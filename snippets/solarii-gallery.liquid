@@ -1,0 +1,325 @@
+{%- comment -%}
+  Solarii Gallery
+  Desktop: 左缩略图 + 中主图 + 下方独立视频
+  Mobile: 仅主轮播 + dots
+  产品信息继续使用 snippets/product.liquid 里的原有输出
+{%- endcomment -%}
+
+{%- assign first_video = nil -%}
+{%- assign first_video_w = 16 -%}
+{%- assign first_video_h = 9 -%}
+
+{%- for media in product.media -%}
+  {%- if media.media_type == 'video' and first_video == nil -%}
+    {%- assign first_video = media -%}
+    {%- assign first_video_w = media.sources[0].width | default: 16 -%}
+    {%- assign first_video_h = media.sources[0].height | default: 9 -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<div class="sg-desktop">
+  <div class="sg-page">
+
+    <div class="sg-thumb-col">
+      <div class="sg-thumb-shell" data-sg-thumb-shell>
+        <div class="sg-thumb-fade-top"></div>
+        <div class="sg-thumb-fade-bottom"></div>
+
+        <div class="sg-thumb-rail" data-sg-thumb-rail>
+          {%- for media in product.media -%}
+            <button
+              type="button"
+              class="sg-thumb-item{% if forloop.first %} is-active{% endif %}"
+              data-sg-thumb
+              data-index="{{ forloop.index0 }}"
+              data-media-id="{{ media.id }}"
+              aria-label="Go to media {{ forloop.index }}"
+            >
+              {%- if media.media_type == 'image' -%}
+                <img
+                  src="{{ media | image_url: width: 220 }}"
+                  alt="{{ media.alt | escape }}"
+                  loading="lazy"
+                  width="76"
+                  height="76"
+                >
+              {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
+                <img
+                  src="{{ media.preview_image | image_url: width: 220 }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="76"
+                  height="76"
+                >
+                <span class="sg-thumb-play">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                </span>
+              {%- else -%}
+                <img
+                  src="{{ media.preview_image | image_url: width: 220 }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="76"
+                  height="76"
+                >
+              {%- endif -%}
+            </button>
+          {%- endfor -%}
+
+          {%- if first_video != blank -%}
+            <button
+              type="button"
+              class="sg-thumb-item"
+              data-sg-thumb
+              data-index="hero-video"
+              aria-label="Go to product video"
+            >
+              <img
+                src="{{ first_video.preview_image | image_url: width: 220 }}"
+                alt="{{ product.title | escape }}"
+                loading="lazy"
+                width="76"
+                height="76"
+              >
+              <span class="sg-thumb-play">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </span>
+            </button>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <section class="sg-media-col">
+      <div class="sg-slider" data-sg-slider>
+        <div class="sg-slider-track" data-sg-track>
+          {%- for media in product.media -%}
+            <div
+              class="sg-slide"
+              data-index="{{ forloop.index0 }}"
+              data-media-id="{{ section.id }}-{{ media.id }}"
+              data-gallery-media-id="{{ media.id }}"
+              data-image-id="{{ media.id }}"
+            >
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  <img
+                    src="{{ media | image_url: width: 1400 }}"
+                    alt="{{ media.alt | escape }}"
+                    data-sg-zoomable
+                    data-sg-zoom-src="{{ media | image_url: width: 3000 }}"
+                    data-sg-zoom-width="{{ media.width }}"
+                    data-sg-zoom-height="{{ media.height }}"
+                    tabindex="0"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+
+                {%- when 'video' -%}
+                  {{
+                    media
+                    | video_tag:
+                      autoplay: false,
+                      loop: false,
+                      controls: false,
+                      muted: true,
+                      preload: 'metadata',
+                      playsinline: true,
+                      style: 'width:100%;height:100%;object-fit:cover;display:block;'
+                  }}
+                  <img
+                    class="sg-slide-poster"
+                    src="{{ media.preview_image | image_url: width: 1600 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                  <div class="sg-slide-play" data-sg-slide-play>
+                    <div class="sg-slide-play-btn">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14l11-7z"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                {%- when 'external_video' -%}
+                  <div style="position:relative;width:100%;height:100%;">
+                    <iframe
+                      src="{{ media | external_video_url: autoplay: false }}"
+                      style="position:absolute;inset:0;width:100%;height:100%;border:none;"
+                      allowfullscreen
+                      loading="lazy"
+                    ></iframe>
+                  </div>
+
+                {%- else -%}
+                  <img
+                    src="{{ media.preview_image | image_url: width: 1400 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    loading="lazy"
+                  >
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <button class="sg-arrow sg-arrow--prev" type="button" data-sg-prev aria-label="Previous media">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <button class="sg-arrow sg-arrow--next" type="button" data-sg-next aria-label="Next media">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="9 6 15 12 9 18"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      {%- if first_video != blank -%}
+        <div
+          class="sg-hero-video"
+          data-sg-hero-video
+          style="aspect-ratio: {{ first_video_w }} / {{ first_video_h }};"
+        >
+          {{
+            first_video
+            | video_tag:
+              autoplay: false,
+              loop: false,
+              controls: false,
+              muted: false,
+              preload: 'metadata',
+              playsinline: true,
+              style: 'width:100%;height:100%;object-fit:cover;display:block;'
+          }}
+
+          <img
+            class="sg-hero-poster"
+            src="{{ first_video.preview_image | image_url: width: 1400 }}"
+            alt="{{ product.title | escape }}"
+            loading="lazy"
+          >
+
+          <div class="sg-hero-overlay" data-sg-hero-overlay>
+            <div class="sg-hero-play">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="sg-hero-title">
+            <div class="sg-eyebrow">Product Story</div>
+            <h3>{{ product.title }}</h3>
+          </div>
+        </div>
+      {%- endif -%}
+    </section>
+
+  </div>
+</div>
+
+<div class="sg-mobile">
+  <div class="sg-mob-swiper-wrap">
+    <div class="sg-mob-swiper" data-sg-mob-swiper>
+      <div class="sg-mob-track" data-sg-mob-track>
+        {%- for media in product.media -%}
+          <div
+            class="sg-mob-slide"
+            data-index="{{ forloop.index0 }}"
+            data-media-id="{{ section.id }}-{{ media.id }}"
+            data-gallery-media-id="{{ media.id }}"
+            data-image-id="{{ media.id }}"
+          >
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- assign sg_mobile_image_width = media.width -%}
+                {%- if sg_mobile_image_width > 1200 -%}
+                  {%- assign sg_mobile_image_width = 1200 -%}
+                {%- endif -%}
+                <img
+                  src="{{ media | image_url: width: sg_mobile_image_width }}"
+                  alt="{{ media.alt | escape }}"
+                  width="{{ media.width }}"
+                  height="{{ media.height }}"
+                  data-sg-zoomable
+                  data-sg-zoom-src="{{ media | image_url: width: 3000 }}"
+                  data-sg-zoom-width="{{ media.width }}"
+                  data-sg-zoom-height="{{ media.height }}"
+                  tabindex="0"
+                  draggable="false"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+
+              {%- when 'video' -%}
+                {{
+                  media
+                  | video_tag:
+                    autoplay: false,
+                    loop: false,
+                    controls: false,
+                    muted: true,
+                    preload: 'metadata',
+                    playsinline: true,
+                    style: 'width:100%;height:100%;object-fit:cover;display:block;'
+                }}
+                {%- assign sg_mobile_poster_width = media.preview_image.width -%}
+                {%- if sg_mobile_poster_width > 1200 -%}
+                  {%- assign sg_mobile_poster_width = 1200 -%}
+                {%- endif -%}
+                <img
+                  class="sg-mob-poster"
+                  src="{{ media.preview_image | image_url: width: sg_mobile_poster_width }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  width="{{ media.preview_image.width }}"
+                  height="{{ media.preview_image.height }}"
+                  draggable="false"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+                <div class="sg-mob-play-ov" data-sg-mob-play>
+                  <div class="sg-mob-play-c">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </div>
+                </div>
+
+              {%- when 'external_video' -%}
+                <div style="position:relative;width:100%;height:100%;">
+                  <iframe
+                    src="{{ media | external_video_url: autoplay: false }}"
+                    style="position:absolute;inset:0;width:100%;height:100%;border:none;"
+                    allowfullscreen
+                    loading="lazy"
+                  ></iframe>
+                </div>
+
+              {%- else -%}
+                {%- assign sg_mobile_preview_width = media.preview_image.width -%}
+                {%- if sg_mobile_preview_width > 1200 -%}
+                  {%- assign sg_mobile_preview_width = 1200 -%}
+                {%- endif -%}
+                <img
+                  src="{{ media.preview_image | image_url: width: sg_mobile_preview_width }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  width="{{ media.preview_image.width }}"
+                  height="{{ media.preview_image.height }}"
+                  draggable="false"
+                  loading="lazy"
+                >
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <div class="sg-mob-dots" data-sg-mob-dots>
+    {%- for media in product.media -%}
+      <div class="sg-mob-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" data-media-id="{{ media.id }}"></div>
+    {%- endfor -%}
+  </div>
+</div>

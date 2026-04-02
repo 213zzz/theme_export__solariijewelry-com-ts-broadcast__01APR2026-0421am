@@ -1,0 +1,185 @@
+{{ 'maya-seasons.css' | asset_url | stylesheet_tag }}
+{{ 'maya-seasons.js' | asset_url | script_tag }}
+
+<section
+  id="maya-seasons-{{ section.id }}"
+  class="maya-seasons"
+  data-maya-seasons
+  data-section-id="{{ section.id }}"
+  style="
+    --fs-logo-d: {{ section.settings.fs_logo_d }}px;
+    --fs-title-d: {{ section.settings.fs_title_d }}px;
+    --fs-desc-d: {{ section.settings.fs_desc_d }}px;
+    --fs-tag-d: {{ section.settings.fs_tag_d }}px;
+    --fs-logo-m: {{ section.settings.fs_logo_m }}px;
+    --fs-title-m: {{ section.settings.fs_title_m }}px;
+    --fs-desc-m: {{ section.settings.fs_desc_m }}px;
+    --fs-tag-m: {{ section.settings.fs_tag_m }}px;
+    --bg: {{ section.settings.bg_color }};
+    --ink: {{ section.settings.text_color }};
+  "
+>
+  <div class="maya-seasons__pin">
+    <article class="maya-seasons__intro is-visible">
+      <div class="maya-seasons__logo">{{ section.settings.logo_text }}</div>
+
+      <h2 class="maya-seasons__title">
+        {% if section.settings.outline_word != blank %}
+          <span class="maya-seasons__outline">{{ section.settings.outline_word }}</span>
+        {% endif %}
+        {{ section.settings.title_rest | escape }}
+      </h2>
+
+      {% if section.settings.description != blank %}
+        <p class="maya-seasons__desc">{{ section.settings.description }}</p>
+      {% endif %}
+
+      <div class="maya-seasons__cta">
+        {% if section.settings.show_circle_btn %}
+          <a class="maya-seasons__circleBtn" href="{{ section.settings.button_link | default: '#' }}" aria-label="Explore arrow">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 17L17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {% endif %}
+
+        {% if section.settings.button_text != blank %}
+          <a class="maya-seasons__pillBtn" href="{{ section.settings.button_link | default: '#' }}">
+            {{ section.settings.button_text }}
+          </a>
+        {% endif %}
+      </div>
+    </article>
+
+    <div class="maya-seasons__viewport">
+      <div class="maya-seasons__track" aria-label="Horizontal scrolling cards">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'card' %}
+              <article class="maya-seasons__panel maya-seasons__cardPanel" {{ block.shopify_attributes }}>
+                <div class="maya-seasons__cardFrame">
+                  {% if block.settings.media_type == 'video' and block.settings.video_url != blank %}
+                    <video class="maya-seasons__media" autoplay muted loop playsinline preload="metadata">
+                      <source src="{{ block.settings.video_url }}" type="video/mp4">
+                    </video>
+                  {% else %}
+                    {% if block.settings.image != blank %}
+                      {{ block.settings.image | image_url: width: 2400 | image_tag: class: 'maya-seasons__media', loading: 'lazy', alt: block.settings.title }}
+                    {% else %}
+                      <img
+                        class="maya-seasons__media"
+                        loading="lazy"
+                        alt="Placeholder"
+                        src="https://images.unsplash.com/photo-1520975693410-00131b7fbb0f?auto=format&fit=crop&w=2000&q=80"
+                      >
+                    {% endif %}
+                  {% endif %}
+
+                  {% if block.settings.tagline != blank %}
+                    <div class="maya-seasons__tag">
+                      {{ block.settings.tagline }}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="maya-seasons__cardMeta">
+                  <h3
+                    class="maya-seasons__cardTitle"
+                    style="--fs-d: {{ block.settings.title_size_d }}px; --fs-m: {{ block.settings.title_size_m }}px;"
+                  >
+                    {{ block.settings.title }}
+                  </h3>
+
+                  {% if block.settings.link_text != blank %}
+                    <a class="maya-seasons__shopBtn" href="{{ block.settings.link | default: '#' }}">
+                      {{ block.settings.link_text }}
+                    </a>
+                  {% endif %}
+                </div>
+              </article>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="maya-seasons__rule" aria-hidden="true"><span></span></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Seasons strip",
+  "settings": [
+    { "type": "header", "content": "Intro Content" },
+    { "type": "text", "id": "logo_text", "label": "Logo text", "default": "MAYA" },
+    { "type": "text", "id": "outline_word", "label": "Outline word", "default": "FASHION" },
+    { "type": "text", "id": "title_rest", "label": "Title rest", "default": "THAT FLOWS WITH THE SEASONS" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Explore our latest collection of timeless fashion. From classic styles to modern trends, find the perfect look for every season. Shop now and elevate your wardrobe!" },
+
+    { "type": "header", "content": "Intro Button" },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "Explore More" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "checkbox", "id": "show_circle_btn", "label": "Show Circle Arrow Button", "default": true },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#f3f1ec" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#101010" },
+
+    { "type": "header", "content": "Intro Typography" },
+    { "type": "range", "id": "fs_logo_d", "label": "Logo Size (Desktop)", "min": 10, "max": 30, "step": 1, "default": 12, "unit": "px" },
+    { "type": "range", "id": "fs_title_d", "label": "Main Title Size (Desktop)", "min": 30, "max": 100, "step": 1, "default": 66, "unit": "px" },
+    { "type": "range", "id": "fs_desc_d", "label": "Description Size (Desktop)", "min": 10, "max": 24, "step": 1, "default": 13, "unit": "px" },
+
+    { "type": "range", "id": "fs_logo_m", "label": "Logo Size (Mobile)", "min": 10, "max": 30, "step": 1, "default": 12, "unit": "px" },
+    { "type": "range", "id": "fs_title_m", "label": "Main Title Size (Mobile)", "min": 20, "max": 60, "step": 1, "default": 32, "unit": "px" },
+    { "type": "range", "id": "fs_desc_m", "label": "Description Size (Mobile)", "min": 10, "max": 24, "step": 1, "default": 13, "unit": "px" },
+
+    { "type": "header", "content": "Card Bubble Typography" },
+    { "type": "range", "id": "fs_tag_d", "label": "Bubble Text Size (Desktop)", "min": 12, "max": 30, "step": 1, "default": 16, "unit": "px" },
+    { "type": "range", "id": "fs_tag_m", "label": "Bubble Text Size (Mobile)", "min": 10, "max": 24, "step": 1, "default": 14, "unit": "px" }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media type",
+          "default": "image",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video (mp4 url)" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "url", "id": "video_url", "label": "Video URL (mp4)" },
+
+        { "type": "header", "content": "Content" },
+        { "type": "richtext", "id": "tagline", "label": "Tagline (Bubble inside image)", "default": "<p>Highlighted text here</p>" },
+        { "type": "text", "id": "title", "label": "Collection Title (Below image)", "default": "Collection title" },
+
+        { "type": "header", "content": "Typography (Per Card)" },
+        { "type": "range", "id": "title_size_d", "label": "Title Size (Desktop)", "min": 16, "max": 60, "step": 1, "default": 40, "unit": "px" },
+        { "type": "range", "id": "title_size_m", "label": "Title Size (Mobile)", "min": 14, "max": 40, "step": 1, "default": 24, "unit": "px" },
+
+        { "type": "text", "id": "link_text", "label": "Button Text (Clear to hide)", "default": "Shop Now" },
+        { "type": "url", "id": "link", "label": "Button link" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Seasons strip",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

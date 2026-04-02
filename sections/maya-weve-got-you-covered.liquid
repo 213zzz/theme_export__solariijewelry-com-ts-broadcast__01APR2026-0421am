@@ -1,0 +1,469 @@
+<section
+  id="be-covered-{{ section.id }}"
+  class="be-covered"
+  style="
+    --be-covered-bg: {{ section.settings.bg_color }};
+    --be-covered-card: {{ section.settings.card_color }};
+    --be-covered-border: {{ section.settings.border_color }};
+    --be-covered-heading: {{ section.settings.heading_color }};
+    --be-covered-text: {{ section.settings.text_color }};
+    --be-covered-max: {{ section.settings.max_width }}px;
+    --be-covered-pad-t: {{ section.settings.padding_top }}px;
+    --be-covered-pad-b: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="be-covered__inner">
+    <header class="be-covered__header">
+      <h2 class="be-covered__title">{{ section.settings.title }}</h2>
+      {% if section.settings.description != blank %}
+        <p class="be-covered__desc">{{ section.settings.description }}</p>
+      {% endif %}
+    </header>
+
+    <div class="be-covered__grid">
+      {% for block in section.blocks %}
+        {% assign col_span = block.settings.desktop_span | default: '1' %}
+        {% case block.type %}
+          {% when 'benefit' %}
+            <article class="be-covered__card be-covered__card--benefit be-covered__span-{{ col_span }}" {{ block.shopify_attributes }}>
+              {% if block.settings.icon_text != blank %}
+                <div class="be-covered__icon" aria-hidden="true">{{ block.settings.icon_text }}</div>
+              {% endif %}
+              <h3 class="be-covered__card-title">{{ block.settings.title }}</h3>
+              {% if block.settings.text != blank %}
+                <p class="be-covered__card-text">{{ block.settings.text }}</p>
+              {% endif %}
+              {% if block.settings.link_label != blank %}
+                <a class="be-covered__link" href="{{ block.settings.link_url | default: '#' }}">
+                  {{ block.settings.link_label }}
+                </a>
+              {% endif %}
+            </article>
+          {% when 'support' %}
+            <article class="be-covered__card be-covered__card--support be-covered__span-{{ col_span }}" {{ block.shopify_attributes }}>
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 900 | image_tag: class: 'be-covered__support-image', loading: 'lazy', alt: block.settings.title }}
+              {% endif %}
+              <div class="be-covered__support-body">
+                {% if block.settings.eyebrow != blank %}
+                  <p class="be-covered__eyebrow">{{ block.settings.eyebrow }}</p>
+                {% endif %}
+                <h3 class="be-covered__card-title">{{ block.settings.title }}</h3>
+                {% if block.settings.text != blank %}
+                  <p class="be-covered__card-text">{{ block.settings.text }}</p>
+                {% endif %}
+                {% if block.settings.link_label != blank %}
+                  <a class="be-covered__link" href="{{ block.settings.link_url | default: '#' }}">
+                    {{ block.settings.link_label }}
+                  </a>
+                {% endif %}
+              </div>
+            </article>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  #be-covered-{{ section.id }} {
+    background: var(--be-covered-bg);
+    padding-top: var(--be-covered-pad-t);
+    padding-bottom: var(--be-covered-pad-b);
+  }
+
+  #be-covered-{{ section.id }} .be-covered__inner {
+    width: min(var(--be-covered-max), calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__header {
+    margin-bottom: 26px;
+    text-align: center;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__title {
+    margin: 0;
+    color: var(--be-covered-heading);
+    font-size: clamp(34px, 6vw, 54px);
+    line-height: 1.03;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__desc {
+    margin: 14px auto 0;
+    max-width: 72ch;
+    color: var(--be-covered-text);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #be-covered-{{ section.id }} .be-covered__card {
+    border: 1px solid var(--be-covered-border);
+    border-radius: 18px;
+    background: var(--be-covered-card);
+    color: var(--be-covered-text);
+    padding: 24px;
+    min-height: 226px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__span-2 {
+    grid-column: span 2;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__span-3 {
+    grid-column: span 3;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--be-covered-border);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__eyebrow {
+    margin: 0 0 8px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__card-title {
+    margin: 0;
+    color: var(--be-covered-heading);
+    font-size: clamp(20px, 2.4vw, 29px);
+    line-height: 1.16;
+    font-weight: 500;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__card-text {
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__link {
+    margin-top: auto;
+    padding-top: 18px;
+    color: var(--be-covered-heading);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__support-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  #be-covered-{{ section.id }} .be-covered__support-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+  }
+
+  @media (max-width: 990px) {
+    #be-covered-{{ section.id }} .be-covered__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #be-covered-{{ section.id }} .be-covered__span-3 {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 700px) {
+    #be-covered-{{ section.id }} .be-covered__inner {
+      width: calc(100% - 24px);
+    }
+
+    #be-covered-{{ section.id }} .be-covered__header {
+      text-align: left;
+    }
+
+    #be-covered-{{ section.id }} .be-covered__title {
+      font-size: 36px;
+    }
+
+    #be-covered-{{ section.id }} .be-covered__grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    #be-covered-{{ section.id }} .be-covered__span-2,
+    #be-covered-{{ section.id }} .be-covered__span-3 {
+      grid-column: span 1;
+    }
+
+    #be-covered-{{ section.id }} .be-covered__card {
+      min-height: 0;
+      padding: 20px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "We've Got You Covered",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "We've Got You Covered"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Need help? Our jewelry experts are available around the clock and can assist with everything from finding the perfect piece to completing your purchase."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8f5ef"
+    },
+    {
+      "type": "color",
+      "id": "card_color",
+      "label": "Card background",
+      "default": "#fbfaf7"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#d9d3c7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1c1a18"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#3c3833"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content max width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "default": 1220,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 84,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 84,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Top icon text",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "FREE SHIPPING"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Body text",
+          "default": "Enjoy complimentary two-day shipping and free shipping on returns."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "select",
+          "id": "desktop_span",
+          "label": "Desktop column span",
+          "default": "1",
+          "options": [
+            { "value": "1", "label": "1 column" },
+            { "value": "2", "label": "2 columns" },
+            { "value": "3", "label": "3 columns" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "support",
+      "name": "Support card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "WE'RE HERE FOR YOU"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "20 years of expertise in one click."
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Body text",
+          "default": "Get personalized support from our jewelry specialists online or in-store."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label",
+          "default": "Chat With Us"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "select",
+          "id": "desktop_span",
+          "label": "Desktop column span",
+          "default": "1",
+          "options": [
+            { "value": "1", "label": "1 column" },
+            { "value": "2", "label": "2 columns" },
+            { "value": "3", "label": "3 columns" }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "We've Got You Covered",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "FREE SHIPPING",
+            "text": "Enjoy complimentary two-day shipping and free shipping on returns.",
+            "link_label": "Learn More"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "FREE RETURNS",
+            "text": "Get a full refund for up to 30 days on all jewelry.",
+            "link_label": "Learn More"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "LIFETIME DIAMOND UPGRADE",
+            "text": "Easily trade up your diamond center stone with our lifetime program.",
+            "link_label": "Learn More"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "UNMATCHED CARE",
+            "text": "Whether you have questions now or years later, we'll always provide one-on-one support.",
+            "link_label": "Learn More",
+            "desktop_span": "2"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "SOURCE BEYOND CONFLICT FREE",
+            "text": "Our Beyond Conflict Free diamonds elevate standards for traceability and ethics.",
+            "link_label": "Learn More"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "SUSTAINABLE PRACTICES",
+            "text": "Protecting our planet is central to how we source and craft our jewelry.",
+            "link_label": "Learn More"
+          }
+        },
+        {
+          "type": "support",
+          "settings": {
+            "eyebrow": "WE'RE HERE FOR YOU",
+            "title": "20 years of expertise in one click.",
+            "text": "Get personalized support from our jewelry specialists online or in-store.",
+            "link_label": "Chat With Us"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

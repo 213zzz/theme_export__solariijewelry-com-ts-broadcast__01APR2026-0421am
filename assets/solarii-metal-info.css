@@ -1,0 +1,87 @@
+/* ── Metal Info Block (mib) ── */
+
+.mib {
+  border: 1px solid #e8e4df;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  padding-bottom: var(--mib-pad-bottom, 0px);
+}
+
+/* ── Header ── */
+.mib-header {
+  text-align: center;
+  font-size: var(--mib-title-size-d, 18px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #e8e4df;
+  text-transform: uppercase;
+}
+
+/* ── Section (each row group) ── */
+.mib-section {
+  padding: 12px 16px;
+}
+
+.mib-section + .mib-section {
+  border-top: 1px solid #f0ece7;
+}
+
+/* ── Row title ── */
+.mib-row-title {
+  text-align: center;
+  font-size: calc(var(--mib-text-size-d, 14px) - 1px);
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+/* ── Grid ── */
+.mib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+/* ── Cell ── */
+.mib-cell {
+  text-align: center;
+  font-size: var(--mib-text-size-d, 14px);
+  font-weight: 600;
+  color: #1a1a1a;
+  padding: 10px 6px;
+  background: #faf9f7;
+  border: 1px solid #e8e4df;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ── Mobile overrides ── */
+@media (max-width: 768px) {
+  .mib-header {
+    font-size: var(--mib-title-size-m, 16px);
+    padding: 12px 12px 8px;
+  }
+
+  .mib-row-title {
+    font-size: calc(var(--mib-text-size-m, 12px) - 1px);
+    margin-bottom: 8px;
+  }
+
+  .mib-section {
+    padding: 10px 12px;
+  }
+
+  .mib-grid {
+    gap: 6px;
+  }
+
+  .mib-cell {
+    font-size: var(--mib-text-size-m, 12px);
+    padding: 8px 4px;
+  }
+}

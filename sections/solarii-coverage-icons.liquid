@@ -1,0 +1,377 @@
+{% comment %}
+  Section: Coverage Icons Row (Brilliant Earth style)
+  - 5 icon items in a row (responsive)
+  - Colors configurable in Theme Editor (match your site easily)
+{% endcomment %}
+
+<section
+  id="solarii-coverage-{{ section.id }}"
+  class="solarii-coverage"
+  style="
+    --sc-bg: {{ section.settings.bg_color }};
+    --sc-text: {{ section.settings.text_color }};
+    --sc-muted: {{ section.settings.muted_text_color }};
+    --sc-border: {{ section.settings.border_color }};
+    --sc-icon-bg: {{ section.settings.icon_bg_color }};
+    --sc-icon: {{ section.settings.icon_color }};
+    --sc-radius: {{ section.settings.radius }}px;
+    --sc-pad-y: {{ section.settings.pad_y }}px;
+  "
+>
+  <div class="solarii-coverage__outer">
+    <div class="solarii-coverage__inner">
+      {% if section.settings.heading != blank %}
+        <h2 class="solarii-coverage__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      <div class="solarii-coverage__grid" role="list" aria-label="{{ section.settings.heading | default: 'Coverage' | escape }}">
+        {% for block in section.blocks %}
+          <div class="solarii-coverage__item" role="listitem" {{ block.shopify_attributes }}>
+            <div class="solarii-coverage__icon" aria-hidden="true">
+              {% if block.settings.icon_image != blank %}
+                <img
+                  src="{{ block.settings.icon_image | image_url: width: 120 }}"
+                  alt=""
+                  loading="lazy"
+                  width="60"
+                  height="60"
+                >
+              {% else %}
+                <span class="solarii-coverage__svg" aria-hidden="true">
+                  {% case block.settings.icon %}
+                    {% when 'shipping' %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 7.5h10.5v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M13.5 10.5H18l3 3v3h-2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M7 19.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M18 19.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M13.5 16.5H9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+
+                    {% when 'warranty' %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2.5 19 6v6.5c0 5-3.5 8.5-7 9.9-3.5-1.4-7-4.9-7-9.9V6l7-3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="m8.5 12 2.2 2.2L15.8 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+
+                    {% when 'support' %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M7.5 18.5 4 20V6.5A3 3 0 0 1 7 3.5h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H7.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M8 8.5h8M8 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+
+                    {% when 'upgrade' %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3 4.5 10.5 12 21l7.5-10.5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M7 11h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+
+                    {% when 'resizing' %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21c4.7 0 8.5-3.1 8.5-7s-3.8-7-8.5-7S3.5 10.1 3.5 14s3.8 7 8.5 7Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M16.5 10.5h3v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19.5 10.5c-1.6-2.3-4.2-3.5-7.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M7.5 17.5h-3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4.5 17.5c1.6 2.3 4.2 3.5 7.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+
+                    {% else %}
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21c4.7 0 8.5-3.8 8.5-8.5S16.7 4 12 4 3.5 7.8 3.5 12.5 7.3 21 12 21Z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M8.8 12.5h6.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+                  {% endcase %}
+                </span>
+              {% endif %}
+            </div>
+
+            {% if block.settings.label != blank %}
+              {% if block.settings.link != blank %}
+                <a class="solarii-coverage__label" href="{{ block.settings.link }}" aria-label="{{ block.settings.label | escape }}">
+                  {{ block.settings.label | escape }}
+                </a>
+              {% else %}
+                <div class="solarii-coverage__label">{{ block.settings.label | escape }}</div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <style>
+    #solarii-coverage-{{ section.id }}{
+      background: var(--sc-bg);
+      color: var(--sc-text);
+      padding: var(--sc-pad-y) 0;
+    }
+    #solarii-coverage-{{ section.id }} .solarii-coverage__outer{
+      max-width: {{ section.settings.max_width }}px;
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+    #solarii-coverage-{{ section.id }} .solarii-coverage__inner{
+      border: 2px solid var(--sc-border);
+      border-radius: var(--sc-radius);
+      padding: clamp(22px, 3vw, 38px);
+    }
+    #solarii-coverage-{{ section.id }} .solarii-coverage__heading{
+      margin: 0 0 22px;
+      text-align: center;
+      font-size: clamp(22px, 2.2vw, 34px);
+      line-height: 1.15;
+      letter-spacing: .2px;
+    }
+    #solarii-coverage-{{ section.id }} .solarii-coverage__grid{
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: clamp(14px, 2vw, 26px);
+      align-items: start;
+    }
+    #solarii-coverage-{{ section.id }} .solarii-coverage__item{
+      text-align: center;
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+#solarii-coverage-{{ section.id }} .solarii-coverage__icon{
+  width: 78px;
+  height: 78px;
+  border-radius: 999px;
+  position: relative;
+  display: grid;
+  place-items: center;
+
+  background:
+    radial-gradient(120% 120% at 28% 22%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%),
+    radial-gradient(120% 120% at 70% 80%, rgba(0,0,0,.28), rgba(0,0,0,0) 60%),
+    var(--sc-icon-bg);
+
+  border: 1px solid rgba(255,255,255,.22);
+
+  box-shadow:
+    0 16px 30px rgba(0,0,0,.35),
+    0 6px 10px rgba(0,0,0,.22),
+    inset 0 2px 0 rgba(255,255,255,.25),
+    inset 0 -10px 16px rgba(0,0,0,.25);
+
+  transform: translateZ(0);
+}
+
+#solarii-coverage-{{ section.id }} .solarii-coverage__icon::before{
+  content:"";
+  position:absolute;
+  inset: 3px;
+  border-radius: inherit;
+  background: radial-gradient(70% 70% at 30% 25%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%);
+  pointer-events:none;
+}
+
+#solarii-coverage-{{ section.id }} .solarii-coverage__icon::after{
+  content:"";
+  position:absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+  pointer-events:none;
+}
+
+#solarii-coverage-{{ section.id }} .solarii-coverage__svg{
+  color: var(--sc-icon);
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.18)) drop-shadow(0 8px 12px rgba(0,0,0,.28));
+}
+    #solarii-coverage-{{ section.id }} .solarii-coverage__icon img{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: none;
+    }
+
+    #solarii-coverage-{{ section.id }} .solarii-coverage__label{
+      font-size: 12px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--sc-muted);
+      text-decoration: none;
+      line-height: 1.25;
+      max-width: 160px;
+    }
+    #solarii-coverage-{{ section.id }} a.solarii-coverage__label:hover{
+      text-decoration: underline;
+    }
+
+    @media (max-width: 990px){
+      #solarii-coverage-{{ section.id }} .solarii-coverage__grid{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+@media (max-width: 640px){
+  #solarii-coverage-{{ section.id }} .solarii-coverage__heading{
+    max-width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 关键：6列网格，让 1-3 各占2列（=3个一行），4-5 各占3列（=2个一行） */
+  #solarii-coverage-{{ section.id }} .solarii-coverage__grid{
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 18px 14px;
+    justify-items: center;
+  }
+
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item{
+    width: 100%;
+  }
+
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item:nth-child(1),
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item:nth-child(2),
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item:nth-child(3){
+    grid-column: span 2;
+  }
+
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item:nth-child(4),
+  #solarii-coverage-{{ section.id }} .solarii-coverage__item:nth-child(5){
+    grid-column: span 3;
+  }
+
+  #solarii-coverage-{{ section.id }} .solarii-coverage__label{
+    max-width: 150px;
+    font-size: 12px;
+    letter-spacing: .7px;
+  }
+}
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Coverage Icons Row",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "We’ve Got You Covered"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#F7F2EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#1F1F1F"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Item text",
+      "default": "#2A2A2A"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#E3D9CF"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_color",
+      "label": "Icon circle background",
+      "default": "#E7DED4"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#B1762D"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 28,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "pad_y",
+      "label": "Section padding (top/bottom)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 900,
+      "max": 1600,
+      "step": 50,
+      "default": 1400
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "FREE SHIPPING & RETURNS"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Optional link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "shipping",
+          "options": [
+            { "value": "shipping", "label": "Shipping" },
+            { "value": "warranty", "label": "Warranty" },
+            { "value": "support", "label": "Support" },
+            { "value": "upgrade", "label": "Upgrade" },
+            { "value": "resizing", "label": "Resizing" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon image (optional)"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Coverage Icons Row",
+      "blocks": [
+        { "type": "item", "settings": { "label": "FREE SHIPPING & RETURNS", "icon": "shipping" } },
+        { "type": "item", "settings": { "label": "FREE LIFETIME WARRANTY", "icon": "warranty" } },
+        { "type": "item", "settings": { "label": "24/7 CUSTOMER SUPPORT", "icon": "support" } },
+        { "type": "item", "settings": { "label": "LIFETIME STONE UPGRADE", "icon": "upgrade" } },
+        { "type": "item", "settings": { "label": "FREE 1 YEAR RESIZING", "icon": "resizing" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1001 @@
+{% comment %}
+  Section: Hotspot Hero (Premium)
+  File: sections/hotspot-hero.liquid
+{% endcomment %}
+
+<section id="shopify-section-{{ section.id }}" class="csh" data-csh>
+  {% liquid
+    assign hero_img = section.settings.image
+    assign hero_img_m = section.settings.image_mobile
+  %}
+
+  <div class="csh__hero" data-csh-hero>
+    {%- comment -%} Hero media: video (desktop/mobile) or image {%- endcomment -%}
+    {% if section.settings.hero_media_type == 'video' and section.settings.hero_video != blank %}
+      {% assign hero_vid_d = section.settings.hero_video %}
+      {% assign hero_vid_m = section.settings.hero_video_mobile %}
+
+      <div class="csh__media csh__media--video">
+        {{ hero_vid_d | video_tag:
+          class: 'csh__img csh__heroVideo csh__heroVideo--desktop',
+          autoplay: section.settings.hero_video_autoplay,
+          loop: true,
+          muted: true,
+          controls: false,
+          playsinline: true,
+          preload: 'metadata'
+        }}
+
+        {% if hero_vid_m != blank %}
+          {{ hero_vid_m | video_tag:
+            class: 'csh__img csh__heroVideo csh__heroVideo--mobile',
+            autoplay: section.settings.hero_video_autoplay,
+            loop: true,
+            muted: true,
+            controls: false,
+            playsinline: true,
+            preload: 'metadata'
+          }}
+        {% else %}
+          {{ hero_vid_d | video_tag:
+            class: 'csh__img csh__heroVideo csh__heroVideo--mobile',
+            autoplay: section.settings.hero_video_autoplay,
+            loop: true,
+            muted: true,
+            controls: false,
+            playsinline: true,
+            preload: 'metadata'
+          }}
+        {% endif %}
+      </div>
+
+    {% elsif hero_img != blank %}
+      <picture class="csh__media">
+        {% if hero_img_m != blank %}
+          <source media="(max-width: 749px)" srcset="{{ hero_img_m | image_url: width: 1200 }}">
+        {% endif %}
+        <img
+          src="{{ hero_img | image_url: width: 2400 }}"
+          alt="{{ section.settings.image_alt | escape }}"
+          loading="lazy"
+          class="csh__img"
+        >
+      </picture>
+    {% else %}
+      <div class="csh__fallback" aria-hidden="true"></div>
+    {% endif %}
+
+    <div class="csh__overlay" aria-hidden="true"></div>
+    <canvas class="csh__sparkle" data-csh-sparkle aria-hidden="true"></canvas>
+
+    {% if section.settings.bg_word != blank %}
+      <div class="csh__bgword" aria-hidden="true">{{ section.settings.bg_word }}</div>
+    {% endif %}
+
+    {%- comment -%} Content (Shane-style: top title + bottom CTA) {%- endcomment -%}
+    <div class="csh__content">
+      <div class="csh__copy">
+        {% if section.settings.heading != blank %}
+          <h2 class="csh__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="csh__subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.button_label != blank %}
+        {% assign cta_href = section.settings.button_link %}
+        <a
+          class="csh__cta csh__cta--{{ section.settings.button_style }}{% if cta_href == blank %} is-disabled{% endif %}"
+          href="{% if cta_href != blank %}{{ cta_href }}{% else %}#{% endif %}"
+          {% if cta_href == blank %}aria-disabled="true"{% endif %}
+        >
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Hotspots + Modals {%- endcomment -%}
+    {% for block in section.blocks %}
+      {% if block.type == 'hotspot' %}
+        {% liquid
+          assign label_side = block.settings.label_side
+          assign show_on_mobile = block.settings.show_on_mobile
+          assign modal_title = block.settings.modal_title
+          if modal_title == blank
+            assign modal_title = block.settings.label
+          endif
+        %}
+
+        <div
+          class="csh__hotspot {% unless show_on_mobile %}csh__hotspot--hide-mobile{% endunless %}"
+          style="--x: {{ block.settings.pos_x }}%; --y: {{ block.settings.pos_y }}%; --xm: {{ block.settings.pos_x_m }}%; --ym: {{ block.settings.pos_y_m }}%;"
+          data-csh-hotspot
+          data-modal-id="{{ block.id }}"
+          {{ block.shopify_attributes }}
+        >
+          {% if label_side == 'left' %}
+            <span class="csh__label">{{ block.settings.label }}</span>
+          {% endif %}
+
+          <button type="button" class="csh__dot" aria-label="{{ block.settings.label | escape }}" data-csh-open>
+            <span class="csh__plus" aria-hidden="true"></span>
+          </button>
+
+          {% if label_side == 'right' %}
+            <span class="csh__label">{{ block.settings.label }}</span>
+          {% endif %}
+        </div>
+
+        <div class="csh__backdrop" data-csh-backdrop data-modal="{{ block.id }}" aria-hidden="true">
+          <div class="csh__modal" role="dialog" aria-modal="true" aria-label="{{ modal_title | escape }}">
+            <div class="csh__modalGrid">
+              <div class="csh__modalText">
+                <div class="csh__modalTitle">{{ modal_title }}</div>
+
+                {% if block.settings.modal_text != blank %}
+                  <div class="csh__modalBody">{{ block.settings.modal_text }}</div>
+                {% endif %}
+
+                {% if block.settings.link_label != blank and block.settings.link_url != blank %}
+                  <a class="csh__learn" href="{{ block.settings.link_url }}">{{ block.settings.link_label }}</a>
+                {% endif %}
+              </div>
+
+              <div class="csh__modalMedia">
+                <button type="button" class="csh__close" aria-label="Close" data-csh-close>×</button>
+
+                {% if block.settings.media_type == 'video' and block.settings.video != blank %}
+                  <div class="csh__videoWrap">
+                    {{ block.settings.video | video_tag:
+                      class: 'csh__video',
+                      autoplay: block.settings.video_autoplay,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                    }}
+                  </div>
+                {% elsif block.settings.media_type == 'image' and block.settings.media_image != blank %}
+                  <img class="csh__mediaImg" src="{{ block.settings.media_image | image_url: width: 1400 }}" alt="" loading="lazy">
+                {% else %}
+                  <div class="csh__mediaEmpty" aria-hidden="true"></div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <style>
+    #shopify-section-{{ section.id }}.csh{
+      --hDesk: {{ section.settings.height_desktop }}px;
+      --hMob: {{ section.settings.height_mobile }}px;
+      --overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+
+      --text: {{ section.settings.text_color }};
+      --label: {{ section.settings.label_color }};
+      --dotBg: {{ section.settings.dot_bg }};
+      --dotBd: {{ section.settings.dot_border }};
+      --plus: {{ section.settings.plus_color }};
+
+      --ctaBg: {{ section.settings.cta_bg }};
+      --ctaText: {{ section.settings.cta_text }};
+      --ctaBd: {{ section.settings.cta_border }};
+
+      --modalTextBg: {{ section.settings.modal_text_bg }};
+      --modalBg: rgba(0,0,0,.35);
+
+      --titleD: {{ section.settings.heading_size_desktop }}px;
+      --titleM: {{ section.settings.heading_size_mobile }}px;
+      --subD: {{ section.settings.subheading_size_desktop }}px;
+      --subM: {{ section.settings.subheading_size_mobile }}px;
+      --ctaD: {{ section.settings.cta_size_desktop }}px;
+      --ctaM: {{ section.settings.cta_size_mobile }}px;
+
+      --mTitleD: {{ section.settings.modal_title_size_desktop }}px;
+      --mTitleM: {{ section.settings.modal_title_size_mobile }}px;
+      --mBodyD: {{ section.settings.modal_body_size_desktop }}px;
+      --mBodyM: {{ section.settings.modal_body_size_mobile }}px;
+
+      position: relative;
+    }
+
+    /* Hero */
+    #shopify-section-{{ section.id }} .csh__hero{
+      position: relative;
+      min-height: var(--hDesk);
+      width: 100%;
+      overflow: hidden;
+      background: #f4f2ee;
+    }
+    @media (max-width: 749px){
+      #shopify-section-{{ section.id }} .csh__hero{ min-height: var(--hMob); }
+    }
+
+    #shopify-section-{{ section.id }} .csh__media,
+    #shopify-section-{{ section.id }} .csh__img{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit: cover;
+    }
+
+    #shopify-section-{{ section.id }} .csh__heroVideo{
+      width:100% !important;
+      height:100% !important;
+      object-fit: cover;
+      display:block;
+    }
+
+    /* Hero video: desktop vs mobile */
+    #shopify-section-{{ section.id }} .csh__heroVideo--mobile { display:none; }
+    @media (max-width: 749px){
+      #shopify-section-{{ section.id }} .csh__heroVideo--desktop { display:none; }
+      #shopify-section-{{ section.id }} .csh__heroVideo--mobile { display:block; }
+    }
+
+    #shopify-section-{{ section.id }} .csh__fallback{
+      position:absolute; inset:0;
+      background: radial-gradient(1200px 500px at 60% 40%, #efe9dd, #d9cfbf);
+    }
+
+    #shopify-section-{{ section.id }} .csh__overlay{
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0, calc(var(--overlay) * .55)), rgba(0,0,0, calc(var(--overlay) * .2)) 55%, rgba(0,0,0, calc(var(--overlay) * .55))),
+        radial-gradient(900px 380px at 50% 50%, rgba(0,0,0, calc(var(--overlay) * .22)), transparent 70%);
+      pointer-events:none;
+      z-index: 1;
+    }
+
+    #shopify-section-{{ section.id }} .csh__sparkle{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      z-index: 2;
+    }
+
+    #shopify-section-{{ section.id }} .csh__bgword{
+      position:absolute; left:50%; top:18%;
+      transform: translateX(-50%);
+      font-size: clamp(48px, 10vw, 140px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.08);
+      white-space: nowrap;
+      pointer-events:none;
+      user-select:none;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    /* Content (top title + bottom CTA like Shane) */
+    #shopify-section-{{ section.id }} .csh__content{
+      position:absolute; inset:0;
+      display:flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items:center;
+      text-align:center;
+      padding: 52px 22px 52px;
+      color: var(--text);
+      z-index: 5;
+      pointer-events:none;
+    }
+    #shopify-section-{{ section.id }} .csh__copy{
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 10px;
+      max-width: 92%;
+    }
+    #shopify-section-{{ section.id }} .csh__heading{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: var(--titleD);
+      font-weight: 500;
+      letter-spacing: .01em;
+      line-height: 1.08;
+      text-shadow: 0 12px 32px rgba(0,0,0,.16);
+    }
+    #shopify-section-{{ section.id }} .csh__subheading{
+      font-size: var(--subD);
+      opacity: .92;
+      line-height: 1.55;
+      max-width: 62ch;
+      text-shadow: 0 10px 28px rgba(0,0,0,.14);
+    }
+
+    #shopify-section-{{ section.id }} .csh__cta{
+      pointer-events:auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 260px;
+      padding: 12px 18px;
+      font-size: var(--ctaD);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: 0;
+      text-decoration:none;
+      transition: transform .15s ease, filter .15s ease;
+      box-shadow: 0 18px 50px rgba(0,0,0,.16);
+      z-index: 7;
+    }
+    #shopify-section-{{ section.id }} .csh__cta:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    #shopify-section-{{ section.id }} .csh__cta.is-disabled{
+      pointer-events:none;
+      opacity:.75;
+    }
+    #shopify-section-{{ section.id }} .csh__cta--solid{
+      background: var(--ctaBg);
+      color: var(--ctaText);
+      border: 1px solid var(--ctaBd);
+    }
+    #shopify-section-{{ section.id }} .csh__cta--outline{
+      background: rgba(255,255,255,.88);
+      color: #111;
+      border: 1px solid rgba(0,0,0,.20);
+      box-shadow: 0 18px 50px rgba(0,0,0,.10);
+    }
+
+    @media (max-width: 749px){
+      #shopify-section-{{ section.id }} .csh__content{ padding: 34px 16px 26px; }
+      #shopify-section-{{ section.id }} .csh__heading{ font-size: var(--titleM); }
+      #shopify-section-{{ section.id }} .csh__subheading{ font-size: var(--subM); }
+      #shopify-section-{{ section.id }} .csh__cta{
+        font-size: var(--ctaM);
+        min-width: 240px;
+        padding: 12px 16px;
+      }
+    }
+
+    /* Hotspots */
+    #shopify-section-{{ section.id }} .csh__hotspot{
+      position:absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      color: var(--label);
+      z-index: 6;
+      user-select:none;
+      max-width: 260px;
+    }
+
+    #shopify-section-{{ section.id }} .csh__label{
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .95;
+      text-shadow: 0 10px 26px rgba(0,0,0,.22);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    #shopify-section-{{ section.id }} .csh__dot{
+      width: 34px; height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--dotBd);
+      background: var(--dotBg);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      position:relative;
+      padding:0;
+      transition: transform .15s ease, box-shadow .15s ease;
+      flex: 0 0 auto;
+    }
+    #shopify-section-{{ section.id }} .csh__dot:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.16);
+    }
+    #shopify-section-{{ section.id }} .csh__plus{ width: 12px; height: 12px; position:relative; }
+    #shopify-section-{{ section.id }} .csh__plus:before,
+    #shopify-section-{{ section.id }} .csh__plus:after{
+      content:"";
+      position:absolute;
+      left:50%; top:50%;
+      width: 12px; height: 2px;
+      background: var(--plus);
+      transform: translate(-50%,-50%);
+      border-radius: 2px;
+    }
+    #shopify-section-{{ section.id }} .csh__plus:after{
+      transform: translate(-50%,-50%) rotate(90deg);
+    }
+
+    {% if section.settings.dot_pulse %}
+    #shopify-section-{{ section.id }} .csh__dot:after{
+      content:"";
+      position:absolute; inset:-8px;
+      border-radius:999px;
+      border: 1px solid rgba(255,255,255,.45);
+      opacity:0;
+      animation: cshPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes cshPulse{
+      0%{ transform: scale(.82); opacity:0;}
+      30%{ opacity:.35;}
+      70%{ transform: scale(1.12); opacity:0;}
+      100%{ opacity:0;}
+    }
+    {% endif %}
+
+    /* Mobile hotspot: label under plus + use mobile coords */
+    @media (max-width: 749px){
+      #shopify-section-{{ section.id }} .csh__hotspot{
+        left: var(--xm, var(--x));
+        top: var(--ym, var(--y));
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        max-width: 200px;
+      }
+      #shopify-section-{{ section.id }} .csh__label{
+        order: 2;
+        font-size: 11px;
+        letter-spacing: .10em;
+        max-width: 170px;
+        text-align:center;
+      }
+      #shopify-section-{{ section.id }} .csh__dot{ order: 1; }
+      #shopify-section-{{ section.id }} .csh__hotspot--hide-mobile{ display:none; }
+    }
+
+    /* Modal (desktop) */
+    #shopify-section-{{ section.id }} .csh__backdrop{
+      position: fixed;
+      inset: 0;
+      background: var(--modalBg);
+      backdrop-filter: blur(6px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 18px;
+    }
+    #shopify-section-{{ section.id }} .csh__backdrop.is-open{ display:flex; }
+
+    #shopify-section-{{ section.id }} .csh__modal{
+      width: min(980px, 92vw);
+      background: transparent;
+      box-shadow: 0 24px 80px rgba(0,0,0,.28);
+    }
+    #shopify-section-{{ section.id }} .csh__modalGrid{
+      display:grid;
+      grid-template-columns: 1fr 1.2fr;
+      background: #fff;
+    }
+    #shopify-section-{{ section.id }} .csh__modalText{
+      background: var(--modalTextBg);
+      padding: 44px 38px;
+      display:flex;
+      flex-direction: column;
+      justify-content:center;
+      gap: 14px;
+    }
+    #shopify-section-{{ section.id }} .csh__modalTitle{
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: var(--mTitleD);
+      font-weight: 500;
+      letter-spacing: .02em;
+      line-height: 1.05;
+      color: #111;
+    }
+    #shopify-section-{{ section.id }} .csh__modalBody{
+      font-size: var(--mBodyD);
+      line-height: 1.7;
+      color: rgba(0,0,0,.72);
+      max-width: 44ch;
+    }
+    #shopify-section-{{ section.id }} .csh__learn{
+      margin-top: 4px;
+      font-size: 13px;
+      color: #111;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      width: fit-content;
+    }
+    #shopify-section-{{ section.id }} .csh__modalMedia{
+      position:relative;
+      background: #111;
+      min-height: 360px;
+      overflow:hidden;
+    }
+    #shopify-section-{{ section.id }} .csh__close{
+      position:absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      z-index: 2;
+    }
+    #shopify-section-{{ section.id }} .csh__videoWrap{ position:absolute; inset:0; }
+    #shopify-section-{{ section.id }} .csh__video{
+      position:absolute; inset:0;
+      width:100% !important;
+      height:100% !important;
+      object-fit: cover;
+      display:block;
+    }
+    #shopify-section-{{ section.id }} .csh__mediaImg{
+      position:absolute; inset:0;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    #shopify-section-{{ section.id }} .csh__mediaEmpty{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #2a2a2a, #111);
+    }
+
+    /* Mobile modal: ONLY cover this hero + circle media + close bottom */
+    @media (max-width: 749px){
+      #shopify-section-{{ section.id }} .csh__backdrop{
+        position:absolute;
+        inset:0;
+        padding:0;
+        background: rgba(0,0,0,.10);
+        backdrop-filter: blur(10px);
+      }
+
+      #shopify-section-{{ section.id }} .csh__modal{
+        width:100%;
+        height:100%;
+        box-shadow:none;
+      }
+
+      #shopify-section-{{ section.id }} .csh__modalGrid{
+        height:100%;
+        display:flex;
+        flex-direction: column;
+        background: transparent;
+      }
+
+      #shopify-section-{{ section.id }} .csh__modalText{
+        background: transparent;
+        padding: 26px 18px 10px;
+        text-align:center;
+        gap: 10px;
+      }
+
+      #shopify-section-{{ section.id }} .csh__modalTitle{
+        font-size: var(--mTitleM);
+        color: #fff;
+        text-shadow: 0 14px 40px rgba(0,0,0,.22);
+      }
+
+      #shopify-section-{{ section.id }} .csh__modalBody{
+        font-size: var(--mBodyM);
+        margin: 2px auto 0;
+        line-height: 1.65;
+        color: rgba(255,255,255,.92);
+        max-width: 36ch;
+        text-shadow: 0 12px 36px rgba(0,0,0,.18);
+      }
+
+      #shopify-section-{{ section.id }} .csh__learn{
+        color:#fff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        margin: 0 auto;
+      }
+
+      #shopify-section-{{ section.id }} .csh__modalMedia{
+        flex: 1;
+        background: transparent;
+        min-height: 1px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding: 8px 0 60px;
+        overflow: visible;
+      }
+
+      #shopify-section-{{ section.id }} .csh__videoWrap{
+        position: relative;
+        inset:auto;
+        width: min(70vw, 290px);
+        aspect-ratio: 1 / 1;
+        border-radius: 999px;
+        overflow: hidden;
+        background:#111;
+        border: 10px solid rgba(255,255,255,.28);
+        box-shadow: 0 18px 70px rgba(0,0,0,.22);
+      }
+
+      #shopify-section-{{ section.id }} .csh__mediaImg,
+      #shopify-section-{{ section.id }} .csh__mediaEmpty{
+        position: relative;
+        inset:auto;
+        width: min(70vw, 290px);
+        height: min(70vw, 290px);
+        border-radius: 999px;
+        overflow:hidden;
+        border: 10px solid rgba(255,255,255,.28);
+        box-shadow: 0 18px 70px rgba(0,0,0,.22);
+      }
+
+      #shopify-section-{{ section.id }} .csh__close{
+        top:auto; right:auto;
+        left:50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        width: 46px;
+        height: 46px;
+        border: 0;
+        background: rgba(255,255,255,.86);
+        color:#111;
+        font-size: 26px;
+        box-shadow: 0 12px 34px rgba(0,0,0,.22);
+      }
+    }
+  </style>
+
+  <script>
+    (function(){
+      const root = document.querySelector('#shopify-section-{{ section.id }}');
+      if(!root) return;
+
+      const backdrops = root.querySelectorAll('[data-csh-backdrop]');
+      const openBtns = root.querySelectorAll('[data-csh-open]');
+      const body = document.body;
+
+      function isMobile(){
+        return window.matchMedia && window.matchMedia('(max-width: 749px)').matches;
+      }
+
+      function pauseAllVideos(scope){
+        (scope || root).querySelectorAll('video').forEach(v => {
+          try{ v.pause(); }catch(e){}
+        });
+      }
+
+      function closeAll(){
+        backdrops.forEach(bd => bd.classList.remove('is-open'));
+        body.style.overflow = '';
+        pauseAllVideos();
+      }
+
+      function openModal(id){
+        closeAll();
+        const bd = root.querySelector('[data-csh-backdrop][data-modal="'+id+'"]');
+        if(!bd) return;
+        bd.classList.add('is-open');
+
+        if(!isMobile()) body.style.overflow = 'hidden';
+
+        // play modal video if present
+        const v = bd.querySelector('video');
+        if(v && v.hasAttribute('autoplay')){
+          try{ v.play(); }catch(e){}
+        }
+      }
+
+      openBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const hot = btn.closest('[data-csh-hotspot]');
+          const id = hot ? hot.getAttribute('data-modal-id') : null;
+          if(id) openModal(id);
+        });
+      });
+
+      backdrops.forEach(bd => {
+        bd.addEventListener('click', (e) => {
+          if(e.target === bd) closeAll();
+        });
+        const closeBtn = bd.querySelector('[data-csh-close]');
+        if(closeBtn) closeBtn.addEventListener('click', closeAll);
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeAll();
+      });
+
+      // Keep only one hero video playing (desktop vs mobile)
+      function syncHeroVideos(){
+        const vd = root.querySelector('.csh__heroVideo--desktop');
+        const vm = root.querySelector('.csh__heroVideo--mobile');
+        const mob = isMobile();
+
+        if(mob){
+          if(vd){ try{ vd.pause(); }catch(e){} }
+          if(vm && vm.hasAttribute('autoplay')){ try{ vm.play(); }catch(e){} }
+        }else{
+          if(vm){ try{ vm.pause(); }catch(e){} }
+          if(vd && vd.hasAttribute('autoplay')){ try{ vd.play(); }catch(e){} }
+        }
+      }
+      syncHeroVideos();
+      window.addEventListener('resize', syncHeroVideos, { passive: true });
+
+      if (window.Shopify && Shopify.designMode) {
+        document.addEventListener('shopify:section:load', syncHeroVideos);
+        document.addEventListener('shopify:section:reorder', syncHeroVideos);
+        document.addEventListener('shopify:section:select', syncHeroVideos);
+      }
+
+      // Optional: coordinate helper
+      {% if section.settings.coord_helper %}
+      try{
+        if(window.Shopify && Shopify.designMode){
+          const hero = root.querySelector('[data-csh-hero]');
+          hero && hero.addEventListener('click', (e) => {
+            const rect = hero.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            const msg = 'X: ' + x.toFixed(1) + '% , Y: ' + y.toFixed(1) + '%';
+            console.log('[Hotspot coords]', msg);
+            if(navigator.clipboard) navigator.clipboard.writeText(msg).catch(()=>{});
+          });
+        }
+      }catch(err){}
+      {% endif %}
+
+      // Sparkle trail (desktop only)
+      const enableSparkle = {{ section.settings.sparkle_trail | json }};
+      const strength = Number({{ section.settings.sparkle_strength | default: 5 }});
+
+      if (enableSparkle && window.matchMedia && window.matchMedia('(pointer:fine)').matches) {
+        const hero = root.querySelector('[data-csh-hero]');
+        const canvas = root.querySelector('[data-csh-sparkle]');
+        if (hero && canvas) {
+          const ctx = canvas.getContext('2d', { alpha: true });
+          let dpr = Math.max(1, window.devicePixelRatio || 1);
+          let w = 0, h = 0;
+
+          function resize() {
+            const rect = hero.getBoundingClientRect();
+            w = Math.max(1, Math.floor(rect.width));
+            h = Math.max(1, Math.floor(rect.height));
+            dpr = Math.max(1, window.devicePixelRatio || 1);
+            canvas.width = Math.floor(w * dpr);
+            canvas.height = Math.floor(h * dpr);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          }
+
+          const particles = [];
+          const MAX = 220;
+          let raf = 0;
+          let lastT = 0;
+
+          function rand(a, b){ return a + Math.random() * (b - a); }
+
+          function drawStar(x, y, r, rot, alpha) {
+            const spikes = 5;
+            const inner = r * 0.45;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rot);
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            for (let i = 0; i < spikes; i++) {
+              ctx.lineTo(Math.cos((i * 2 * Math.PI) / spikes) * r, Math.sin((i * 2 * Math.PI) / spikes) * r);
+              ctx.lineTo(Math.cos(((i * 2 + 1) * Math.PI) / spikes) * inner, Math.sin(((i * 2 + 1) * Math.PI) / spikes) * inner);
+            }
+            ctx.closePath();
+            ctx.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,1)' : 'rgba(255,246,226,1)';
+            ctx.fill();
+            ctx.restore();
+          }
+
+          function tick(t) {
+            raf = requestAnimationFrame(tick);
+            const dt = Math.min(0.033, (t - lastT) / 1000 || 0.016);
+            lastT = t;
+
+            ctx.clearRect(0, 0, w, h);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+              const p = particles[i];
+              p.life -= dt;
+              if (p.life <= 0) { particles.splice(i, 1); continue; }
+
+              p.x += p.vx * dt;
+              p.y += p.vy * dt;
+              p.vy += p.g * dt;
+              p.rot += p.vr * dt;
+
+              const a = Math.max(0, Math.min(1, p.life / p.maxLife));
+              drawStar(p.x, p.y, p.r, p.rot, a);
+            }
+
+            if (particles.length === 0) {
+              cancelAnimationFrame(raf);
+              raf = 0;
+            }
+          }
+
+          let lastEmit = 0;
+          function emitAt(clientX, clientY) {
+            const now = performance.now();
+            if (now - lastEmit < 14) return;
+            lastEmit = now;
+
+            const rect = hero.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            const count = Math.max(1, Math.round(strength / 2));
+            for (let i = 0; i < count; i++) {
+              if (particles.length >= MAX) particles.shift();
+              particles.push({
+                x: x + rand(-2, 2),
+                y: y + rand(-2, 2),
+                vx: rand(-40, 40),
+                vy: rand(-60, -10),
+                g: rand(120, 220),
+                r: rand(2.2, 4.4),
+                rot: rand(0, Math.PI * 2),
+                vr: rand(-6, 6),
+                life: rand(0.45, 0.85),
+                maxLife: rand(0.45, 0.85)
+              });
+            }
+
+            if (!raf) {
+              lastT = performance.now();
+              raf = requestAnimationFrame(tick);
+            }
+          }
+
+          resize();
+          window.addEventListener('resize', resize, { passive: true });
+          hero.addEventListener('pointermove', (e) => emitAt(e.clientX, e.clientY), { passive: true });
+
+          if (window.Shopify && Shopify.designMode) {
+            document.addEventListener('shopify:section:load', resize);
+            document.addEventListener('shopify:section:reorder', resize);
+          }
+        }
+      }
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Hotspot Hero",
+  "settings": [
+    {
+      "type": "select",
+      "id": "hero_media_type",
+      "label": "主区域媒体类型",
+      "default": "image",
+      "options": [
+        { "value": "image", "label": "图片" },
+        { "value": "video", "label": "视频（Shopify 视频）" }
+      ]
+    },
+    { "type": "video", "id": "hero_video", "label": "主视频 桌面端（Shopify 视频）" },
+    { "type": "video", "id": "hero_video_mobile", "label": "主视频 手机端（可选 Shopify 视频）" },
+    { "type": "checkbox", "id": "hero_video_autoplay", "label": "主视频自动播放（静音循环）", "default": true },
+
+    { "type": "checkbox", "id": "sparkle_trail", "label": "鼠标星星拖尾（仅桌面）", "default": true },
+    { "type": "range", "id": "sparkle_strength", "label": "拖尾强度", "min": 1, "max": 10, "step": 1, "default": 5 },
+
+    { "type": "image_picker", "id": "image", "label": "主图（桌面端）" },
+    { "type": "image_picker", "id": "image_mobile", "label": "主图（手机端可选）" },
+    { "type": "text", "id": "image_alt", "label": "图片ALT（可选）" },
+
+    { "type": "range", "id": "height_desktop", "label": "高度（桌面 px）", "min": 420, "max": 820, "step": 10, "default": 560 },
+    { "type": "range", "id": "height_mobile", "label": "高度（手机 px）", "min": 360, "max": 700, "step": 10, "default": 460 },
+    { "type": "range", "id": "overlay_opacity", "label": "暗化遮罩强度（0-60）", "min": 0, "max": 60, "step": 1, "default": 18 },
+
+    { "type": "text", "id": "bg_word", "label": "背景大字（可选）" },
+
+    { "type": "text", "id": "heading", "label": "标题", "default": "此刻创造，永恒之爱" },
+    { "type": "richtext", "id": "subheading", "label": "副标题（可选）" },
+
+    { "type": "range", "id": "heading_size_desktop", "label": "标题字号 桌面(px)", "min": 22, "max": 72, "step": 1, "default": 48 },
+    { "type": "range", "id": "heading_size_mobile", "label": "标题字号 手机(px)", "min": 18, "max": 56, "step": 1, "default": 34 },
+    { "type": "range", "id": "subheading_size_desktop", "label": "副标题字号 桌面(px)", "min": 12, "max": 24, "step": 1, "default": 16 },
+    { "type": "range", "id": "subheading_size_mobile", "label": "副标题字号 手机(px)", "min": 12, "max": 22, "step": 1, "default": 14 },
+
+    { "type": "text", "id": "button_label", "label": "按钮文字", "default": "进入定制" },
+    { "type": "url", "id": "button_link", "label": "按钮链接" },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "按钮样式",
+      "default": "outline",
+      "options": [
+        { "value": "outline", "label": "白底描边（像示例）" },
+        { "value": "solid", "label": "强调色实心" }
+      ]
+    },
+    { "type": "range", "id": "cta_size_desktop", "label": "按钮字号 桌面(px)", "min": 10, "max": 18, "step": 1, "default": 12 },
+    { "type": "range", "id": "cta_size_mobile", "label": "按钮字号 手机(px)", "min": 10, "max": 18, "step": 1, "default": 12 },
+
+    { "type": "checkbox", "id": "dot_pulse", "label": "热点呼吸波纹", "default": true },
+    { "type": "checkbox", "id": "coord_helper", "label": "编辑器里点击图片输出坐标（方便布点）", "default": true },
+
+    { "type": "color", "id": "text_color", "label": "标题文字色", "default": "#FFFFFF" },
+    { "type": "color", "id": "label_color", "label": "热点标签文字色", "default": "#FFFFFF" },
+
+    { "type": "color", "id": "dot_bg", "label": "热点圆点背景", "default": "#FFFFFF" },
+    { "type": "color", "id": "dot_border", "label": "热点圆点边框", "default": "rgba(0,0,0,0.18)" },
+    { "type": "color", "id": "plus_color", "label": "加号颜色", "default": "#6b1f1f" },
+
+    { "type": "color", "id": "cta_bg", "label": "按钮背景（实心用）", "default": "#FFFFFF" },
+    { "type": "color", "id": "cta_text", "label": "按钮文字（实心用）", "default": "#111111" },
+    { "type": "color", "id": "cta_border", "label": "按钮边框（实心用）", "default": "rgba(0,0,0,0.18)" },
+
+    { "type": "range", "id": "modal_title_size_desktop", "label": "弹窗标题字号 桌面(px)", "min": 22, "max": 64, "step": 1, "default": 44 },
+    { "type": "range", "id": "modal_title_size_mobile", "label": "弹窗标题字号 手机(px)", "min": 20, "max": 54, "step": 1, "default": 38 },
+    { "type": "range", "id": "modal_body_size_desktop", "label": "弹窗正文字号 桌面(px)", "min": 12, "max": 22, "step": 1, "default": 14 },
+    { "type": "range", "id": "modal_body_size_mobile", "label": "弹窗正文字号 手机(px)", "min": 12, "max": 20, "step": 1, "default": 13 },
+
+    { "type": "color", "id": "modal_text_bg", "label": "弹窗左侧底色", "default": "#F5F2F2" }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "热点 + 弹窗",
+      "settings": [
+        { "type": "text", "id": "label", "label": "热点标签（主图上显示）", "default": "READY WHEN YOU ARE" },
+        {
+          "type": "select",
+          "id": "label_side",
+          "label": "标签在圆点哪侧（桌面）",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "标签在左，圆点在右（左侧热点）" },
+            { "value": "right", "label": "圆点在左，标签在右（右侧热点）" }
+          ]
+        },
+        { "type": "range", "id": "pos_x", "label": "位置 X 桌面(0-100)", "min": 0, "max": 100, "step": 1, "default": 20 },
+        { "type": "range", "id": "pos_y", "label": "位置 Y 桌面(0-100)", "min": 0, "max": 100, "step": 1, "default": 55 },
+        { "type": "range", "id": "pos_x_m", "label": "位置 X 手机(0-100)", "min": 0, "max": 100, "step": 1, "default": 20 },
+        { "type": "range", "id": "pos_y_m", "label": "位置 Y 手机(0-100)", "min": 0, "max": 100, "step": 1, "default": 55 },
+
+        { "type": "checkbox", "id": "show_on_mobile", "label": "手机端也显示这个热点", "default": true },
+
+        { "type": "text", "id": "modal_title", "label": "弹窗标题（可不填=用标签）" },
+        { "type": "richtext", "id": "modal_text", "label": "弹窗内容" },
+
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "右侧媒体类型",
+          "default": "video",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "image", "label": "图片" },
+            { "value": "video", "label": "视频（Shopify 视频）" }
+          ]
+        },
+        { "type": "image_picker", "id": "media_image", "label": "弹窗右侧图片" },
+        { "type": "video", "id": "video", "label": "弹窗右侧视频（Shopify 视频）" },
+        { "type": "checkbox", "id": "video_autoplay", "label": "视频自动播放（静音循环）", "default": true },
+
+        { "type": "text", "id": "link_label", "label": "Learn more 文字（可选）" },
+        { "type": "url", "id": "link_url", "label": "Learn more 链接（可选）" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Hotspot Hero" }
+  ]
+}
+{% endschema %}

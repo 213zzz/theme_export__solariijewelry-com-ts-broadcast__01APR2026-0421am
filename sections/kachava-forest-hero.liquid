@@ -1,0 +1,1083 @@
+{% liquid
+  assign sid = section.id
+%}
+
+<section id="kachava-forest-hero-{{ sid }}" class="kfh-eco-story">
+  <div class="kfh__stage" data-scene>
+    <div class="kfh__top">
+      <div class="kfh__container">
+        {% if section.settings.top_heading != blank %}
+          <h2 class="kfh__heading">{{ section.settings.top_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.top_text != blank %}
+          <div class="kfh__text">{{ section.settings.top_text | newline_to_br }}</div>
+        {% endif %}
+
+        {% if section.blocks.size > 0 %}
+          <div class="kfh__grid">
+            {% for block in section.blocks %}
+              {% if block.type == 'feature' %}
+                <div class="kfh__item" {{ block.shopify_attributes }}>
+                  <div class="kfh__icon-wrap">
+                    {% case block.settings.icon_type %}
+                      {% when 'recycled_metal' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <rect x="25" y="28" width="14" height="8" rx="1.5"></rect>
+                          <path d="M23 26h8l-4-4"></path>
+                          <path d="M41 38h-8l4 4"></path>
+                          <path d="M23 26c-4 2.5-7 7-7 12"></path>
+                          <path d="M41 38c4-2.5 7-7 7-12"></path>
+                        </svg>
+
+                      {% when 'responsible_sourcing' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <path d="M32 19c-5 0-9 4-9 9 0 7 9 16 9 16s9-9 9-16c0-5-4-9-9-9z"></path>
+                          <path d="m32 23 4 4-4 4-4-4z"></path>
+                        </svg>
+
+                      {% when 'made_to_order' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <rect x="22" y="22" width="20" height="16" rx="2"></rect>
+                          <path d="M26 18v6M38 18v6M22 28h20"></path>
+                          <path d="m27 33 3 3 7-7"></path>
+                        </svg>
+
+                      {% when 'handcraft' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <path d="M23 40 39 24"></path>
+                          <path d="M36 21l7 7"></path>
+                          <path d="M27 28l9 9"></path>
+                          <path d="M21 42l6-6"></path>
+                        </svg>
+
+                      {% when 'minimal_packaging' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <rect x="23" y="26" width="18" height="14" rx="2"></rect>
+                          <path d="M32 26v14M23 31h18"></path>
+                          <path d="M43 19c-5 0-8 3-8 8 5 0 8-3 8-8z"></path>
+                        </svg>
+
+                      {% when 'lasting_wear' %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <path d="M24 34c0 4 3.6 7 8 7s8-3 8-7-3.6-7-8-7-8 3-8 7z"></path>
+                          <path d="M24 22c2.2-2 5-3 8-3s5.8 1 8 3"></path>
+                          <path d="m32 16 1.2 2.8 3 .3-2.2 2 0.6 2.9-2.6-1.5-2.6 1.5 0.6-2.9-2.2-2 3-.3z"></path>
+                        </svg>
+
+                      {% else %}
+                        <svg class="kfh__icon-svg" viewBox="0 0 64 64" aria-hidden="true">
+                          <circle cx="32" cy="32" r="21"></circle>
+                          <rect x="25" y="28" width="14" height="8" rx="1.5"></rect>
+                          <path d="M23 26h8l-4-4"></path>
+                          <path d="M41 38h-8l4 4"></path>
+                          <path d="M23 26c-4 2.5-7 7-7 12"></path>
+                          <path d="M41 38c4-2.5 7-7 7-12"></path>
+                        </svg>
+                    {% endcase %}
+                  </div>
+
+                  {% if block.settings.title != blank %}
+                    <div class="kfh__item-title">{{ block.settings.title }}</div>
+                  {% endif %}
+
+                  {% if block.settings.text != blank %}
+                    <div class="kfh__item-text">{{ block.settings.text }}</div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if section.settings.bg_image != blank or section.settings.bg_image_mobile != blank %}
+      <div class="kfh__layer kfh__layer--bg {% if section.settings.bg_image_mobile != blank %}kfh__layer--has-mobile{% endif %}">
+        <div class="kfh__parallax" data-depth="6">
+          {% if section.settings.bg_image != blank %}
+            {{
+              section.settings.bg_image
+              | image_url: width: 2600
+              | image_tag:
+                class: 'kfh__img kfh__img--desktop',
+                loading: 'eager',
+                widths: '768, 1200, 1600, 2200, 2600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+
+          {% if section.settings.bg_image_mobile != blank %}
+            {{
+              section.settings.bg_image_mobile
+              | image_url: width: 1600
+              | image_tag:
+                class: 'kfh__img kfh__img--mobile',
+                loading: 'eager',
+                widths: '480, 768, 1080, 1600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.settings.mid_image != blank or section.settings.mid_image_mobile != blank %}
+      <div class="kfh__layer kfh__layer--mid {% if section.settings.mid_image_mobile != blank %}kfh__layer--has-mobile{% endif %}">
+        <div class="kfh__parallax" data-depth="14">
+          {% if section.settings.mid_image != blank %}
+            {{
+              section.settings.mid_image
+              | image_url: width: 2600
+              | image_tag:
+                class: 'kfh__img kfh__img--desktop',
+                loading: 'eager',
+                widths: '768, 1200, 1600, 2200, 2600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+
+          {% if section.settings.mid_image_mobile != blank %}
+            {{
+              section.settings.mid_image_mobile
+              | image_url: width: 1600
+              | image_tag:
+                class: 'kfh__img kfh__img--mobile',
+                loading: 'eager',
+                widths: '480, 768, 1080, 1600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="kfh__overlay"></div>
+
+    <div class="kfh__impact-wrap">
+      <div class="kfh__impact kfh__parallax" data-depth="9">
+        {% if section.settings.impact_heading != blank %}
+          <div class="kfh__impact-heading">{{ section.settings.impact_heading }}</div>
+        {% endif %}
+
+        {% if section.settings.impact_number != blank %}
+          <div class="kfh__impact-number">{{ section.settings.impact_number }}</div>
+        {% endif %}
+
+        {% if section.settings.impact_text != blank %}
+          <div class="kfh__impact-text">{{ section.settings.impact_text }}</div>
+        {% endif %}
+
+        {% if section.settings.impact_note != blank %}
+          <div class="kfh__impact-note">{{ section.settings.impact_note }}</div>
+        {% endif %}
+
+        {% if section.settings.impact_button_label != blank %}
+          <a
+            class="kfh__impact-button"
+            {% if section.settings.impact_button_link != blank %}
+              href="{{ section.settings.impact_button_link }}"
+            {% else %}
+              href="#"
+            {% endif %}
+          >
+            {{ section.settings.impact_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if section.settings.fg_image != blank or section.settings.fg_image_mobile != blank %}
+      <div class="kfh__layer kfh__layer--fg {% if section.settings.fg_image_mobile != blank %}kfh__layer--has-mobile{% endif %}">
+        <div class="kfh__parallax" data-depth="24">
+          {% if section.settings.fg_image != blank %}
+            {{
+              section.settings.fg_image
+              | image_url: width: 2600
+              | image_tag:
+                class: 'kfh__img kfh__img--desktop',
+                loading: 'eager',
+                widths: '768, 1200, 1600, 2200, 2600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+
+          {% if section.settings.fg_image_mobile != blank %}
+            {{
+              section.settings.fg_image_mobile
+              | image_url: width: 1600
+              | image_tag:
+                class: 'kfh__img kfh__img--mobile',
+                loading: 'eager',
+                widths: '480, 768, 1080, 1600',
+                sizes: '100vw',
+                alt: section.settings.top_heading
+            }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    #kachava-forest-hero-{{ sid }} {
+      --section-bg: {{ section.settings.section_bg }};
+      --text-color: {{ section.settings.text_color }};
+      --muted-color: {{ section.settings.muted_color }};
+      --impact-text-color: {{ section.settings.impact_text_color }};
+      --button-color: {{ section.settings.button_color }};
+      --button-hover-color: {{ section.settings.button_hover_color }};
+
+      --stage-height-desktop: {{ section.settings.stage_height_desktop }}px;
+      --stage-height-mobile: {{ section.settings.stage_height_mobile }}px;
+
+      --top-padding-desktop: {{ section.settings.top_padding_desktop }}px;
+      --top-padding-mobile: {{ section.settings.top_padding_mobile }}px;
+
+      --top-reserve-desktop: {{ section.settings.top_reserve_desktop }}px;
+      --top-reserve-mobile: {{ section.settings.top_reserve_mobile }}px;
+
+      --bg-height-desktop: {{ section.settings.bg_height_desktop }}px;
+      --bg-height-mobile: {{ section.settings.bg_height_mobile }}px;
+
+      --mid-height-desktop: {{ section.settings.mid_height_desktop }}px;
+      --mid-height-mobile: {{ section.settings.mid_height_mobile }}px;
+
+      --fg-height-desktop: {{ section.settings.fg_height_desktop }}px;
+      --fg-height-mobile: {{ section.settings.fg_height_mobile }}px;
+
+      --impact-bottom-desktop: {{ section.settings.impact_bottom_desktop }}px;
+      --impact-bottom-mobile: {{ section.settings.impact_bottom_mobile }}px;
+
+      --impact-width-desktop: {{ section.settings.impact_width_desktop }}px;
+      --impact-width-mobile: {{ section.settings.impact_width_mobile }}px;
+
+      --mobile-icon-size: {{ section.settings.mobile_icon_size }}px;
+      --mobile-grid-gap: {{ section.settings.mobile_grid_gap }}px;
+
+      background: var(--section-bg);
+      overflow: hidden;
+    }
+
+    #kachava-forest-hero-{{ sid }} * {
+      box-sizing: border-box;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__stage {
+      position: relative;
+      min-height: var(--stage-height-desktop);
+      background: var(--section-bg);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__container {
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__top {
+      position: relative;
+      z-index: 5;
+      padding: var(--top-padding-desktop) 0 var(--top-reserve-desktop);
+      text-align: center;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__heading {
+      margin: 0;
+      color: var(--text-color);
+      font-size: clamp(34px, 4vw, 62px);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__text {
+      width: min(860px, 100%);
+      margin: 20px auto 0;
+      color: var(--muted-color);
+      font-size: clamp(15px, 1.2vw, 20px);
+      line-height: 1.75;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__grid {
+      margin-top: 52px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 28px 18px;
+      align-items: start;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__item {
+      position: relative;
+      z-index: 6;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__icon-wrap {
+      width: 126px;
+      height: 126px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      opacity: 0.82;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__icon-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__item-title {
+      color: var(--text-color);
+      font-size: 18px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__item-text {
+      margin-top: 6px;
+      color: var(--muted-color);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__layer {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__layer--bg {
+      bottom: 0;
+      height: var(--bg-height-desktop);
+      z-index: 1;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__layer--mid {
+      left: -2%;
+      width: 104%;
+      bottom: 0;
+      height: var(--mid-height-desktop);
+      z-index: 2;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__layer--fg {
+      left: -3%;
+      width: 106%;
+      bottom: -1px;
+      height: var(--fg-height-desktop);
+      z-index: 6;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__parallax {
+      --tx: 0px;
+      --ty: 0px;
+      --scale: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      transform: translate3d(var(--tx), var(--ty), 0) scale(var(--scale));
+      transform-origin: center center;
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__layer--bg .kfh__parallax { --scale: 1; }
+    #kachava-forest-hero-{{ sid }} .kfh__layer--mid .kfh__parallax { --scale: 1; }
+    #kachava-forest-hero-{{ sid }} .kfh__layer--fg .kfh__parallax { --scale: 1; }
+
+    #kachava-forest-hero-{{ sid }} .kfh__img {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: none;
+      transform: translateX(-50%);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__img--mobile {
+      display: none;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(244,239,232,0) 48%, rgba(244,239,232,0.04) 58%, rgba(0,0,0,0.07) 100%);
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: var(--impact-bottom-desktop);
+      transform: translateX(-50%);
+      width: min(var(--impact-width-desktop), calc(100% - 40px));
+      z-index: 9;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact {
+      position: relative;
+      z-index: 9;
+      color: var(--impact-text-color);
+      text-shadow:
+        0 2px 12px rgba(0,0,0,0.22),
+        0 1px 2px rgba(0,0,0,0.16);
+      pointer-events: auto;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-heading {
+      font-size: clamp(28px, 3vw, 48px);
+      line-height: 1.04;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-number {
+      margin-top: 8px;
+      font-size: clamp(52px, 7vw, 104px);
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      word-break: break-word;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-text {
+      margin-top: 10px;
+      font-size: clamp(18px, 1.5vw, 28px);
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-note {
+      margin-top: 10px;
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.35;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-button {
+      display: inline-block;
+      margin-top: 18px;
+      padding-bottom: 3px;
+      color: var(--button-color);
+      border-bottom: 2px solid currentColor;
+      text-decoration: none;
+      font-size: clamp(18px, 1.5vw, 26px);
+      line-height: 1.1;
+      font-weight: 700;
+      transition: color .25s ease, border-color .25s ease, opacity .25s ease;
+    }
+
+    #kachava-forest-hero-{{ sid }} .kfh__impact-button:hover {
+      color: var(--button-hover-color);
+      border-color: var(--button-hover-color);
+      opacity: .92;
+    }
+
+    @media screen and (max-width: 1199px) {
+      #kachava-forest-hero-{{ sid }} .kfh__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      #kachava-forest-hero-{{ sid }} .kfh__stage {
+        min-height: var(--stage-height-mobile);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__top {
+        padding: var(--top-padding-mobile) 0 var(--top-reserve-mobile);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__container {
+        width: min(100%, calc(100% - 24px));
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__heading {
+        font-size: clamp(26px, 6vw, 34px);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__text {
+        margin-top: 12px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__grid {
+        margin-top: 24px;
+        gap: var(--mobile-grid-gap) 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__icon-wrap {
+        width: var(--mobile-icon-size);
+        height: var(--mobile-icon-size);
+        margin-bottom: 10px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__item-title {
+        font-size: 14px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__item-text {
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__layer--bg {
+        height: var(--bg-height-mobile);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__layer--mid {
+        left: -4%;
+        width: 108%;
+        height: var(--mid-height-mobile);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__layer--fg {
+        left: -6%;
+        width: 112%;
+        height: var(--fg-height-mobile);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-wrap {
+        width: min(var(--impact-width-mobile), calc(100% - 24px));
+        bottom: var(--impact-bottom-mobile);
+        z-index: 9;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-heading {
+        font-size: clamp(22px, 5vw, 30px);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-number {
+        font-size: clamp(36px, 9vw, 54px);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-text {
+        font-size: clamp(13px, 3.8vw, 16px);
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-note {
+        font-size: clamp(10px, 2.8vw, 12px);
+        letter-spacing: 0.05em;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__layer--has-mobile .kfh__img--desktop {
+        display: none;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__layer--has-mobile .kfh__img--mobile {
+        display: block;
+      }
+    }
+
+    @media screen and (max-width: 640px) {
+      #kachava-forest-hero-{{ sid }} .kfh__heading {
+        font-size: 28px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__text {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__item-title {
+        font-size: 13px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__item-text {
+        font-size: 10px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-heading {
+        font-size: 20px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-number {
+        font-size: 34px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-text {
+        font-size: 12px;
+      }
+
+      #kachava-forest-hero-{{ sid }} .kfh__impact-note {
+        font-size: 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #kachava-forest-hero-{{ sid }} .kfh__parallax {
+        transition: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    (function() {
+      const section = document.getElementById('kachava-forest-hero-{{ sid }}');
+      if (!section || section.dataset.inited === 'true') return;
+      section.dataset.inited = 'true';
+
+      const scene = section.querySelector('[data-scene]');
+      const layers = Array.from(section.querySelectorAll('.kfh__parallax[data-depth]'));
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const finePointer = window.matchMedia('(pointer:fine)').matches;
+
+      let targetX = 0;
+      let targetY = 0;
+      let currentX = 0;
+      let currentY = 0;
+      let ambientTime = 0;
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function render() {
+        currentX += (targetX - currentX) * 0.085;
+        currentY += (targetY - currentY) * 0.085;
+
+        layers.forEach(function(layer) {
+          const depth = parseFloat(layer.getAttribute('data-depth')) || 0;
+          const moveX = currentX * depth;
+          const moveY = currentY * depth * 0.7;
+          layer.style.setProperty('--tx', moveX.toFixed(2) + 'px');
+          layer.style.setProperty('--ty', moveY.toFixed(2) + 'px');
+        });
+
+        window.requestAnimationFrame(render);
+      }
+
+      function onPointerMove(event) {
+        const rect = scene.getBoundingClientRect();
+        const px = ((event.clientX - rect.left) / rect.width) - 0.5;
+        const py = ((event.clientY - rect.top) / rect.height) - 0.5;
+        targetX = clamp(px, -0.5, 0.5) * 1.4;
+        targetY = clamp(py, -0.5, 0.5) * 1.1;
+      }
+
+      function onLeave() {
+        targetX = 0;
+        targetY = 0;
+      }
+
+      function ambientLoop() {
+        ambientTime += 0.012;
+        targetX = Math.sin(ambientTime) * 0.18;
+        targetY = Math.cos(ambientTime * 0.85) * 0.12;
+      }
+
+      if (!reduceMotion && finePointer) {
+        scene.addEventListener('mousemove', onPointerMove, { passive: true });
+        scene.addEventListener('mouseleave', onLeave, { passive: true });
+      } else if (!reduceMotion) {
+        window.setInterval(ambientLoop, 40);
+      }
+
+      render();
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "森林视差主视觉",
+  "tag": "section",
+  "class": "section section-kachava-forest-hero",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "上方内容"
+    },
+    {
+      "type": "text",
+      "id": "top_heading",
+      "label": "上方标题",
+      "default": "对自然更温柔"
+    },
+    {
+      "type": "textarea",
+      "id": "top_text",
+      "label": "上方说明",
+      "default": "我们更在意一枚珠宝从哪里来、如何被制作，以及它会留下怎样的痕迹。\\n从用料到包装，我们都尽量做得更克制、更长久，也更值得被珍惜。"
+    },
+
+    {
+      "type": "header",
+      "content": "电脑端图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "电脑端背景山景图"
+    },
+    {
+      "type": "image_picker",
+      "id": "mid_image",
+      "label": "电脑端中景树林图"
+    },
+    {
+      "type": "image_picker",
+      "id": "fg_image",
+      "label": "电脑端前景植物图"
+    },
+
+    {
+      "type": "header",
+      "content": "手机端图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image_mobile",
+      "label": "手机端背景山景图"
+    },
+    {
+      "type": "image_picker",
+      "id": "mid_image_mobile",
+      "label": "手机端中景树林图"
+    },
+    {
+      "type": "image_picker",
+      "id": "fg_image_mobile",
+      "label": "手机端前景植物图"
+    },
+
+    {
+      "type": "header",
+      "content": "底部文案"
+    },
+    {
+      "type": "text",
+      "id": "impact_heading",
+      "label": "底部标题",
+      "default": "对我们的地球有益"
+    },
+    {
+      "type": "text",
+      "id": "impact_number",
+      "label": "底部大字",
+      "default": "RESPONSIBLY"
+    },
+    {
+      "type": "text",
+      "id": "impact_text",
+      "label": "底部副标题",
+      "default": "CRAFTED WITH A LIGHTER FOOTPRINT"
+    },
+    {
+      "type": "text",
+      "id": "impact_note",
+      "label": "底部说明",
+      "default": "RECYCLED METALS × MINDFUL MAKING"
+    },
+    {
+      "type": "text",
+      "id": "impact_button_label",
+      "label": "底部按钮文字",
+      "default": "Explore Our Values"
+    },
+    {
+      "type": "url",
+      "id": "impact_button_link",
+      "label": "底部按钮链接"
+    },
+
+    {
+      "type": "header",
+      "content": "电脑端布局"
+    },
+    {
+      "type": "range",
+      "id": "stage_height_desktop",
+      "label": "电脑端模块高度",
+      "min": 1000,
+      "max": 1800,
+      "step": 10,
+      "default": 1420
+    },
+    {
+      "type": "range",
+      "id": "top_padding_desktop",
+      "label": "电脑端顶部留白",
+      "min": 40,
+      "max": 180,
+      "step": 10,
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "top_reserve_desktop",
+      "label": "电脑端上半区预留",
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "default": 610
+    },
+    {
+      "type": "range",
+      "id": "bg_height_desktop",
+      "label": "电脑端背景层高度",
+      "min": 300,
+      "max": 800,
+      "step": 10,
+      "default": 540
+    },
+    {
+      "type": "range",
+      "id": "mid_height_desktop",
+      "label": "电脑端中景层高度",
+      "min": 220,
+      "max": 700,
+      "step": 10,
+      "default": 440
+    },
+    {
+      "type": "range",
+      "id": "fg_height_desktop",
+      "label": "电脑端前景层高度",
+      "min": 140,
+      "max": 500,
+      "step": 10,
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "impact_bottom_desktop",
+      "label": "电脑端底部文案上移",
+      "min": 80,
+      "max": 400,
+      "step": 10,
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "impact_width_desktop",
+      "label": "电脑端底部文案宽度",
+      "min": 500,
+      "max": 1000,
+      "step": 10,
+      "default": 860
+    },
+
+    {
+      "type": "header",
+      "content": "手机端布局"
+    },
+    {
+      "type": "range",
+      "id": "stage_height_mobile",
+      "label": "手机端模块高度",
+      "min": 600,
+      "max": 1100,
+      "step": 10,
+      "default": 780
+    },
+    {
+      "type": "range",
+      "id": "top_padding_mobile",
+      "label": "手机端顶部留白",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "top_reserve_mobile",
+      "label": "手机端上半区预留",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "bg_height_mobile",
+      "label": "手机端背景层高度",
+      "min": 180,
+      "max": 420,
+      "step": 10,
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "mid_height_mobile",
+      "label": "手机端中景层高度",
+      "min": 140,
+      "max": 320,
+      "step": 10,
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "fg_height_mobile",
+      "label": "手机端前景层高度",
+      "min": 100,
+      "max": 240,
+      "step": 10,
+      "default": 160
+    },
+    {
+      "type": "range",
+      "id": "impact_bottom_mobile",
+      "label": "手机端底部文案上移",
+      "min": 20,
+      "max": 160,
+      "step": 10,
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "impact_width_mobile",
+      "label": "手机端底部文案宽度",
+      "min": 220,
+      "max": 380,
+      "step": 10,
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_size",
+      "label": "手机端图标大小",
+      "min": 48,
+      "max": 90,
+      "step": 2,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "mobile_grid_gap",
+      "label": "手机端图标区上下间距",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "default": 16
+    },
+
+    {
+      "type": "header",
+      "content": "颜色"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "模块背景色",
+      "default": "#F4EFE8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "主文字颜色",
+      "default": "#7F5944"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "辅助文字颜色",
+      "default": "#8F7667"
+    },
+    {
+      "type": "color",
+      "id": "impact_text_color",
+      "label": "底部森林区文字颜色",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "按钮颜色",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "按钮悬停颜色",
+      "default": "#EFE6D7"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "卖点图标",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "图标",
+          "default": "recycled_metal",
+          "options": [
+            { "value": "recycled_metal", "label": "再生金属" },
+            { "value": "responsible_sourcing", "label": "负责任选材" },
+            { "value": "made_to_order", "label": "按需制作" },
+            { "value": "handcraft", "label": "手工细作" },
+            { "value": "minimal_packaging", "label": "简化包装" },
+            { "value": "lasting_wear", "label": "长久佩戴" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题",
+          "default": "再生金属"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "小字说明",
+          "default": "更克制地使用资源"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "森林视差主视觉",
+      "blocks": [
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" }
+      ]
+    }
+  ]
+}
+{% endschema %}

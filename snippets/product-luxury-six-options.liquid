@@ -1,0 +1,1254 @@
+{%- liquid
+  assign current_variant = current_variant | default: product.selected_or_first_available_variant
+  assign uniq_id = 'lg-' | append: section.id | append: '-' | append: block.id
+  assign plating_lines = block.settings.plating_options | newline_to_br | split: '<br />'
+  assign engraving_lines = block.settings.engraving_options | newline_to_br | split: '<br />'
+  assign note_max = block.settings.note_max | default: 200
+  assign stone_material_options = 'Simulated Diamonds|Moissanite' | split: '|'
+  assign plating_enabled_label = '925 Sterling Silver'
+  assign plating_icon = block.settings.plating_icon
+  assign color_icon = block.settings.color_icon
+  assign stone_icon = block.settings.stone_icon
+  assign size_icon = block.settings.size_icon
+  assign engraving_icon = block.settings.engraving_icon
+  assign note_icon = block.settings.note_icon
+
+  assign color_option = nil
+  assign stone_option = nil
+  assign size_option = nil
+
+  for option in product.options_with_values
+    assign option_handle = option.name | downcase
+    if option_handle == 'color' or option_handle == 'colour' or option_handle == 'metal' or option_handle == 'material'
+      assign color_option = option
+      assign color_index = forloop.index0
+    elsif option_handle contains 'stone' or option_handle contains 'gem'
+      assign stone_option = option
+      assign stone_index = forloop.index0
+    elsif option_handle == 'size' or option_handle == 'ring size'
+      assign size_option = option
+      assign size_index = forloop.index0
+    endif
+  endfor
+-%}
+
+<div
+  id="{{ uniq_id }}"
+  class="product__block block-padding"
+  {{ block_style }}
+  {{ block.shopify_attributes }}
+  data-section-id="{{ section.id }}"
+>
+  <style>
+    #{{ uniq_id }},
+    #{{ uniq_id }} *,
+    #{{ uniq_id }} *::before,
+    #{{ uniq_id }} *::after { box-sizing: border-box; }
+
+    #{{ uniq_id }} { position: relative; overflow: visible; }
+    #{{ uniq_id }} .lg-list { display: grid; gap: 6px; position: relative; overflow: visible; }
+    #{{ uniq_id }} .lg-divider { border: none; height: 1px; background: #e5e5e5; margin: 4px 0; }
+    #{{ uniq_id }} .lg-section-title { font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: #737373; padding-left: 4px; margin: 0; }
+    #{{ uniq_id }} .lg-row { position: relative; z-index: 1; overflow: visible; }
+    #{{ uniq_id }} .lg-row.is-open { z-index: 60; }
+
+    #{{ uniq_id }} .lg-trigger {
+      width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 8px 14px; border: none; border-radius: 16px; cursor: pointer; font-family: inherit; text-align: left;
+      position: relative; z-index: 1;
+      transition: border-color .2s ease, background .2s ease;
+      background: #ffffff;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      border: 1px solid #d4d4d4;
+      box-shadow: none;
+    }
+    #{{ uniq_id }} .lg-trigger::before { display: none; }
+    #{{ uniq_id }} .lg-trigger:hover { border-color: #111111; transform: none; box-shadow: none; }
+    #{{ uniq_id }} .lg-row.is-open .lg-trigger { transform: none; border-color: #111111; box-shadow: none; }
+
+    #{{ uniq_id }} .lg-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    #{{ uniq_id }} .lg-icon {
+      width: 36px; height: 36px; flex: 0 0 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+      background: #ffffff;
+      border: 1px solid #d4d4d4; box-shadow: none;
+    }
+    #{{ uniq_id }} .lg-icon svg { width: 17px; height: 17px; stroke: #111111; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    #{{ uniq_id }} .lg-icon img,
+    #{{ uniq_id }} .lg-icon .lg-icon-image { width: 100%; height: 100%; display: block; object-fit: cover; border-radius: inherit; }
+    #{{ uniq_id }} .lg-icon--swatch { border-radius: 50%; border: 1px solid #d4d4d4; }
+    #{{ uniq_id }} .lg-icon--swatch .lg-swatch-fill { width: 100%; height: 100%; border-radius: inherit; display: block; }
+    #{{ uniq_id }} .lg-icon--gold { background: #ffffff; }
+    #{{ uniq_id }} .lg-icon--stone { background: #ffffff; }
+    #{{ uniq_id }} .lg-icon--media { padding: 0; background: #ffffff; }
+
+    #{{ uniq_id }} .lg-meta { min-width: 0; display: grid; gap: 2px; }
+    #{{ uniq_id }} .lg-label { font-size: 14px; font-weight: 600; color: #1c1917; line-height: 1.2; }
+    #{{ uniq_id }} .lg-sub {
+      display: block;
+      max-width: 100%;
+      font-size: 12px;
+      color: #404040;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #{{ uniq_id }} .lg-sub.is-placeholder { color: #a3a3a3; }
+    #{{ uniq_id }} .lg-right { display: flex; align-items: center; gap: 0; flex: 0 0 auto; }
+    #{{ uniq_id }} .lg-value {
+      max-width: 200px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.2; color: #3d352d;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      background: #ffffff;
+      border: 1px solid #d4d4d4; box-shadow: none;
+    }
+    #{{ uniq_id }} .lg-value.is-placeholder { font-weight: 500; color: #a3a3a3; }
+    #{{ uniq_id }} .lg-price { font-size: 13px; font-weight: 600; color: #1c1917; white-space: nowrap; margin-right: 4px; }
+    #{{ uniq_id }} .lg-chevron {
+      width: 24px; height: 24px; flex: 0 0 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #ffffff; border: 1px solid #d4d4d4;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), background .25s;
+    }
+    #{{ uniq_id }} .lg-chevron svg { width: 12px; height: 12px; stroke: #111111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    #{{ uniq_id }} .lg-row.is-open > .lg-trigger .lg-chevron { transform: rotate(180deg); background: #ffffff; }
+
+    #{{ uniq_id }} .lg-panel {
+      position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 50; border-radius: 14px; overflow: hidden;
+      background: #ffffff;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      border: 1px solid #d4d4d4;
+      box-shadow: none;
+      max-height: 0; padding: 0 20px; opacity: 0; visibility: hidden; transform: translateY(-6px) scale(.98);
+      transition: max-height .35s cubic-bezier(.34,1.56,.64,1), padding .3s ease, opacity .25s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+    #{{ uniq_id }} .lg-panel::before { display: none; }
+    #{{ uniq_id }} .lg-row.is-open .lg-panel { max-height: 420px; padding: 14px; opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; overflow-y: auto; }
+
+    #{{ uniq_id }} .lg-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    #{{ uniq_id }} .lg-panel-title { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #737373; }
+    #{{ uniq_id }} .lg-panel-note { font-size: 11px; color: #737373; }
+    #{{ uniq_id }} .lg-help-btn {
+      width: 22px; height: 22px; flex: 0 0 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #ffffff; border: 1px solid #d4d4d4; cursor: pointer;
+      font-family: inherit; font-size: 12px; font-weight: 600; color: #737373; line-height: 1;
+      transition: border-color .2s ease, color .2s ease;
+      padding: 0; margin: 0;
+    }
+    #{{ uniq_id }} .lg-help-btn:hover { border-color: #111111; color: #111111; }
+
+    /* ── Drawer ── */
+    .lg-drawer-overlay {
+      position: fixed; inset: 0; z-index: 999999;
+      background: rgba(0,0,0,.45);
+      opacity: 0; visibility: hidden;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+    .lg-drawer-overlay.is-open { opacity: 1; visibility: visible; }
+    .lg-drawer-overlay__close {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.4);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .2s ease;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    }
+    .lg-drawer-overlay__close:hover { background: rgba(255,255,255,.28); }
+    .lg-drawer-overlay__close svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .lg-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 1000000;
+      width: 370px; max-width: 92vw;
+      background: #ffffff;
+      box-shadow: -4px 0 24px rgba(0,0,0,.1);
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.22,.61,.36,1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .lg-drawer.is-open { transform: translateX(0); }
+    .lg-drawer__header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px; border-bottom: 1px solid #e5e5e5; flex: 0 0 auto;
+    }
+    .lg-drawer__title { font-size: 16px; font-weight: 700; color: #1c1917; line-height: 1.2; margin: 0; }
+    .lg-drawer__close {
+      width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%;
+      background: #f5f5f5; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s ease;
+    }
+    .lg-drawer__close:hover { background: #e5e5e5; }
+    .lg-drawer__close svg { width: 16px; height: 16px; stroke: #111111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .lg-drawer__body { flex: 1; overflow-y: auto; padding: 24px; -webkit-overflow-scrolling: touch; }
+    .lg-drawer__image { width: 100%; border-radius: 12px; margin-bottom: 20px; display: block; }
+    .lg-drawer__body .rte { font-size: 14px; line-height: 1.7; color: #404040; }
+    .lg-drawer__body .rte h1, .lg-drawer__body .rte h2, .lg-drawer__body .rte h3,
+    .lg-drawer__body .rte h4, .lg-drawer__body .rte h5, .lg-drawer__body .rte h6 {
+      color: #1c1917; margin: 0 0 12px; line-height: 1.3;
+    }
+    .lg-drawer__body .rte p { margin: 0 0 14px; }
+    .lg-drawer__body .rte ul, .lg-drawer__body .rte ol { padding-left: 20px; margin: 0 0 14px; }
+    .lg-drawer__body .rte li { margin-bottom: 6px; }
+    .lg-drawer__body .rte strong { color: #1c1917; }
+
+    #{{ uniq_id }} .lg-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    #{{ uniq_id }} .lg-pill {
+      min-height: 34px; padding: 0 14px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: inherit; font-size: 12px; font-weight: 500; color: #111111; cursor: pointer; position: relative; overflow: hidden;
+      background: #ffffff;
+      border: 1px solid #d4d4d4; box-shadow: none;
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
+      appearance: none;
+    }
+    #{{ uniq_id }} .lg-pill:hover { transform: none; border-color: #111111; }
+    #{{ uniq_id }} .lg-pill.is-selected { border-color: #111111; background: #111111; color: #ffffff; font-weight: 600; box-shadow: none; }
+    #{{ uniq_id }} .lg-pill.is-selected::after { display: none; }
+    #{{ uniq_id }} .lg-pill.is-disabled { opacity: .3; pointer-events: none; }
+    #{{ uniq_id }} .lg-pill.is-locked { opacity: .55; color: #737373; }
+    #{{ uniq_id }} .lg-pill.is-locked::before {
+      content: ''; position: absolute; left: 50%; top: -18%; width: 1.5px; height: 136%;
+      background: rgba(17,17,17,.55); transform: rotate(45deg); transform-origin: center; pointer-events: none;
+    }
+    #{{ uniq_id }} .lg-pill--swatch { padding-left: 10px; }
+    #{{ uniq_id }} .lg-pill-sw { width: 18px; height: 18px; border-radius: 50%; flex: 0 0 18px; overflow: hidden; border: 1px solid rgba(0,0,0,.06); }
+    #{{ uniq_id }} .lg-pill-sw span, #{{ uniq_id }} .lg-pill-sw img { width: 100%; height: 100%; display: block; border-radius: inherit; object-fit: cover; }
+
+    #{{ uniq_id }} .lg-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e5e5e5; display: flex; align-items: center; justify-content: space-between; }
+    #{{ uniq_id }} .lg-foot-link { font-size: 12px; color: #1c1917; text-decoration: underline; text-underline-offset: 3px; background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; }
+    #{{ uniq_id }} .lg-foot-link--muted { color: #525252; }
+    #{{ uniq_id }} .lg-foot-link--mini { font-size: 11px; color: #525252; }
+    #{{ uniq_id }} .lg-custom-size-box { display: none; gap: 8px; margin-top: 12px; }
+    #{{ uniq_id }} .lg-custom-size-box.is-open { display: grid; }
+    #{{ uniq_id }} .lg-custom-size-input {
+      width: 100%; min-height: 44px; border-radius: 14px; padding: 0 14px;
+      font: inherit; font-size: 14px; color: #1c1917; outline: none;
+      background: #ffffff; border: 1px solid #d4d4d4;
+      transition: border-color .22s ease;
+    }
+    #{{ uniq_id }} .lg-custom-size-input::placeholder { color: #a3a3a3; }
+    #{{ uniq_id }} .lg-custom-size-input:focus { border-color: #111111; box-shadow: none; }
+    #{{ uniq_id }} .lg-size-guide-portal { position: absolute; inset: 0 auto auto 0; width: 0; height: 0; overflow: visible; z-index: 0; }
+    #{{ uniq_id }} .lg-size-guide-portal [data-popup-open] {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+    }
+
+    #{{ uniq_id }} .lg-note-box { display: grid; gap: 8px; }
+    #{{ uniq_id }} .lg-note {
+      width: 100%; min-height: 96px; border-radius: 16px; padding: 14px 16px;
+      font: inherit; font-size: 14px; line-height: 1.5; color: #1c1917; resize: vertical; outline: none;
+      background: #ffffff; border: 1px solid #d4d4d4;
+      transition: border-color .22s ease;
+    }
+    #{{ uniq_id }} .lg-note::placeholder { color: #a3a3a3; }
+    #{{ uniq_id }} .lg-note:focus { border-color: #111111; box-shadow: none; }
+    #{{ uniq_id }} .lg-note-foot { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #737373; }
+
+    #{{ uniq_id }} .lg-stone-grid { display: grid; gap: 8px; }
+    #{{ uniq_id }} .lg-row--stone .lg-panel { overflow: visible; }
+    #{{ uniq_id }} .lg-row--stone.is-open .lg-panel { max-height: 520px; overflow: visible; }
+    #{{ uniq_id }} .lg-stone-subrow { position: relative; z-index: 1; }
+    #{{ uniq_id }} .lg-stone-subrow.is-open { z-index: 12; }
+    #{{ uniq_id }} .lg-stone-subtrigger {
+      min-height: 46px;
+      padding: 6px 12px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+    #{{ uniq_id }} .lg-stone-subtrigger::before { border-radius: 14px; }
+    #{{ uniq_id }} .lg-stone-subrow.is-open .lg-stone-subtrigger { box-shadow: none; }
+    #{{ uniq_id }} .lg-stone-subrow.is-open > .lg-stone-subtrigger .lg-chevron {
+      transform: rotate(180deg);
+      background: #ffffff;
+    }
+    #{{ uniq_id }} .lg-stone-subpanel {
+      position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 8; border-radius: 14px;
+      background: #ffffff;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      border: 1px solid #d4d4d4;
+      box-shadow: none;
+      max-height: 0; padding: 0 16px; opacity: 0; visibility: hidden; transform: translateY(-6px) scale(.98);
+      transition: max-height .35s cubic-bezier(.34,1.56,.64,1), padding .3s ease, opacity .25s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none; overflow: hidden;
+    }
+    #{{ uniq_id }} .lg-stone-subpanel::before { display: none; }
+    #{{ uniq_id }} .lg-stone-subrow.is-open .lg-stone-subpanel { max-height: 210px; padding: 12px; opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; }
+    #{{ uniq_id }} .lg-stone-subpanel .lg-panel-head { margin-bottom: 10px; }
+
+    #{{ uniq_id }} .lg__hidden { display: none !important; }
+
+    @media (max-width: 749px) {
+      #{{ uniq_id }} .lg-trigger { min-height: 46px; padding: 7px 10px; border-radius: 12px; }
+      #{{ uniq_id }} .lg-trigger::before { border-radius: 12px; }
+      #{{ uniq_id }} .lg-icon { width: 32px; height: 32px; flex-basis: 32px; border-radius: 8px; }
+      #{{ uniq_id }} .lg-label { font-size: 13px; }
+      #{{ uniq_id }} .lg-value { max-width: 110px; font-size: 11px; padding: 3px 10px; }
+      #{{ uniq_id }} .lg-price { font-size: 12px; }
+      #{{ uniq_id }} .lg-chevron { width: 22px; height: 22px; flex-basis: 22px; }
+      #{{ uniq_id }} .lg-panel {
+        position: absolute;
+        left: -4px;
+        right: -4px;
+        top: calc(100% + 6px);
+        margin-top: 0;
+        border-radius: 12px;
+      }
+      #{{ uniq_id }} .lg-pill { min-height: 32px; padding: 0 12px; font-size: 11px; }
+      #{{ uniq_id }} .lg-row--stone.is-open .lg-panel { max-height: 520px; overflow: visible; }
+      #{{ uniq_id }} .lg-stone-grid { gap: 8px; padding: 0 6px; }
+      #{{ uniq_id }} .lg-stone-subrow { padding: 0; }
+      #{{ uniq_id }} .lg-stone-subtrigger { min-height: 42px; padding: 6px 10px; border-radius: 12px; }
+      #{{ uniq_id }} .lg-stone-subtrigger::before { border-radius: 12px; }
+      #{{ uniq_id }} .lg-stone-subtrigger .lg-left { gap: 8px; }
+      #{{ uniq_id }} .lg-stone-subtrigger .lg-right { gap: 6px; }
+      #{{ uniq_id }} .lg-stone-subtrigger .lg-value { max-width: 100px; }
+      #{{ uniq_id }} .lg-stone-subpanel {
+        position: absolute;
+        left: -4px;
+        right: -4px;
+        top: calc(100% + 6px);
+        margin-top: 0;
+        border-radius: 12px;
+      }
+    }
+  </style>
+
+  {%- comment -%} Variant JSON for image switching {%- endcomment -%}
+  <script type="application/json" data-lg-variants>
+    [
+      {%- for variant in product.variants -%}
+        {
+          "id": {{ variant.id }},
+          "options": {{ variant.options | json }},
+          "featured_media_id": {% if variant.featured_media %}{{ variant.featured_media.id }}{% else %}null{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  </script>
+
+  <div class="lg-list">
+
+    {%- comment -%} ══════ 1. 镀层 ══════ {%- endcomment -%}
+    <div class="lg-row" data-lg-dd data-lg-custom-row="plating">
+      <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+        <span class="lg-left">
+          <span class="lg-icon lg-icon--gold{% if plating_icon != blank %} lg-icon--media{% endif %}">
+            {%- if plating_icon != blank -%}
+              {{ plating_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: block.settings.plating_label }}
+            {%- else -%}
+              <svg viewBox="0 0 24 24"><path d="M5 8h14"/><path d="M6 8l2 10h8l2-10"/><path d="M9 8V5h6v3"/></svg>
+            {%- endif -%}
+          </span>
+          <span class="lg-meta"><span class="lg-label">{{ block.settings.plating_label }}</span><span class="lg-sub" data-lg-selected>{{ plating_enabled_label }}</span></span>
+        </span>
+        <span class="lg-right">
+          <span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </span>
+      </button>
+      <div class="lg-panel" data-lg-panel>
+        <div class="lg-panel-head"><span class="lg-panel-title">Select {{ block.settings.plating_label }}</span><button type="button" class="lg-help-btn" data-lg-help="plating" aria-label="Help">?</button></div>
+        <div class="lg-pills">
+          <button type="button" class="lg-pill is-selected" data-lg-custom-choice data-custom-key="plating" data-value="{{ plating_enabled_label | escape }}"><span>{{ plating_enabled_label }}</span></button>
+          {%- for item in plating_lines -%}{%- assign ic = item | strip -%}{%- if ic != blank and ic != plating_enabled_label -%}
+            <button type="button" class="lg-pill is-disabled is-locked" aria-disabled="true" tabindex="-1" data-lg-custom-choice data-custom-key="plating" data-value="{{ ic | escape }}"><span>{{ ic }}</span></button>
+          {%- endif -%}{%- endfor -%}
+        </div>
+      </div>
+      <input type="hidden" class="lg__hidden" form="{{ product_form_id }}" name="properties[{{ block.settings.plating_label | escape }}]" value="{{ plating_enabled_label }}" data-lg-custom-input="plating">
+    </div>
+
+    {%- comment -%} ══════ 2. Color ══════ {%- endcomment -%}
+    {%- if color_option -%}
+      {%- assign option = color_option -%}
+      {%- assign current_value = current_variant.options[color_index] -%}
+      {%- assign selected_swatch_color = '' -%}{%- assign selected_swatch_image = '' -%}
+      {%- for value in option.values -%}{%- if current_value == value -%}{%- if value.swatch.image -%}{%- assign selected_swatch_image = value.swatch.image | image_url: width: 120 -%}{%- elsif value.swatch.color -%}{%- assign selected_swatch_color = value.swatch.color -%}{%- endif -%}{%- endif -%}{%- endfor -%}
+
+      <div class="lg-row" data-lg-dd data-lg-native-row data-option-position="{{ option.position }}" data-row-type="color">
+        <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+          <span class="lg-left">
+            <span class="lg-icon{% if color_icon != blank %} lg-icon--media{% else %} lg-icon--swatch{% endif %}" data-lg-trigger-visual{% if color_icon != blank %} data-lg-visual-locked="true"{% endif %}>
+              {%- if color_icon != blank -%}
+                {{ color_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: option.name }}
+              {%- elsif selected_swatch_image != blank -%}<img class="lg-swatch-fill" src="{{ selected_swatch_image }}" alt="{{ current_value | escape }}">
+              {%- elsif selected_swatch_color != blank -%}<span class="lg-swatch-fill" style="background:{{ selected_swatch_color }};"></span>
+              {%- else -%}<svg viewBox="0 0 24 24"><path d="M6 12a6 6 0 0 1 12 0c0 4-6 9-6 9s-6-5-6-9Z"/><path d="M9 10.5c1.4-1.8 4.6-1.8 6 0"/></svg>{%- endif -%}
+            </span>
+            <span class="lg-meta"><span class="lg-label">{{ option.name }}</span><span class="lg-sub" data-lg-selected>{{ current_value }}</span></span>
+          </span>
+          <span class="lg-right">
+            <span class="lg-price">+$0.00</span>
+            <span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+          </span>
+        </button>
+        <div class="lg-panel" data-lg-panel>
+          <div class="lg-panel-head"><span class="lg-panel-title">Select {{ option.name }}</span></div>
+          <div class="lg-pills">
+            {%- for value in option.values -%}
+              {%- assign vi = '' -%}{%- assign vc = '' -%}{%- assign vt = '' -%}
+              {%- if value.swatch.image -%}{%- assign vt = 'image' -%}{%- assign vi = value.swatch.image | image_url: width: 120 -%}
+              {%- elsif value.swatch.color -%}{%- assign vt = 'color' -%}{%- assign vc = value.swatch.color -%}{%- endif -%}
+              <button type="button" class="lg-pill lg-pill--swatch{% if current_value == value %} is-selected{% endif %}{% unless value.available %} is-disabled{% endunless %}" data-lg-native-choice data-option-position="{{ option.position }}" data-value="{{ value | escape }}" data-visual-type="{{ vt }}" data-visual-image="{{ vi }}" data-visual-color="{{ vc }}">
+                <span class="lg-pill-sw">{%- if vi != blank -%}<img src="{{ vi }}" alt="{{ value | escape }}">{%- elsif vc != blank -%}<span style="background:{{ vc }};"></span>{%- else -%}<span style="background:#ddd;"></span>{%- endif -%}</span>
+                <span>{{ value }}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ══════ 3. Stone Type ══════ {%- endcomment -%}
+    {%- if stone_option -%}
+      {%- assign option = stone_option -%}{%- assign current_value = current_variant.options[stone_index] -%}
+      <div class="lg-row lg-row--stone" data-lg-dd data-lg-native-row data-option-position="{{ option.position }}" data-row-type="stone" data-lg-stone-row>
+        <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+          <span class="lg-left">
+            <span class="lg-icon lg-icon--stone{% if stone_icon != blank %} lg-icon--media{% endif %}">
+              {%- if stone_icon != blank -%}
+                {{ stone_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: option.name }}
+              {%- else -%}
+                <svg viewBox="0 0 24 24"><path d="M12 3 4 10l8 11 8-11-8-7Z"/><path d="M7 10h10"/></svg>
+              {%- endif -%}
+            </span>
+            <span class="lg-meta"><span class="lg-label">{{ option.name }}</span><span class="lg-sub" data-lg-selected>{{ current_value }}</span></span>
+          </span>
+          <span class="lg-right"><span class="lg-price">+$0.00</span><span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></span>
+        </button>
+        <div class="lg-panel" data-lg-panel>
+          <div class="lg-panel-head"><span class="lg-panel-title">Select {{ option.name }}</span></div>
+          <div class="lg-stone-grid">
+            <div class="lg-stone-subrow" data-lg-stone-subrow="main">
+              <button type="button" class="lg-trigger lg-stone-subtrigger" data-lg-stone-sub-trigger aria-expanded="false">
+                <span class="lg-left">
+                  <span class="lg-icon lg-icon--stone{% if stone_icon != blank %} lg-icon--media{% endif %}">
+                    {%- if stone_icon != blank -%}
+                      {{ stone_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: 'Main Stone Material' }}
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24"><path d="M12 3 4 10l8 11 8-11-8-7Z"/><path d="M7 10h10"/></svg>
+                    {%- endif -%}
+                  </span>
+                  <span class="lg-meta"><span class="lg-label">Main Stone Material</span><span class="lg-sub" data-lg-stone-main-selected>{{ current_value }}</span></span>
+                </span>
+                <span class="lg-right"><span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></span>
+              </button>
+              <div class="lg-stone-subpanel" data-lg-stone-sub-panel>
+                <div class="lg-panel-head"><span class="lg-panel-title">Main Stone Material</span></div>
+                <div class="lg-pills">
+                  {%- for material in stone_material_options -%}
+                    {%- assign material_exists = false -%}
+                    {%- for option_value in option.values -%}
+                      {%- if option_value == material -%}
+                        {%- assign material_exists = true -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    <button type="button" class="lg-pill{% if current_value == material %} is-selected{% endif %}{% unless material_exists %} is-disabled{% endunless %}" data-lg-native-choice data-lg-stone-main-choice data-option-position="{{ option.position }}" data-value="{{ material | escape }}"><span>{{ material }}</span></button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+
+            <div class="lg-stone-subrow" data-lg-stone-subrow="side">
+              <button type="button" class="lg-trigger lg-stone-subtrigger" data-lg-stone-sub-trigger aria-expanded="false">
+                <span class="lg-left">
+                  <span class="lg-icon lg-icon--stone{% if stone_icon != blank %} lg-icon--media{% endif %}">
+                    {%- if stone_icon != blank -%}
+                      {{ stone_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: 'Side Stone Material' }}
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24"><path d="M12 3 4 10l8 11 8-11-8-7Z"/><path d="M7 10h10"/></svg>
+                    {%- endif -%}
+                  </span>
+                  <span class="lg-meta"><span class="lg-label">Side Stone Material</span><span class="lg-sub" data-lg-stone-side-selected>{{ current_value | default: 'Simulated Diamonds' }}</span></span>
+                </span>
+                <span class="lg-right"><span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></span>
+              </button>
+              <div class="lg-stone-subpanel" data-lg-stone-sub-panel>
+                <div class="lg-panel-head"><span class="lg-panel-title">Side Stone Material</span></div>
+                <div class="lg-pills">
+                  {%- for material in stone_material_options -%}
+                    <button type="button" class="lg-pill{% if current_value == material %} is-selected{% endif %}" data-lg-stone-side-choice data-value="{{ material | escape }}"><span>{{ material }}</span></button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" class="lg__hidden" form="{{ product_form_id }}" name="properties[Side Stone Material]" value="{{ current_value | default: 'Simulated Diamonds' }}" data-lg-stone-side-input>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ══════ 4. Size ══════ {%- endcomment -%}
+    {%- if size_option -%}
+      {%- assign option = size_option -%}{%- assign current_value = current_variant.options[size_index] -%}
+      <div class="lg-row" data-lg-dd data-lg-native-row data-option-position="{{ option.position }}" data-row-type="size">
+        <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+          <span class="lg-left">
+            <span class="lg-icon{% if size_icon != blank %} lg-icon--media{% endif %}">
+              {%- if size_icon != blank -%}
+                {{ size_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: option.name }}
+              {%- else -%}
+                <svg viewBox="0 0 24 24"><path d="M4 8h16"/><path d="M7 4v8"/><path d="M12 6v6"/><path d="M17 4v8"/><path d="M9 16h6"/><path d="M12 13v6"/></svg>
+              {%- endif -%}
+            </span>
+            <span class="lg-meta"><span class="lg-label">{{ option.name }}</span><span class="lg-sub" data-lg-selected>{{ current_value }}</span></span>
+          </span>
+          <span class="lg-right"><span class="lg-price">+$0.00</span><span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></span>
+        </button>
+        <div class="lg-panel" data-lg-panel>
+          <div class="lg-panel-head"><span class="lg-panel-title">Select {{ option.name }}</span><span class="lg-panel-note">US sizing</span></div>
+          <div class="lg-pills">{%- for value in option.values -%}<button type="button" class="lg-pill{% if current_value == value %} is-selected{% endif %}{% unless value.available %} is-disabled{% endunless %}" data-lg-native-choice data-option-position="{{ option.position }}" data-value="{{ value | escape }}"><span>{{ value }}</span></button>{%- endfor -%}</div>
+          <div class="lg-foot">
+            <button type="button" class="lg-foot-link" data-lg-size-custom-toggle>Customize Your Size</button>
+            <button type="button" class="lg-foot-link lg-foot-link--muted" data-lg-size-guide-link>Find My Ring Size</button>
+          </div>
+          <div class="lg-custom-size-box" data-lg-size-custom-box>
+            <input type="text" class="lg-custom-size-input" placeholder="Enter your exact size" inputmode="decimal" autocomplete="off" data-lg-size-custom-field>
+            <div class="lg-note-foot"><span>Your custom size will be saved with this order</span><button type="button" class="lg-foot-link lg-foot-link--mini" data-lg-size-custom-clear>Use Standard Size</button></div>
+          </div>
+        </div>
+        <input type="hidden" class="lg__hidden" form="{{ product_form_id }}" name="properties[Custom Ring Size]" value="" data-lg-size-custom-input>
+      </div>
+    {%- endif -%}
+
+    <hr class="lg-divider">
+    <div><p class="lg-section-title">Customize Your Ring</p></div>
+
+    {%- comment -%} ══════ 5. 雕刻/备注 ══════ {%- endcomment -%}
+    <div class="lg-row" data-lg-dd data-lg-custom-row="engraving-note">
+      <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+        <span class="lg-left">
+          <span class="lg-icon{% if engraving_icon != blank %} lg-icon--media{% endif %}">
+            {%- if engraving_icon != blank -%}
+              {{ engraving_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: block.settings.engraving_label }}
+            {%- else -%}
+              <svg viewBox="0 0 24 24"><path d="m5 19 4-1 8-8-3-3-8 8-1 4Z"/><path d="M13 6 18 11"/></svg>
+            {%- endif -%}
+          </span>
+          <span class="lg-meta"><span class="lg-label">{{ block.settings.engraving_label }}</span><span class="lg-sub is-placeholder" data-lg-engraving-preview>{{ block.settings.engraving_placeholder }}</span></span>
+        </span>
+        <span class="lg-right">
+          <span class="lg-price">+$0.00</span>
+          <span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </span>
+      </button>
+      <div class="lg-panel" data-lg-panel>
+        <div class="lg-panel-head"><span class="lg-panel-title">{{ block.settings.engraving_label }}</span><span class="lg-panel-note">Optional</span></div>
+        <div class="lg-note-box">
+          <textarea class="lg-note" form="{{ product_form_id }}" name="properties[{{ block.settings.engraving_label | escape }}]" placeholder="{{ block.settings.engraving_placeholder }}" maxlength="{{ note_max }}" data-lg-engraving-note></textarea>
+          <div class="lg-note-foot"><span>Visible on the order</span><span><span data-lg-engraving-count>0</span>/{{ note_max }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} ══════ 6. 备注 ══════ {%- endcomment -%}
+    <div class="lg-row" data-lg-dd data-lg-custom-row="note">
+      <button type="button" class="lg-trigger" data-lg-trigger aria-expanded="false">
+        <span class="lg-left">
+          <span class="lg-icon{% if note_icon != blank %} lg-icon--media{% endif %}">
+            {%- if note_icon != blank -%}
+              {{ note_icon | image_url: width: 120 | image_tag: class: 'lg-icon-image', alt: block.settings.note_label }}
+            {%- else -%}
+              <svg viewBox="0 0 24 24"><path d="M7 5h10a2 2 0 0 1 2 2v10l-3-2-3 2-3-2-3 2V7a2 2 0 0 1 2-2Z"/><path d="M9 10h6"/><path d="M9 13h5"/></svg>
+            {%- endif -%}
+          </span>
+          <span class="lg-meta"><span class="lg-label">{{ block.settings.note_label }}</span><span class="lg-sub is-placeholder" data-lg-note-preview>{{ block.settings.note_placeholder }}</span></span>
+        </span>
+        <span class="lg-right">
+          <span class="lg-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </span>
+      </button>
+      <div class="lg-panel" data-lg-panel>
+        <div class="lg-panel-head"><span class="lg-panel-title">{{ block.settings.note_label }}</span><span class="lg-panel-note">Optional</span></div>
+        <div class="lg-note-box">
+          <textarea class="lg-note" form="{{ product_form_id }}" name="properties[{{ block.settings.note_label | escape }}]" placeholder="{{ block.settings.note_placeholder }}" maxlength="{{ note_max }}" data-lg-note></textarea>
+          <div class="lg-note-foot"><span>Visible on the order</span><span><span data-lg-note-count>0</span>/{{ note_max }}</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {%- comment -%} ══════ Help Drawer (template, moved to body via JS) ══════ {%- endcomment -%}
+  <template data-lg-drawer-tpl>
+    <div class="lg-drawer-overlay" data-lg-drawer-overlay>
+      <button type="button" class="lg-drawer-overlay__close" data-lg-drawer-close aria-label="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="lg-drawer" data-lg-drawer>
+      <div class="lg-drawer__header">
+        <h3 class="lg-drawer__title" data-lg-drawer-title></h3>
+        <button type="button" class="lg-drawer__close" data-lg-drawer-close aria-label="Close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="lg-drawer__body" data-lg-drawer-body>
+        {%- if block.settings.drawer_image != blank -%}
+          {{ block.settings.drawer_image | image_url: width: 800 | image_tag: class: 'lg-drawer__image', alt: block.settings.drawer_title }}
+        {%- endif -%}
+        {%- if block.settings.drawer_content != blank -%}
+          <div class="rte">{{ block.settings.drawer_content }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </template>
+
+  <script>
+    (function() {
+      var root = document.getElementById({{ uniq_id | json }});
+      if (!root || root.dataset.ready === 'true') return;
+      root.dataset.ready = 'true';
+
+      var productInfo = root.closest('product-info');
+      var sectionId = root.getAttribute('data-section-id') || '';
+      var defaultStoneValue = 'Simulated Diamonds';
+      var initialOptions = {{ current_variant.options | json }};
+
+      /* Parse variant JSON for image switching */
+      var variantsData = [];
+      try {
+        var jsonEl = root.querySelector('[data-lg-variants]');
+        if (jsonEl) variantsData = JSON.parse(jsonEl.textContent);
+      } catch(e) {}
+
+      function $$(scope, sel) { return Array.prototype.slice.call(scope.querySelectorAll(sel)); }
+      function getHiddenPicker() { return productInfo ? productInfo.querySelector('[data-luxury-hidden-variants]') : null; }
+      function getSelectedVariantScript() {
+        var hiddenPicker = getHiddenPicker();
+        if (hiddenPicker) {
+          var hiddenSelected = hiddenPicker.querySelector('[data-selected-variant]');
+          if (hiddenSelected) return hiddenSelected;
+        }
+        return productInfo ? productInfo.querySelector('variant-selects [data-selected-variant]') : null;
+      }
+      function getSourceGroup(position) { var hp = getHiddenPicker(); if (!hp) return null; return hp.querySelector('[data-option-position="' + position + '"]'); }
+      function findRadioByValue(group, value) { return group ? $$(group, 'input[type="radio"]').find(function(i) { return i.value === value; }) : null; }
+      function findDropdownOptionByValue(group, value) { return group ? $$(group, '[data-popout-option]').find(function(el) { return (el.getAttribute('data-value') || '') === value; }) : null; }
+      function getGroupValue(group) { if (!group) return ''; var checked = group.querySelector('input[type="radio"]:checked'); if (checked) return checked.value; var toggle = group.querySelector('[data-popout-toggle-text]'); return toggle ? toggle.textContent.trim() : ''; }
+      function getStoneRow() { return root.querySelector('[data-lg-stone-row]'); }
+      function getSizeRow() { return root.querySelector('[data-row-type="size"]'); }
+      function ensureSizeGuidePortal() {
+        var existingPortal = root.querySelector('[data-lg-size-guide-portal]');
+        if (existingPortal) return existingPortal;
+        var hiddenPicker = getHiddenPicker();
+        if (!hiddenPicker) return null;
+        var sourcePopup = hiddenPicker.querySelector('popup-component');
+        if (!sourcePopup) return null;
+        var portal = document.createElement('div');
+        portal.className = 'lg-size-guide-portal';
+        portal.setAttribute('data-lg-size-guide-portal', '');
+        portal.appendChild(sourcePopup.cloneNode(true));
+        root.appendChild(portal);
+        return portal;
+      }
+      function getSizeGuideTrigger() {
+        var portal = ensureSizeGuidePortal();
+        if (portal) {
+          var portalTrigger = portal.querySelector('[data-popup-open]');
+          if (portalTrigger) return portalTrigger;
+        }
+        var hiddenPicker = getHiddenPicker();
+        return hiddenPicker ? hiddenPicker.querySelector('[data-popup-open]') : null;
+      }
+      function getVariantById(variantId) {
+        var targetId = String(variantId || '');
+        if (!targetId) return null;
+        for (var i = 0; i < variantsData.length; i++) {
+          if (String(variantsData[i].id) === targetId) return variantsData[i];
+        }
+        return null;
+      }
+      function getSelectedVariantData() {
+        var script = getSelectedVariantScript();
+        if (!script) return null;
+        try {
+          return JSON.parse(script.textContent || '{}');
+        } catch (e) {
+          return null;
+        }
+      }
+      function getCurrentVariantId() {
+        var variant = getSelectedVariantData();
+        return variant && variant.id ? String(variant.id) : '';
+      }
+      function findVariantByOptions(options) {
+        if (!options || !options.length) return null;
+        for (var i = 0; i < variantsData.length; i++) {
+          var variant = variantsData[i];
+          var match = true;
+          for (var j = 0; j < options.length; j++) {
+            if (variant.options[j] !== options[j]) { match = false; break; }
+          }
+          if (match) return variant;
+        }
+        return null;
+      }
+      function getCurrentOptions() {
+        var selectedVariant = getSelectedVariantData();
+        if (selectedVariant && selectedVariant.options && selectedVariant.options.length) return selectedVariant.options.slice();
+        var variant = getVariantById(getCurrentVariantId()) || getMatchedVariant();
+        if (variant && variant.options && variant.options.length) return variant.options.slice();
+        return initialOptions.slice();
+      }
+
+      function selectSourceValue(position, value) {
+        var group = getSourceGroup(position);
+        if (!group) return;
+        var radio = findRadioByValue(group, value);
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('input', { bubbles: true }));
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+          return;
+        }
+        var dOpt = findDropdownOptionByValue(group, value);
+        if (dOpt) dOpt.click();
+      }
+
+      function getMatchedVariant() {
+        var hp = getHiddenPicker();
+        if (!hp) return null;
+
+        var selectedOptions = [];
+        var groups = $$(hp, '[data-option-position]');
+        groups.forEach(function(g) {
+          selectedOptions.push(getGroupValue(g));
+        });
+
+        for (var i = 0; i < variantsData.length; i++) {
+          var v = variantsData[i];
+          var match = true;
+          for (var j = 0; j < selectedOptions.length; j++) {
+            if (v.options[j] !== selectedOptions[j]) { match = false; break; }
+          }
+          if (match) return v;
+        }
+
+        return null;
+      }
+
+      function navigateToMediaId(featuredMediaId) {
+        if (!featuredMediaId) return;
+        featuredMediaId = String(featuredMediaId);
+        var mediaId = sectionId + '-' + featuredMediaId;
+        var scope = productInfo || document;
+        var desktopSlider = scope.querySelector('[data-sg-slider]');
+        var mobileSwiper = scope.querySelector('[data-sg-mob-swiper]');
+
+        if (desktopSlider) {
+          desktopSlider.dispatchEvent(new CustomEvent('solarii:media-select', {
+            bubbles: true,
+            detail: { mediaId: featuredMediaId }
+          }));
+        }
+
+        if (mobileSwiper) {
+          mobileSwiper.dispatchEvent(new CustomEvent('solarii:media-select', {
+            bubbles: true,
+            detail: { mediaId: featuredMediaId }
+          }));
+        }
+
+        var isDesktop = window.innerWidth > 1024;
+        var nativeMobileMedia = !isDesktop ? scope.querySelector('.sg-native-mobile-media') : null;
+
+        if (nativeMobileMedia && window.getComputedStyle(nativeMobileMedia).display !== 'none') {
+          var nativeSlide = nativeMobileMedia.querySelector('[data-image-id="' + featuredMediaId + '"]');
+          var nativeMediaList = nativeMobileMedia.querySelector('[data-product-media-list]');
+
+          if (nativeSlide) {
+            nativeSlide.dispatchEvent(new CustomEvent('theme:media:select', {
+              bubbles: true,
+              detail: { id: mediaId }
+            }));
+
+            nativeMobileMedia.setAttribute('data-active-media', mediaId);
+
+            if (nativeMediaList && typeof nativeMediaList.scrollTo === 'function') {
+              nativeMediaList.scrollTo({
+                left: nativeSlide.offsetLeft,
+                behavior: 'smooth'
+              });
+            }
+
+            return;
+          }
+        }
+
+        if (isDesktop) {
+          var desktopThumb = scope.querySelector('[data-sg-thumb][data-media-id="' + featuredMediaId + '"]');
+          if (desktopThumb) {
+            desktopThumb.click();
+            return;
+          }
+        } else {
+          var mobileDot = scope.querySelector('.sg-mob-dot[data-media-id="' + featuredMediaId + '"]');
+          if (mobileDot) {
+            mobileDot.click();
+            return;
+          }
+        }
+
+        var fallbackSlide = scope.querySelector((isDesktop ? '.sg-slide' : '.sg-mob-slide') + '[data-gallery-media-id="' + featuredMediaId + '"]');
+        if (fallbackSlide) {
+          var idx = parseInt(fallbackSlide.getAttribute('data-index'), 10);
+          if (!isNaN(idx)) {
+            if (isDesktop) {
+              var track = scope.querySelector('[data-sg-track]');
+              if (track) track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+              $$(scope, '[data-sg-thumb]').forEach(function(t) {
+                t.classList.toggle('is-active', String(t.dataset.index) === String(idx));
+              });
+            } else {
+              var mobTrack = scope.querySelector('[data-sg-mob-track]');
+              if (mobTrack) {
+                mobTrack.style.transition = 'transform .4s cubic-bezier(.22,.61,.36,1)';
+                mobTrack.style.transform = 'translateX(-' + (idx * 100) + '%)';
+              }
+              $$(scope, '.sg-mob-dot').forEach(function(dot, dotIndex) {
+                dot.classList.toggle('is-active', dotIndex === idx);
+              });
+            }
+            return;
+          }
+        }
+
+        var thumbLink = scope.querySelector('[data-thumb-link][data-media-id="' + mediaId + '"]');
+        if (thumbLink) thumbLink.click();
+
+        var mediaSlide = scope.querySelector('[data-media-id="' + mediaId + '"][data-slide]');
+        if (mediaSlide) {
+          var productImages = mediaSlide.closest('product-images');
+          if (productImages && productImages.setAttribute) {
+            productImages.setAttribute('data-active-media', mediaId);
+          }
+        }
+      }
+      function getMobileSwiper() {
+        var scope = productInfo || document;
+        return scope.querySelector('[data-sg-mob-swiper]');
+      }
+      function clearPinnedMobileMedia() {
+        var mobileSwiper = getMobileSwiper();
+        if (mobileSwiper && mobileSwiper.dataset.sgUserPinnedMediaId) {
+          delete mobileSwiper.dataset.sgUserPinnedMediaId;
+        }
+      }
+      function shouldPreservePinnedMobileMedia(forceNavigate) {
+        if (forceNavigate || window.innerWidth > 1024) return false;
+        var mobileSwiper = getMobileSwiper();
+        return !!(mobileSwiper && mobileSwiper.dataset.sgUserPinnedMediaId);
+      }
+      /* ── Navigate gallery to variant's featured image ── */
+      function navigateToVariantImage(preferredVariantId, forceNavigate) {
+        if (shouldPreservePinnedMobileMedia(forceNavigate)) return;
+        var matchedVariant = getVariantById(preferredVariantId) || getVariantById(getCurrentVariantId()) || getMatchedVariant();
+        if (!matchedVariant || !matchedVariant.featured_media_id) return;
+        navigateToMediaId(matchedVariant.featured_media_id);
+      }
+      function previewVariantImageForSelection(position, value) {
+        var pos = parseInt(position, 10);
+        if (isNaN(pos) || pos < 1) return;
+        var options = getCurrentOptions();
+        if (!options.length || pos > options.length) return;
+        options[pos - 1] = value;
+        var variant = findVariantByOptions(options);
+        if (variant && variant.featured_media_id) navigateToMediaId(variant.featured_media_id);
+      }
+
+      function syncVariantThenNavigate(previousVariantId, callback, forceNavigate) {
+        var attempts = 0;
+        var maxAttempts = 15;
+
+        function check() {
+          attempts += 1;
+          var currentVariantId = getCurrentVariantId();
+          if ((currentVariantId && currentVariantId !== String(previousVariantId || '')) || attempts >= maxAttempts) {
+            updateNativeRows();
+            navigateToVariantImage(currentVariantId, forceNavigate);
+            if (typeof callback === 'function') callback();
+            return;
+          }
+          window.setTimeout(check, 60);
+        }
+
+        window.setTimeout(check, 60);
+      }
+
+      function closeStoneSubRows(stoneRow, exceptSubRow) {
+        if (!stoneRow) return;
+        $$(stoneRow, '[data-lg-stone-subrow].is-open').forEach(function(subrow) {
+          if (exceptSubRow && subrow === exceptSubRow) return;
+          subrow.classList.remove('is-open');
+          var trigger = subrow.querySelector('[data-lg-stone-sub-trigger]');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      function closeAll(exceptRow) {
+        $$(root, '.lg-row.is-open').forEach(function(row) {
+          if (exceptRow && row === exceptRow) return;
+          row.classList.remove('is-open');
+          closeStoneSubRows(row);
+          var trigger = row.querySelector('[data-lg-trigger]');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      function setTriggerVisual(row, btn) {
+        if (!row) return;
+        var visual = row.querySelector('[data-lg-trigger-visual]');
+        if (!visual || row.getAttribute('data-row-type') !== 'color') return;
+        if (visual.getAttribute('data-lg-visual-locked') === 'true') return;
+        var vType = btn ? (btn.getAttribute('data-visual-type') || '') : '';
+        var vImage = btn ? (btn.getAttribute('data-visual-image') || '') : '';
+        var vColor = btn ? (btn.getAttribute('data-visual-color') || '') : '';
+        visual.classList.add('lg-icon--swatch');
+        visual.innerHTML = '';
+        if (vType === 'image' && vImage) { var img = document.createElement('img'); img.className = 'lg-swatch-fill'; img.src = vImage; visual.appendChild(img); }
+        else if (vType === 'color' && vColor) { var fill = document.createElement('span'); fill.className = 'lg-swatch-fill'; fill.style.background = vColor; visual.appendChild(fill); }
+        else { visual.classList.remove('lg-icon--swatch'); visual.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 12a6 6 0 0 1 12 0c0 4-6 9-6 9s-6-5-6-9Z"></path><path d="M9 10.5c1.4-1.8 4.6-1.8 6 0"></path></svg>'; }
+      }
+
+      function syncStoneRow() {
+        var stoneRow = getStoneRow();
+        if (!stoneRow) return;
+
+        var group = getSourceGroup(stoneRow.getAttribute('data-option-position'));
+        var mainValue = getGroupValue(group) || '';
+        var summary = stoneRow.querySelector('[data-lg-selected]');
+        var mainSelected = stoneRow.querySelector('[data-lg-stone-main-selected]');
+        var sideInput = stoneRow.querySelector('[data-lg-stone-side-input]');
+
+        if (sideInput && !sideInput.value) sideInput.value = mainValue || defaultStoneValue;
+        var sideValue = sideInput ? sideInput.value : '';
+
+        if (summary) {
+          var summaryText = mainValue || defaultStoneValue;
+          if (sideValue && sideValue !== summaryText) summaryText = summaryText + ' / ' + sideValue;
+          summary.textContent = summaryText;
+          summary.classList.remove('is-placeholder');
+        }
+
+        if (mainSelected) {
+          mainSelected.textContent = mainValue || defaultStoneValue;
+          mainSelected.classList.remove('is-placeholder');
+        }
+
+        $$(stoneRow, '[data-lg-stone-main-choice]').forEach(function(btn) {
+          var btnValue = btn.getAttribute('data-value') || '';
+          var radio = findRadioByValue(group, btnValue);
+          var dropdownOption = findDropdownOptionByValue(group, btnValue);
+          var disabled = false;
+
+          if (radio) disabled = radio.classList.contains('disabled') || radio.disabled;
+          else if (dropdownOption) disabled = dropdownOption.classList.contains('unavailable');
+          else disabled = true;
+
+          btn.classList.toggle('is-disabled', !!disabled);
+          btn.classList.toggle('is-selected', btnValue === mainValue);
+        });
+
+        var sideSelected = stoneRow.querySelector('[data-lg-stone-side-selected]');
+        if (sideSelected) {
+          sideSelected.textContent = sideValue || defaultStoneValue;
+          sideSelected.classList.remove('is-placeholder');
+        }
+
+        $$(stoneRow, '[data-lg-stone-side-choice]').forEach(function(btn) {
+          var btnValue = btn.getAttribute('data-value') || '';
+          btn.classList.toggle('is-selected', btnValue === sideValue);
+        });
+      }
+
+      function syncSizeRow() {
+        var sizeRow = getSizeRow();
+        if (!sizeRow) return;
+
+        var group = getSourceGroup(sizeRow.getAttribute('data-option-position'));
+        var value = getGroupValue(group) || '';
+        var selectedText = sizeRow.querySelector('[data-lg-selected]');
+        var customBox = sizeRow.querySelector('[data-lg-size-custom-box]');
+        var customField = sizeRow.querySelector('[data-lg-size-custom-field]');
+        var customInput = sizeRow.querySelector('[data-lg-size-custom-input]');
+        var customValue = customField ? customField.value.trim() : '';
+        var forceOpen = customBox && customBox.getAttribute('data-open') === 'true';
+
+        if (customInput) customInput.value = customValue;
+
+        if (selectedText) {
+          selectedText.textContent = customValue || value;
+          selectedText.classList.remove('is-placeholder');
+        }
+
+        if (customBox) customBox.classList.toggle('is-open', !!customValue || !!forceOpen);
+      }
+
+      function updateNativeRows() {
+        $$(root, '[data-lg-native-row]').forEach(function(row) {
+          var pos = row.getAttribute('data-option-position');
+          var group = getSourceGroup(pos);
+          if (!group) return;
+          var value = getGroupValue(group);
+          var selectedText = row.querySelector('[data-lg-selected]');
+          if (selectedText) { selectedText.textContent = value; selectedText.classList.remove('is-placeholder'); }
+          var matchedButton = null;
+          $$(row, '[data-lg-native-choice]').forEach(function(btn) {
+            var btnValue = btn.getAttribute('data-value') || '';
+            var selected = btnValue === value;
+            btn.classList.toggle('is-selected', selected);
+            if (selected) matchedButton = btn;
+            var disabled = false;
+            var radio = findRadioByValue(group, btnValue);
+            if (radio) { disabled = radio.classList.contains('disabled') || radio.disabled; }
+            else {
+              var d = findDropdownOptionByValue(group, btnValue);
+              if (d) disabled = d.classList.contains('unavailable');
+              else disabled = true;
+            }
+            btn.classList.toggle('is-disabled', !!disabled);
+          });
+          if (matchedButton) setTriggerVisual(row, matchedButton);
+        });
+        syncStoneRow();
+        syncSizeRow();
+      }
+
+      /* Toggle */
+      $$(root, '[data-lg-trigger]').forEach(function(trigger) {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var row = trigger.closest('.lg-row');
+          var willOpen = !row.classList.contains('is-open');
+          closeAll(row);
+          closeStoneSubRows(row);
+          row.classList.toggle('is-open', willOpen);
+          trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+      });
+      $$(root, '[data-lg-stone-sub-trigger]').forEach(function(trigger) {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var stoneRow = trigger.closest('[data-lg-stone-row]');
+          var subrow = trigger.closest('[data-lg-stone-subrow]');
+          var willOpen = !subrow.classList.contains('is-open');
+          closeStoneSubRows(stoneRow, subrow);
+          subrow.classList.toggle('is-open', willOpen);
+          trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+      });
+      $$(root, '[data-lg-panel]').forEach(function(panel) { panel.addEventListener('click', function(e) { e.stopPropagation(); }); });
+      $$(root, '[data-lg-stone-sub-panel]').forEach(function(panel) { panel.addEventListener('click', function(e) { e.stopPropagation(); }); });
+
+      var sizeRow = getSizeRow();
+      if (sizeRow) {
+        var sizeCustomBox = sizeRow.querySelector('[data-lg-size-custom-box]');
+        var sizeCustomField = sizeRow.querySelector('[data-lg-size-custom-field]');
+        var sizeCustomToggle = sizeRow.querySelector('[data-lg-size-custom-toggle]');
+        var sizeCustomClear = sizeRow.querySelector('[data-lg-size-custom-clear]');
+        var sizeGuideLink = sizeRow.querySelector('[data-lg-size-guide-link]');
+
+        if (sizeCustomToggle && sizeCustomBox) {
+          sizeCustomToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            sizeCustomBox.setAttribute('data-open', sizeCustomBox.getAttribute('data-open') === 'true' ? 'false' : 'true');
+            syncSizeRow();
+            if (sizeCustomBox.classList.contains('is-open') && sizeCustomField) sizeCustomField.focus();
+          });
+        }
+
+        if (sizeCustomField) {
+          sizeCustomField.addEventListener('input', syncSizeRow);
+          sizeCustomField.addEventListener('click', function(e) { e.stopPropagation(); });
+        }
+
+        if (sizeCustomClear && sizeCustomField && sizeCustomBox) {
+          sizeCustomClear.addEventListener('click', function(e) {
+            e.preventDefault();
+            sizeCustomField.value = '';
+            sizeCustomBox.setAttribute('data-open', 'false');
+            syncSizeRow();
+          });
+        }
+
+        if (sizeGuideLink) {
+          sizeGuideLink.addEventListener('click', function(e) {
+            var guideTrigger = getSizeGuideTrigger();
+            if (guideTrigger) {
+              e.preventDefault();
+              guideTrigger.click();
+            }
+          });
+        }
+      }
+
+      /* Native choices — select variant + navigate image */
+      $$(root, '[data-lg-native-choice]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.classList.contains('is-disabled')) return;
+          var stoneRow = btn.closest('[data-lg-stone-row]');
+          var stoneSubrow = btn.closest('[data-lg-stone-subrow]');
+          var previousVariantId = getCurrentVariantId();
+          clearPinnedMobileMedia();
+          previewVariantImageForSelection(btn.getAttribute('data-option-position'), btn.getAttribute('data-value') || '');
+          selectSourceValue(btn.getAttribute('data-option-position'), btn.getAttribute('data-value') || '');
+          syncVariantThenNavigate(previousVariantId, function() {
+            if (stoneRow && stoneSubrow) closeStoneSubRows(stoneRow);
+            else closeAll();
+          }, true);
+        });
+      });
+
+      /* Side stone choice */
+      $$(root, '[data-lg-stone-side-choice]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.classList.contains('is-disabled')) return;
+          var stoneRow = btn.closest('[data-lg-stone-row]');
+          var sideInput = stoneRow ? stoneRow.querySelector('[data-lg-stone-side-input]') : null;
+          if (sideInput) sideInput.value = btn.getAttribute('data-value') || '';
+          syncStoneRow();
+          closeStoneSubRows(stoneRow);
+        });
+      });
+
+      /* Custom choices */
+      $$(root, '[data-lg-custom-choice]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.classList.contains('is-disabled')) return;
+          var key = btn.getAttribute('data-custom-key');
+          var value = btn.getAttribute('data-value') || '';
+          var row = btn.closest('.lg-row');
+          var input = root.querySelector('[data-lg-custom-input="' + key + '"]');
+          var selectedText = row.querySelector('[data-lg-selected]');
+          if (input) input.value = value;
+          if (selectedText) { selectedText.textContent = value; selectedText.classList.remove('is-placeholder'); }
+          $$(row, '[data-lg-custom-choice]').forEach(function(item) { item.classList.remove('is-selected'); });
+          btn.classList.add('is-selected');
+          closeAll();
+        });
+      });
+
+      /* Note */
+      var noteInput = root.querySelector('[data-lg-note]');
+      if (noteInput) {
+        var noteCount = root.querySelector('[data-lg-note-count]');
+        var notePreview = root.querySelector('[data-lg-note-preview]');
+        function syncNote() {
+          var value = noteInput.value || '';
+          if (noteCount) noteCount.textContent = value.length;
+          if (notePreview) {
+            if (value.trim()) { notePreview.textContent = value.trim().length > 22 ? value.trim().slice(0, 22) + '…' : value.trim(); notePreview.classList.remove('is-placeholder'); }
+            else { notePreview.textContent = {{ block.settings.note_placeholder | json }}; notePreview.classList.add('is-placeholder'); }
+          }
+        }
+        noteInput.addEventListener('input', syncNote);
+        syncNote();
+      }
+
+      var engravingInput = root.querySelector('[data-lg-engraving-note]');
+      if (engravingInput) {
+        var engravingCount = root.querySelector('[data-lg-engraving-count]');
+        var engravingPreview = root.querySelector('[data-lg-engraving-preview]');
+        function syncEngraving() {
+          var value = engravingInput.value || '';
+          if (engravingCount) engravingCount.textContent = value.length;
+          if (engravingPreview) {
+            if (value.trim()) { engravingPreview.textContent = value.trim().length > 22 ? value.trim().slice(0, 22) + '…' : value.trim(); engravingPreview.classList.remove('is-placeholder'); }
+            else { engravingPreview.textContent = {{ block.settings.engraving_placeholder | json }}; engravingPreview.classList.add('is-placeholder'); }
+          }
+        }
+        engravingInput.addEventListener('input', syncEngraving);
+        syncEngraving();
+      }
+
+      document.addEventListener('click', function() { closeAll(); });
+
+      /* ── Help Drawer (mount to body to escape stacking context) ── */
+      var drawerOverlay, drawer, drawerTitle, drawerBody;
+      (function mountDrawer() {
+        var tpl = root.querySelector('[data-lg-drawer-tpl]');
+        if (!tpl) return;
+        var existing = document.body.querySelector('[data-lg-drawer-root]');
+        if (existing) {
+          drawerOverlay = existing.querySelector('[data-lg-drawer-overlay]');
+          drawer = existing.querySelector('[data-lg-drawer]');
+        } else {
+          var wrapper = document.createElement('div');
+          wrapper.setAttribute('data-lg-drawer-root', '');
+          wrapper.appendChild(tpl.content.cloneNode(true));
+          document.body.appendChild(wrapper);
+          drawerOverlay = wrapper.querySelector('[data-lg-drawer-overlay]');
+          drawer = wrapper.querySelector('[data-lg-drawer]');
+        }
+        drawerTitle = drawer ? drawer.querySelector('[data-lg-drawer-title]') : null;
+        drawerBody = drawer ? drawer.querySelector('[data-lg-drawer-body]') : null;
+      })();
+
+      function openDrawer(title) {
+        if (!drawer || !drawerOverlay) return;
+        if (drawerTitle) drawerTitle.textContent = title || '';
+        drawer.classList.add('is-open');
+        drawerOverlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeDrawer() {
+        if (!drawer || !drawerOverlay) return;
+        drawer.classList.remove('is-open');
+        drawerOverlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      /* ? button click */
+      var drawerDefaultTitle = {{ block.settings.drawer_title | default: 'Metal' | json }};
+      $$(root, '[data-lg-help]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openDrawer(drawerDefaultTitle);
+        });
+      });
+
+      /* Close buttons (both panel X and overlay X) */
+      var drawerRoot = document.body.querySelector('[data-lg-drawer-root]');
+      if (drawerRoot) {
+        $$(drawerRoot, '[data-lg-drawer-close]').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeDrawer();
+          });
+        });
+      }
+
+      /* Click overlay background to close */
+      if (drawerOverlay) {
+        drawerOverlay.addEventListener('click', function(e) {
+          if (e.target === drawerOverlay) closeDrawer();
+        });
+      }
+
+      /* Esc key to close */
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && drawer && drawer.classList.contains('is-open')) closeDrawer();
+      });
+
+      function initSync() {
+        ensureSizeGuidePortal();
+        updateNativeRows();
+        var hp = getHiddenPicker();
+        if (!hp) return;
+        hp.addEventListener('change', function() { updateNativeRows(); navigateToVariantImage(null, false); });
+        hp.addEventListener('input', function() { updateNativeRows(); navigateToVariantImage(null, false); });
+        var obs = new MutationObserver(function() { updateNativeRows(); });
+        obs.observe(hp, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'checked', 'aria-current', 'value'] });
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSync);
+      else initSync();
+    })();
+  </script>
+</div>

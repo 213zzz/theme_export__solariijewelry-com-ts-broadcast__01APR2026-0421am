@@ -1,0 +1,699 @@
+{% comment %}
+  Section: Brand Cards (text-only)
+  - Same behavior as your carousel module: header + arrows + horizontal track + hover lift + divider + CTA
+  - Text cards only (no images)
+  - Premium floating panel style, no clipping on hover shadow
+{% endcomment %}
+
+<section
+  id="BrandCards-{{ section.id }}"
+  class="bc bc-align-{{ section.settings.header_align }}"
+  style="
+    --bc-bg: {{ section.settings.bg }};
+    --bc-text: {{ section.settings.text_color }};
+    --bc-muted: {{ section.settings.muted_color }};
+    --bc-gap: {{ section.settings.gap }}px;
+    --bc-radius: {{ section.settings.card_radius }}px;
+    --bc-pad-y: {{ section.settings.pad_y }}px;
+    --bc-pad-x: {{ section.settings.pad_x }}px;
+
+    --bc-head-d: {{ section.settings.heading_size_desktop }}px;
+    --bc-head-m: {{ section.settings.heading_size_mobile }}px;
+    --bc-sub-d: {{ section.settings.subheading_size_desktop }}px;
+    --bc-sub-m: {{ section.settings.subheading_size_mobile }}px;
+
+    --bc-card-minh-d: {{ section.settings.card_min_height_desktop }}px;
+    --bc-card-minh-m: {{ section.settings.card_min_height_mobile }}px;
+
+    --bc-title-d: {{ section.settings.card_title_size_desktop }}px;
+    --bc-title-m: {{ section.settings.card_title_size_mobile }}px;
+
+    --bc-body-d: {{ section.settings.card_body_size_desktop }}px;
+    --bc-body-m: {{ section.settings.card_body_size_mobile }}px;
+
+    --bc-cta-fs-d: {{ section.settings.cta_font_size_desktop }}px;
+    --bc-cta-py-d: {{ section.settings.cta_padding_y_desktop }}px;
+    --bc-cta-px-d: {{ section.settings.cta_padding_x_desktop }}px;
+    --bc-cta-radius-d: {% if section.settings.cta_radius_desktop >= 100 %}999{% else %}{{ section.settings.cta_radius_desktop }}{% endif %}px;
+    --bc-cta-minw-d: {{ section.settings.cta_min_width_desktop }}px;
+
+    --bc-cta-fs-m: {{ section.settings.cta_font_size_mobile }}px;
+    --bc-cta-py-m: {{ section.settings.cta_padding_y_mobile }}px;
+    --bc-cta-px-m: {{ section.settings.cta_padding_x_mobile }}px;
+    --bc-cta-radius-m: {% if section.settings.cta_radius_mobile >= 100 %}999{% else %}{{ section.settings.cta_radius_mobile }}{% endif %}px;
+    --bc-cta-minw-m: {{ section.settings.cta_min_width_mobile }}px;
+  "
+  data-bc-root
+>
+  <style>
+    #BrandCards-{{ section.id }}{
+      background: var(--bc-bg);
+      color: var(--bc-text);
+      padding: var(--bc-pad-y) var(--bc-pad-x);
+      overflow-x: hidden;
+      overflow-y: visible; /* ✅ hover 阴影不裁 */
+      position: relative;
+      z-index: 0;
+    }
+    #BrandCards-{{ section.id }} .bc-inner{
+      max-width: {{ section.settings.max_width }}px;
+      margin: 0 auto;
+    }
+
+    /* Top */
+    #BrandCards-{{ section.id }} .bc-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+    #BrandCards-{{ section.id }} .bc-headwrap{
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    #BrandCards-{{ section.id }} .bc-heading{
+      margin: 0;
+      font-size: var(--bc-head-d);
+      line-height: 1.08;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-family: var(--font-heading-family, ui-serif, "Times New Roman", serif);
+    }
+    #BrandCards-{{ section.id }} .bc-sub{
+      margin: 10px 0 0 0;
+      color: var(--bc-muted);
+      font-size: var(--bc-sub-d);
+      line-height: 1.55;
+      max-width: 820px;
+    }
+
+    #BrandCards-{{ section.id }} .bc-arrows{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      user-select:none;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    #BrandCards-{{ section.id }} .bc-arrow{
+      appearance:none;
+      border:none;
+      background: transparent;
+      padding: 6px;
+      cursor:pointer;
+      color: var(--bc-text);
+      opacity: .85;
+      transition: opacity 160ms ease, transform 160ms ease;
+      line-height: 0;
+    }
+    #BrandCards-{{ section.id }} .bc-arrow:hover{
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+    #BrandCards-{{ section.id }} .bc-arrow:disabled{
+      opacity: .35;
+      cursor:not-allowed;
+      transform:none;
+    }
+    #BrandCards-{{ section.id }} .bc-arrow svg{
+      width: 20px; height: 20px;
+      fill:none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display:block;
+    }
+
+    /* Header align: center */
+    #BrandCards-{{ section.id }}.bc-align-center .bc-top{
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #BrandCards-{{ section.id }}.bc-align-center .bc-headwrap{
+      text-align: center;
+    }
+    #BrandCards-{{ section.id }}.bc-align-center .bc-sub{
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #BrandCards-{{ section.id }}.bc-align-center .bc-arrows{
+      margin-top: 10px;
+    }
+
+    /* Track */
+    #BrandCards-{{ section.id }} .bc-track{
+      display:flex;
+      gap: var(--bc-gap);
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling: touch;
+
+      padding-top: 18px;   /* ✅ hover 上浮空间 */
+      padding-bottom: 26px;
+
+      scrollbar-width: none;
+      background: var(--bc-bg); /* ✅ 间隙背景一致 */
+      position: relative;
+      z-index: 1;
+    }
+    #BrandCards-{{ section.id }} .bc-track::-webkit-scrollbar{ display:none; }
+
+    /* Card */
+    #BrandCards-{{ section.id }} .bc-card{
+      position: relative;
+      border-radius: var(--bc-radius);
+      min-height: var(--bc-card-minh-d);
+      flex: 0 0 calc((100% - (var(--bc-gap) * 2)) / 3);
+      scroll-snap-align: start;
+
+      background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,255,255,.74) 100%);
+      border: 1px solid rgba(0,0,0,.07);
+      box-shadow: 0 16px 44px rgba(0,0,0,.07);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      transition: transform 220ms ease, box-shadow 220ms ease;
+      will-change: transform;
+      isolation: isolate;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    #BrandCards-{{ section.id }} .bc-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(800px 240px at 10% 0%, rgba(0,0,0,.04), transparent 55%),
+        radial-gradient(600px 220px at 90% 10%, rgba(0,0,0,.03), transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    #BrandCards-{{ section.id }} .bc-card::after{
+      content:"";
+      position:absolute;
+      left: 18px;
+      top: 18px;
+      width: 44px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--card-accent, #111);
+      opacity: .9;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    @media (hover:hover){
+      #BrandCards-{{ section.id }} .bc-card:hover{
+        transform: translateY(-8px);
+        box-shadow: 0 26px 70px rgba(0,0,0,.12);
+        z-index: 6;
+      }
+    }
+
+    #BrandCards-{{ section.id }} .bc-card-inner{
+      position: relative;
+      z-index: 1;
+      padding: 24px 22px 22px 22px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+      height: 100%;
+    }
+
+    #BrandCards-{{ section.id }} .bc-topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    #BrandCards-{{ section.id }} .bc-badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.62);
+      font-weight: 650;
+    }
+
+    #BrandCards-{{ section.id }} .bc-icon{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      background: rgba(0,0,0,.06);
+      border: 1px solid rgba(0,0,0,.08);
+      flex-shrink: 0;
+    }
+    #BrandCards-{{ section.id }} .bc-icon svg{
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: rgba(0,0,0,.78);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display:block;
+    }
+
+    #BrandCards-{{ section.id }} .bc-title{
+      margin: 0;
+      font-size: var(--bc-title-d);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      color: rgba(0,0,0,.88);
+      font-weight: 750;
+      text-wrap: balance;
+      max-width: 96%;
+    }
+
+    #BrandCards-{{ section.id }} .bc-body{
+      margin: 0;
+      font-size: var(--bc-body-d);
+      line-height: 1.6;
+      color: rgba(0,0,0,.68);
+      max-width: 96%;
+    }
+
+    #BrandCards-{{ section.id }} .bc-list{
+      margin: 2px 0 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+    #BrandCards-{{ section.id }} .bc-list li{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      color: rgba(0,0,0,.70);
+      font-size: var(--bc-body-d);
+      line-height: 1.5;
+    }
+    #BrandCards-{{ section.id }} .bc-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--card-accent, #111);
+      opacity: .9;
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    #BrandCards-{{ section.id }} .bc-linkrow{
+      margin-top: auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding-top: 8px;
+      color: rgba(0,0,0,.78);
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: .01em;
+    }
+    #BrandCards-{{ section.id }} .bc-linkrow svg{
+      width: 18px; height: 18px;
+      fill:none;
+      stroke: rgba(0,0,0,.72);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      opacity: .9;
+    }
+
+    #BrandCards-{{ section.id }} .bc-link{
+      position:absolute;
+      inset:0;
+      z-index: 3;
+      text-decoration:none;
+      color: inherit;
+    }
+
+    /* Divider + CTA */
+    #BrandCards-{{ section.id }} .bc-divider{
+      position: relative;
+      margin: 18px 0 18px 0;
+      height: 1px;
+      background: rgba(0,0,0,.18);
+    }
+    #BrandCards-{{ section.id }} .bc-divider::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:-1px;
+      width: 140px;
+      height: 2px;
+      background: rgba(0,0,0,.35);
+    }
+
+    #BrandCards-{{ section.id }} .bc-cta{
+      display:flex;
+      justify-content:center;
+      margin-top: 6px;
+    }
+    #BrandCards-{{ section.id }} .bc-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: var(--bc-cta-py-d) var(--bc-cta-px-d);
+      border-radius: var(--bc-cta-radius-d);
+      background: #0b0b0b;
+      color: #fff;
+      text-decoration:none;
+      font-weight: 650;
+      font-size: var(--bc-cta-fs-d);
+      min-width: var(--bc-cta-minw-d);
+      letter-spacing: .01em;
+      transition: transform 180ms ease, opacity 180ms ease;
+      opacity: .98;
+    }
+    #BrandCards-{{ section.id }} .bc-btn:hover{
+      transform: translateY(-2px);
+      opacity: 1;
+    }
+
+    /* Tablet */
+    @media (max-width: 1024px){
+      #BrandCards-{{ section.id }} .bc-card{
+        flex-basis: calc((100% - var(--bc-gap)) / 2);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px){
+      #BrandCards-{{ section.id }}{
+        padding: calc(var(--bc-pad-y) * .75) calc(var(--bc-pad-x) * .75);
+      }
+      #BrandCards-{{ section.id }} .bc-heading{ font-size: var(--bc-head-m); }
+      #BrandCards-{{ section.id }} .bc-sub{ font-size: var(--bc-sub-m); }
+
+      #BrandCards-{{ section.id }} .bc-track{
+        padding-top: 14px;
+        padding-bottom: 18px;
+      }
+
+      #BrandCards-{{ section.id }} .bc-card{
+        flex-basis: 86%;
+        min-height: var(--bc-card-minh-m);
+      }
+
+      #BrandCards-{{ section.id }} .bc-title{ font-size: var(--bc-title-m); }
+      #BrandCards-{{ section.id }} .bc-body{ font-size: var(--bc-body-m); }
+      #BrandCards-{{ section.id }} .bc-list li{ font-size: var(--bc-body-m); }
+
+      #BrandCards-{{ section.id }} .bc-btn{
+        padding: var(--bc-cta-py-m) var(--bc-cta-px-m);
+        border-radius: var(--bc-cta-radius-m);
+        font-size: var(--bc-cta-fs-m);
+        min-width: var(--bc-cta-minw-m);
+      }
+    }
+  </style>
+
+  <div class="bc-inner">
+    <div class="bc-top">
+      <div class="bc-headwrap">
+        <h2 class="bc-heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="bc-sub">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+
+      <div class="bc-arrows">
+        <button type="button" class="bc-arrow" data-bc-prev aria-label="Previous">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="bc-arrow" data-bc-next aria-label="Next">
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="bc-track" data-bc-track>
+      {% for block in section.blocks %}
+        <article class="bc-card" style="--card-accent: {{ block.settings.accent_color }};" {{ block.shopify_attributes }}>
+          {% if block.settings.link_url != blank %}
+            <a class="bc-link" href="{{ block.settings.link_url }}" aria-label="{{ block.settings.title | escape }}"></a>
+          {% endif %}
+
+          <div class="bc-card-inner">
+            <div class="bc-topline">
+              <div class="bc-badge">
+                {% if block.settings.badge != blank %}
+                  <span>{{ block.settings.badge }}</span>
+                {% endif %}
+              </div>
+
+              <div class="bc-icon" aria-hidden="true">
+                {% case block.settings.icon %}
+                  {% when 'leaf' %}
+                    <svg viewBox="0 0 24 24"><path d="M4 14c6-10 16-10 16-10s0 10-10 16C6 22 4 18 4 14Z"/><path d="M8 16c2-2 5-5 10-8"/></svg>
+                  {% when 'ring' %}
+                    <svg viewBox="0 0 24 24"><path d="M12 6l2.2 2.2L12 10.4 9.8 8.2 12 6Z"/><path d="M6 14a6 6 0 0 0 12 0c0-3.3-2.7-6-6-6s-6 2.7-6 6Z"/></svg>
+                  {% when 'factory' %}
+                    <svg viewBox="0 0 24 24"><path d="M3 21V10l6 3V10l6 3V8l6 3v10H3Z"/><path d="M7 21v-4"/><path d="M11 21v-4"/><path d="M15 21v-4"/></svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path d="M5 19V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v13"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h7"/></svg>
+                {% endcase %}
+              </div>
+            </div>
+
+            <h3 class="bc-title">{{ block.settings.title }}</h3>
+
+            <p class="bc-body">{{ block.settings.body }}</p>
+
+            {% if block.settings.bullets != blank %}
+              <ul class="bc-list">
+                {% assign lines = block.settings.bullets | split: '\n' %}
+                {% for line in lines %}
+                  {% assign t = line | strip %}
+                  {% if t != blank %}
+                    <li><span class="bc-dot"></span><span>{{ t }}</span></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <div class="bc-linkrow" aria-hidden="true">
+              <span>{{ block.settings.link_label }}</span>
+              <svg viewBox="0 0 24 24"><path d="M7 17L17 7"/><path d="M9 7h8v8"/></svg>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_divider %}
+      <div class="bc-divider"></div>
+    {% endif %}
+
+    {% if section.settings.show_cta and section.settings.cta_label != blank %}
+      <div class="bc-cta">
+        {% if section.settings.cta_url != blank %}
+          <a class="bc-btn" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+        {% else %}
+          <a class="bc-btn" href="/pages/about-us">{{ section.settings.cta_label }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('BrandCards-{{ section.id }}');
+      if (!root) return;
+
+      const track = root.querySelector('[data-bc-track]');
+      const prevBtn = root.querySelector('[data-bc-prev]');
+      const nextBtn = root.querySelector('[data-bc-next]');
+      if (!track) return;
+
+      const getStep = () => {
+        const card = track.querySelector('.bc-card');
+        if (!card) return 320;
+        const cardW = card.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap || '0') || 0;
+        return Math.max(260, Math.round(cardW + gap));
+      };
+
+      const clamp = () => {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (prevBtn) prevBtn.disabled = track.scrollLeft <= 2;
+        if (nextBtn) nextBtn.disabled = track.scrollLeft >= (maxScroll - 2);
+      };
+
+      const go = (dir) => track.scrollBy({ left: dir * getStep(), behavior: 'smooth' });
+
+      prevBtn && prevBtn.addEventListener('click', () => go(-1));
+      nextBtn && nextBtn.addEventListener('click', () => go(1));
+      track.addEventListener('scroll', clamp, { passive: true });
+      window.addEventListener('resize', clamp, { passive: true });
+
+      clamp();
+    })();
+  </script>
+
+  {% schema %}
+  {
+    "name": "Brand Cards",
+    "settings": [
+      {
+        "type": "select",
+        "id": "header_align",
+        "label": "标题区对齐",
+        "default": "left",
+        "options": [
+          { "value": "left", "label": "左对齐" },
+          { "value": "center", "label": "居中" }
+        ]
+      },
+
+      { "type": "text", "id": "heading", "label": "模块标题", "default": "OUR PROMISE" },
+      { "type": "textarea", "id": "subheading", "label": "副标题（可选）" },
+
+      { "type": "range", "id": "heading_size_desktop", "label": "标题字号 桌面", "min": 22, "max": 72, "step": 1, "default": 44 },
+      { "type": "range", "id": "heading_size_mobile", "label": "标题字号 手机", "min": 18, "max": 60, "step": 1, "default": 32 },
+
+      { "type": "range", "id": "subheading_size_desktop", "label": "副标题字号 桌面", "min": 12, "max": 22, "step": 1, "default": 15 },
+      { "type": "range", "id": "subheading_size_mobile", "label": "副标题字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 },
+
+      { "type": "color", "id": "bg", "label": "背景色", "default": "#FFFFFF" },
+      { "type": "color", "id": "text_color", "label": "文字色", "default": "#111111" },
+      { "type": "color", "id": "muted_color", "label": "弱文字色", "default": "#666666" },
+
+      { "type": "range", "id": "max_width", "label": "内容最大宽度", "min": 960, "max": 2000, "step": 20, "default": 1600 },
+      { "type": "range", "id": "pad_y", "label": "上下内边距", "min": 20, "max": 140, "step": 4, "default": 60 },
+      { "type": "range", "id": "pad_x", "label": "左右内边距", "min": 12, "max": 80, "step": 2, "default": 20 },
+
+      { "type": "range", "id": "gap", "label": "卡片间距", "min": 10, "max": 40, "step": 2, "default": 26 },
+      { "type": "range", "id": "card_radius", "label": "卡片圆角", "min": 12, "max": 34, "step": 1, "default": 22 },
+
+      { "type": "range", "id": "card_min_height_desktop", "label": "卡片最小高度 桌面", "min": 260, "max": 700, "step": 10, "default": 420 },
+      { "type": "range", "id": "card_min_height_mobile", "label": "卡片最小高度 手机", "min": 260, "max": 760, "step": 10, "default": 480 },
+
+      { "type": "range", "id": "card_title_size_desktop", "label": "卡片标题字号 桌面", "min": 14, "max": 34, "step": 1, "default": 20 },
+      { "type": "range", "id": "card_title_size_mobile", "label": "卡片标题字号 手机", "min": 14, "max": 40, "step": 1, "default": 20 },
+
+      { "type": "range", "id": "card_body_size_desktop", "label": "卡片正文字号 桌面", "min": 12, "max": 18, "step": 1, "default": 14 },
+      { "type": "range", "id": "card_body_size_mobile", "label": "卡片正文字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 },
+
+      { "type": "checkbox", "id": "show_divider", "label": "显示分割线", "default": true },
+
+      { "type": "checkbox", "id": "show_cta", "label": "显示底部按钮", "default": true },
+      { "type": "text", "id": "cta_label", "label": "底部按钮文案", "default": "Learn More" },
+      { "type": "url", "id": "cta_url", "label": "底部按钮链接（不填默认 About）" },
+
+      { "type": "range", "id": "cta_font_size_desktop", "label": "按钮字号 桌面", "min": 12, "max": 22, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_y_desktop", "label": "按钮上下内边距 桌面", "min": 8, "max": 28, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_x_desktop", "label": "按钮左右内边距 桌面", "min": 12, "max": 56, "step": 1, "default": 26 },
+      { "type": "range", "id": "cta_radius_desktop", "label": "按钮圆角 桌面(100=全圆)", "min": 0, "max": 100, "step": 1, "default": 100 },
+      { "type": "range", "id": "cta_min_width_desktop", "label": "按钮最小宽度 桌面(0为自动)", "min": 0, "max": 520, "step": 10, "default": 0 },
+
+      { "type": "range", "id": "cta_font_size_mobile", "label": "按钮字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_y_mobile", "label": "按钮上下内边距 手机", "min": 8, "max": 28, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_x_mobile", "label": "按钮左右内边距 手机", "min": 12, "max": 56, "step": 1, "default": 26 },
+      { "type": "range", "id": "cta_radius_mobile", "label": "按钮圆角 手机(100=全圆)", "min": 0, "max": 100, "step": 1, "default": 100 },
+      { "type": "range", "id": "cta_min_width_mobile", "label": "按钮最小宽度 手机(0为自动)", "min": 0, "max": 520, "step": 10, "default": 0 }
+    ],
+    "blocks": [
+      {
+        "type": "card",
+        "name": "文字卡片",
+        "settings": [
+          { "type": "color", "id": "accent_color", "label": "强调色", "default": "#111111" },
+
+          {
+            "type": "select",
+            "id": "icon",
+            "label": "图标",
+            "default": "leaf",
+            "options": [
+              { "value": "leaf", "label": "环保" },
+              { "value": "ring", "label": "定制" },
+              { "value": "factory", "label": "供货" },
+              { "value": "story", "label": "故事" }
+            ]
+          },
+
+          { "type": "text", "id": "badge", "label": "小标签", "default": "Sustainability" },
+          { "type": "text", "id": "title", "label": "标题", "default": "Low-Impact, High Sparkle" },
+          { "type": "textarea", "id": "body", "label": "正文", "default": "We choose materials and processes that reduce waste—without compromising brilliance or durability." },
+          { "type": "textarea", "id": "bullets", "label": "要点（每行一条）", "default": "Recycled metals where possible\nPlastic-minimal packaging\nMade to last, not to trend" },
+
+          { "type": "text", "id": "link_label", "label": "底部文案", "default": "Read details" },
+          { "type": "url", "id": "link_url", "label": "点击跳转链接（可选）" }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Brand Cards",
+        "blocks": [
+          {
+            "type": "card",
+            "settings": {
+              "accent_color": "#111111",
+              "icon": "leaf",
+              "badge": "Sustainability",
+              "title": "Low-Impact, High Sparkle",
+              "body": "We choose materials and processes that reduce waste—without compromising brilliance or durability.",
+              "bullets": "Recycled metals where possible\nPlastic-minimal packaging\nMade to last, not to trend",
+              "link_label": "Read details"
+            }
+          },
+          {
+            "type": "card",
+            "settings": {
+              "accent_color": "#111111",
+              "icon": "ring",
+              "badge": "Custom in 7 Days",
+              "title": "Made to Your Specs, Fast",
+              "body": "From concept to finished ring—our typical production cycle is 7 days (plus shipping).",
+              "bullets": "CAD preview before crafting\nHand-finished, hand-set\nSizing support included",
+              "link_label": "How it works"
+            }
+          },
+          {
+            "type": "card",
+            "settings": {
+              "accent_color": "#111111",
+              "icon": "factory",
+              "badge": "Trusted Supplier",
+              "title": "Chosen by Studios & Boutiques",
+              "body": "Many brands source from us for consistent quality, stable production, and discreet support.",
+              "bullets": "Small-batch & scalable runs\nQuality control on every piece\nWhite-label friendly",
+              "link_label": "Partner with us"
+            }
+          },
+          {
+            "type": "card",
+            "settings": {
+              "accent_color": "#111111",
+              "icon": "story",
+              "badge": "Our Story",
+              "title": "A Studio Built on Craft",
+              "body": "We started with one belief: jewelry should feel personal, last for years, and be priced fairly.",
+              "bullets": "Craft-first, not mass-made\nTransparent and responsive service\nCare support after delivery",
+              "link_label": "Meet Solarii"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  {% endschema %}
+</section>

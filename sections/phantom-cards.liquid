@@ -1,0 +1,472 @@
+{% comment %}
+  Section: Phantom Cards (Carousel)
+  Features:
+  - Scroll in: fade + slide up (IntersectionObserver)
+  - Horizontal carousel: scroll-snap + buttons
+  - Stacked edges: pseudo layers behind cards
+  - Background transition: bg_from -> bg_to when in view
+  - Hover lift: translate + shadow
+{% endcomment %}
+
+<section
+  id="PhantomCards-{{ section.id }}"
+  class="phantom-cards"
+  style="
+    --pc-bg-from: {{ section.settings.bg_from }};
+    --pc-bg-to: {{ section.settings.bg_to }};
+    --pc-radius: {{ section.settings.radius }}px;
+    --pc-gap: {{ section.settings.gap }}px;
+    --pc-pad-y: {{ section.settings.pad_y }}px;
+    --pc-pad-x: {{ section.settings.pad_x }}px;
+    --pc-card-w: {{ section.settings.card_width }}px;
+  "
+  data-phantom-cards
+>
+  <style>
+    #PhantomCards-{{ section.id }}{
+      position: relative;
+      padding: var(--pc-pad-y) var(--pc-pad-x);
+      background: var(--pc-bg-from);
+      transition: background 700ms ease;
+      overflow: hidden;
+    }
+    #PhantomCards-{{ section.id }}.is-inview{
+      background: var(--pc-bg-to);
+    }
+
+    #PhantomCards-{{ section.id }} .pc-inner{
+      max-width: {{ section.settings.max_width }}px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    #PhantomCards-{{ section.id }} .pc-header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    #PhantomCards-{{ section.id }} .pc-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,.06);
+      font-weight: 600;
+      line-height: 1;
+      color: rgba(0,0,0,.78);
+    }
+    #PhantomCards-{{ section.id }} .pc-title{
+      margin: 10px 0 0 0;
+      font-size: {{ section.settings.heading_size }}px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: rgba(0,0,0,.88);
+    }
+    #PhantomCards-{{ section.id }} .pc-sub{
+      margin: 10px 0 0 0;
+      max-width: 720px;
+      color: rgba(0,0,0,.68);
+      font-size: {{ section.settings.subheading_size }}px;
+      line-height: 1.5;
+    }
+
+    /* Controls */
+    #PhantomCards-{{ section.id }} .pc-controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-shrink: 0;
+    }
+    #PhantomCards-{{ section.id }} .pc-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+    #PhantomCards-{{ section.id }} .pc-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px rgba(0,0,0,.12);
+    }
+    #PhantomCards-{{ section.id }} .pc-btn:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+    #PhantomCards-{{ section.id }} .pc-btn svg{
+      width: 18px;
+      height: 18px;
+      display:block;
+      fill: none;
+      stroke: rgba(0,0,0,.75);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Track */
+    #PhantomCards-{{ section.id }} .pc-track{
+      display:flex;
+      gap: var(--pc-gap);
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior:smooth;
+      padding: 12px 2px 20px 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    #PhantomCards-{{ section.id }} .pc-track::-webkit-scrollbar{ display:none; }
+
+    /* Card */
+    #PhantomCards-{{ section.id }} .pc-card{
+      scroll-snap-align: start;
+      width: var(--pc-card-w);
+      min-width: var(--pc-card-w);
+      border-radius: var(--pc-radius);
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 18px 60px rgba(0,0,0,.10);
+      transform: translateY(18px);
+      opacity: 0;
+      transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease, box-shadow 200ms ease;
+      transition-delay: calc(var(--i) * 80ms);
+    }
+    #PhantomCards-{{ section.id }}.is-inview .pc-card{
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* stacked edges */
+    #PhantomCards-{{ section.id }} .pc-card::before,
+    #PhantomCards-{{ section.id }} .pc-card::after{
+      content:"";
+      position:absolute;
+      inset: 0;
+      border-radius: var(--pc-radius);
+      z-index: -1;
+      border: 1px solid rgba(0,0,0,.07);
+      background: rgba(255,255,255,.55);
+      filter: blur(0);
+    }
+    #PhantomCards-{{ section.id }} .pc-card::before{
+      transform: translate(10px, 10px);
+      opacity: .55;
+    }
+    #PhantomCards-{{ section.id }} .pc-card::after{
+      transform: translate(18px, 18px);
+      opacity: .35;
+    }
+
+    /* hover lift */
+    @media (hover:hover){
+      #PhantomCards-{{ section.id }} .pc-card:hover{
+        transform: translateY(-6px) !important;
+        box-shadow: 0 26px 70px rgba(0,0,0,.14);
+      }
+    }
+
+    #PhantomCards-{{ section.id }} .pc-card-inner{
+      display:flex;
+      flex-direction:column;
+      height: 100%;
+      padding: 22px;
+      gap: 14px;
+    }
+
+    #PhantomCards-{{ section.id }} .pc-card-title{
+      font-size: {{ section.settings.card_title_size }}px;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: rgba(0,0,0,.88);
+      margin: 0;
+      font-weight: 700;
+    }
+    #PhantomCards-{{ section.id }} .pc-card-text{
+      margin: 0;
+      color: rgba(0,0,0,.68);
+      font-size: {{ section.settings.card_text_size }}px;
+      line-height: 1.55;
+    }
+
+    #PhantomCards-{{ section.id }} .pc-media{
+      margin-top: auto;
+      border-radius: calc(var(--pc-radius) - 8px);
+      overflow:hidden;
+      background: rgba(0,0,0,.06);
+      border: 1px solid rgba(0,0,0,.06);
+      aspect-ratio: {{ section.settings.media_ratio }};
+      display:block;
+      position: relative;
+    }
+    #PhantomCards-{{ section.id }} .pc-media img,
+    #PhantomCards-{{ section.id }} .pc-media video{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    #PhantomCards-{{ section.id }} .pc-link{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      text-decoration:none;
+      margin-top: 4px;
+      color: rgba(0,0,0,.78);
+      font-weight: 600;
+      font-size: 14px;
+      opacity: .9;
+    }
+    #PhantomCards-{{ section.id }} .pc-link:hover{ opacity: 1; }
+    #PhantomCards-{{ section.id }} .pc-link svg{
+      width: 16px; height: 16px;
+      fill:none;
+      stroke: rgba(0,0,0,.70);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px){
+      #PhantomCards-{{ section.id }}{
+        padding: calc(var(--pc-pad-y) * .75) calc(var(--pc-pad-x) * .75);
+      }
+      #PhantomCards-{{ section.id }} .pc-card{
+        width: min(82vw, var(--pc-card-w));
+        min-width: min(82vw, var(--pc-card-w));
+      }
+    }
+    @media (max-width: 640px){
+      #PhantomCards-{{ section.id }} .pc-header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      #PhantomCards-{{ section.id }} .pc-controls{
+        width: 100%;
+        justify-content:flex-end;
+      }
+    }
+  </style>
+
+  <div class="pc-inner">
+    <div class="pc-header">
+      <div class="pc-head-left">
+        {% if section.settings.pill_label != blank %}
+          <div class="pc-pill">
+            <span aria-hidden="true">↻</span>
+            <span>{{ section.settings.pill_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if section.settings.heading != blank %}
+          <h2 class="pc-title">{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <p class="pc-sub">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_controls %}
+        <div class="pc-controls">
+          <button class="pc-btn" type="button" data-pc-prev aria-label="Previous">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="pc-btn" type="button" data-pc-next aria-label="Next">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="pc-track" data-pc-track>
+      {% for block in section.blocks %}
+        <article class="pc-card" style="--i: {{ forloop.index0 }};" {{ block.shopify_attributes }}>
+          <div class="pc-card-inner">
+            {% if block.settings.title != blank %}
+              <h3 class="pc-card-title">{{ block.settings.title }}</h3>
+            {% endif %}
+
+            {% if block.settings.text != blank %}
+              <p class="pc-card-text">{{ block.settings.text }}</p>
+            {% endif %}
+
+            {% if block.settings.link_url != blank and block.settings.link_label != blank %}
+              <a class="pc-link" href="{{ block.settings.link_url }}">
+                <span>{{ block.settings.link_label }}</span>
+                <svg viewBox="0 0 24 24"><path d="M7 17L17 7"/><path d="M9 7h8v8"/></svg>
+              </a>
+            {% endif %}
+
+            <div class="pc-media">
+              {% case block.settings.media_type %}
+                {% when 'image' %}
+                  {% if block.settings.media_image != blank %}
+                    {{ block.settings.media_image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: block.settings.title }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag }}
+                  {% endif %}
+                {% when 'video' %}
+                  {% if block.settings.video != blank %}
+                    {{ block.settings.video
+                      | video_tag:
+                        autoplay: block.settings.video_autoplay,
+                        loop: true,
+                        muted: true,
+                        controls: false,
+                        playsinline: true,
+                        preload: 'metadata'
+                    }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag }}
+                  {% endif %}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+              {% endcase %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('PhantomCards-{{ section.id }}');
+      if (!root) return;
+
+      const track = root.querySelector('[data-pc-track]');
+      const prevBtn = root.querySelector('[data-pc-prev]');
+      const nextBtn = root.querySelector('[data-pc-next]');
+
+      // in-view background + card enter animation
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            root.classList.add('is-inview');
+            io.disconnect();
+          }
+        });
+      }, { threshold: 0.18 });
+      io.observe(root);
+
+      if (!track) return;
+
+      const getStep = () => {
+        const firstCard = track.querySelector('.pc-card');
+        if (!firstCard) return 300;
+        const cardW = firstCard.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap || '0') || 0;
+        return Math.max(240, Math.round(cardW + gap));
+      };
+
+      const clampControls = () => {
+        if (!prevBtn || !nextBtn) return;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        prevBtn.disabled = track.scrollLeft <= 2;
+        nextBtn.disabled = track.scrollLeft >= (maxScroll - 2);
+      };
+
+      const scrollByDir = (dir) => {
+        track.scrollBy({ left: dir * getStep(), behavior: 'smooth' });
+      };
+
+      if (prevBtn) prevBtn.addEventListener('click', () => scrollByDir(-1));
+      if (nextBtn) nextBtn.addEventListener('click', () => scrollByDir(1));
+
+      track.addEventListener('scroll', () => clampControls(), { passive: true });
+      window.addEventListener('resize', () => clampControls(), { passive: true });
+
+      // initial
+      clampControls();
+    })();
+  </script>
+
+  {% schema %}
+  {
+    "name": "Phantom Cards",
+    "settings": [
+      { "type": "text", "id": "pill_label", "label": "左上角标签", "default": "Trading" },
+      { "type": "text", "id": "heading", "label": "标题", "default": "Your highlight cards, but premium." },
+      { "type": "textarea", "id": "subheading", "label": "副标题", "default": "Horizontal cards with subtle motion, stacked depth, and a smooth background transition." },
+
+      { "type": "color", "id": "bg_from", "label": "背景色 起始", "default": "#F2F0FF" },
+      { "type": "color", "id": "bg_to", "label": "背景色 进入后", "default": "#F7F7F7" },
+
+      { "type": "checkbox", "id": "show_controls", "label": "显示左右按钮", "default": true },
+
+      { "type": "range", "id": "max_width", "label": "内容最大宽度", "min": 960, "max": 1600, "step": 20, "default": 1280 },
+      { "type": "range", "id": "pad_y", "label": "上下内边距", "min": 20, "max": 120, "step": 4, "default": 56 },
+      { "type": "range", "id": "pad_x", "label": "左右内边距", "min": 12, "max": 80, "step": 2, "default": 20 },
+
+      { "type": "range", "id": "gap", "label": "卡片间距", "min": 10, "max": 40, "step": 2, "default": 18 },
+      { "type": "range", "id": "radius", "label": "卡片圆角", "min": 12, "max": 32, "step": 1, "default": 22 },
+      { "type": "range", "id": "card_width", "label": "桌面端卡片宽度", "min": 280, "max": 520, "step": 10, "default": 380 },
+
+      { "type": "range", "id": "heading_size", "label": "标题字号", "min": 22, "max": 52, "step": 1, "default": 40 },
+      { "type": "range", "id": "subheading_size", "label": "副标题字号", "min": 12, "max": 20, "step": 1, "default": 16 },
+      { "type": "range", "id": "card_title_size", "label": "卡片标题字号", "min": 16, "max": 34, "step": 1, "default": 26 },
+      { "type": "range", "id": "card_text_size", "label": "卡片文字字号", "min": 12, "max": 18, "step": 1, "default": 15 },
+
+      { "type": "text", "id": "media_ratio", "label": "媒体比例 例如 4/3 或 1/1", "default": "4/3" }
+    ],
+    "blocks": [
+      {
+        "type": "card",
+        "name": "卡片",
+        "settings": [
+          { "type": "text", "id": "title", "label": "卡片标题", "default": "Buy and sell instantly." },
+          { "type": "textarea", "id": "text", "label": "卡片描述", "default": "A clean, premium card with subtle depth and motion." },
+
+          {
+            "type": "select",
+            "id": "media_type",
+            "label": "媒体类型",
+            "default": "image",
+            "options": [
+              { "value": "none", "label": "无" },
+              { "value": "image", "label": "图片" },
+              { "value": "video", "label": "视频 Shopify 视频" }
+            ]
+          },
+          { "type": "image_picker", "id": "media_image", "label": "图片" },
+          { "type": "video", "id": "video", "label": "视频 Shopify 视频" },
+          { "type": "checkbox", "id": "video_autoplay", "label": "视频自动播放 静音循环", "default": true },
+
+          { "type": "text", "id": "link_label", "label": "链接文字", "default": "Learn more" },
+          { "type": "url", "id": "link_url", "label": "链接" }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Phantom Cards",
+        "blocks": [
+          { "type": "card" },
+          { "type": "card" },
+          { "type": "card" }
+        ]
+      }
+    ]
+  }
+  {% endschema %}
+</section>

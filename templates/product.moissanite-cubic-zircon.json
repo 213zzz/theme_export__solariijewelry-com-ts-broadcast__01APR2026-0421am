@@ -1,0 +1,1808 @@
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "subheading_option": "collection",
+            "heading_font_size": "heading-small",
+            "padding_bottom": 8
+          }
+        },
+        "loyalty_points_cDXRTc": {
+          "type": "loyalty_points",
+          "settings": {
+            "show_icon": true,
+            "points_per_dollar": 1,
+            "redeem_points": 100,
+            "redeem_amount_dollars": 1,
+            "padding_bottom": 12
+          }
+        },
+        "loox_reviews_loox_rating_RmpBmG": {
+          "type": "shopify://apps/loox-reviews/blocks/loox-rating/5c3b337f-fd14-4df5-b1d6-80ec13e6e28e",
+          "disabled": true,
+          "settings": {
+            "contentSize": 16,
+            "pattern": "",
+            "hideText": false,
+            "alignment": "",
+            "layout": "",
+            "textColor": "",
+            "starColor": "",
+            "showAllReviews": false,
+            "looxOpenFloatingWidget": false,
+            "emptyRatingWidget": false
+          }
+        },
+        "loox_reviews_loox_snippets_widget_kpeXU3": {
+          "type": "shopify://apps/loox-reviews/blocks/loox-snippets-widget/5c3b337f-fd14-4df5-b1d6-80ec13e6e28e",
+          "disabled": true,
+          "settings": {
+            "reviews-type": "product-reviews",
+            "reviews-limit": 10,
+            "alignment": "left",
+            "max-width": "",
+            "color-scheme": "default",
+            "shadow": "",
+            "show-rating": true,
+            "show-image": true,
+            "hide-arrows-mobile": false,
+            "font-size": 14,
+            "show-border": false,
+            "border-radius": 16,
+            "background-color": "",
+            "text-color": "",
+            "name-color": "",
+            "rating-icon-color": "",
+            "border-color": "",
+            "shadow-color": "",
+            "product_selection": ""
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "text_font_size": "body-small",
+            "padding_bottom": 16
+          }
+        },
+        "countdown_dbJGaa": {
+          "type": "countdown",
+          "disabled": true,
+          "settings": {
+            "end_date": "2026-1-30",
+            "end_time": "11:59",
+            "period": "pm",
+            "end_message": "<p>Offer has expired</p>",
+            "hide_on_complete": true,
+            "digits_font_size": "heading-x-small",
+            "text_font_size": "body-x-small",
+            "text": "<p>🎁Free Vegan Leather Jewelry Case on orders $99+ </p><p>🌹Free Moissanite Necklace on orders $299+</p>",
+            "heading_font_size": "heading-x-small",
+            "bg_color": "#fad9dd",
+            "color": "#7a1c2e",
+            "text_align": "text-center",
+            "padding_bottom": 16
+          }
+        },
+        "accordion_X9nqxr": {
+          "type": "accordion",
+          "disabled": true,
+          "settings": {
+            "style": "collapsible",
+            "show_description": false,
+            "show_read_more": true,
+            "default_open": false,
+            "heading": "Forgot the discount code? Don’t worry, we’ve got it all figured out for you!",
+            "heading_font_size": "body-medium",
+            "text": "<ol><li><strong>Add 2 items to your cart,get the cheaper one free!</strong></li><li><strong>$25 OFF SITEWIDE CODE:W25</strong></li><li><strong>5-8 Business Days Delivery Free of Charge for a Limited Time</strong></li></ol>",
+            "text_font_size": "body-medium",
+            "show_icon": false,
+            "icon_name": "icon-award",
+            "icon_size": 20,
+            "icon_color": "",
+            "padding_bottom": 0
+          }
+        },
+        "variants": {
+          "type": "variants",
+          "settings": {
+            "info_page": "size-guide",
+            "size_chart_style": "text",
+            "option_font_size": "body-medium",
+            "value_font_size": "body-x-small",
+            "padding_bottom": 16
+          }
+        },
+        "luxury_six_options_n6FBz8": {
+          "type": "luxury_six_options",
+          "settings": {
+            "plating_icon": "shopify://shop_images/silver2.webp",
+            "plating_label": "Metal",
+            "plating_placeholder": "Select metal",
+            "plating_options": "18K Gold Plated\nWhite Gold Plated\nRose Gold Plated\nNo Plating",
+            "stone_icon": "shopify://shop_images/white2.webp",
+            "size_icon": "shopify://shop_images/size.webp",
+            "engraving_label": "Engraving",
+            "engraving_placeholder": "Select engraving",
+            "engraving_options": "No Engraving\nInside Engraving\nOutside Engraving\nInside & Outside Engraving",
+            "note_label": "Notes",
+            "note_placeholder": "Enter your notes",
+            "note_max": 200,
+            "drawer_title": "Metal",
+            "drawer_content": "<p>925 Sterling Silver<br/><br/>Crafted from premium sterling silver, each piece is hallmarked and built to last. Our 925 standard ensures durability, brilliance, and timeless elegance for everyday wear and cherished moments alike.</p>",
+            "padding_bottom": 16
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+            "show_quantity": true,
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_dynamic_checkout": false,
+            "button_type_dynamic": "btn--secondary",
+            "button_size_dynamic": "",
+            "button_style_dynamic": "btn--solid",
+            "show_gift_card_recipient": false,
+            "padding_bottom": 32
+          }
+        },
+        "installment_message_gHNJHN": {
+          "type": "installment_message",
+          "settings": {
+            "installment_count": 4,
+            "show_afterpay": true,
+            "show_klarna": true,
+            "show_paypal": true,
+            "paypal_client_id": "",
+            "note_text": "",
+            "padding_bottom": 24
+          }
+        },
+        "payment_icons_m9YAi9": {
+          "type": "payment_icons",
+          "settings": {
+            "heading": "Guaranteed Safe Checkout",
+            "heading_align": "center",
+            "heading_size": "body-small",
+            "marquee_enable": true,
+            "marquee_speed": 30,
+            "icon_height_desktop": 28,
+            "icon_height_mobile": 22,
+            "padding_bottom": 16
+          }
+        },
+        "metal_info_Van6UY": {
+          "type": "metal_info",
+          "disabled": true,
+          "settings": {
+            "card_title": "金属材质",
+            "row1_title": "金属材质",
+            "row1_items": "S925, 10K金, 14K金, 18K金, 铂金",
+            "row2_title": "镀层工艺",
+            "row2_items": "镀层, 不含镍, 镀铑",
+            "title_size_desktop": 18,
+            "text_size_desktop": 14,
+            "title_size_mobile": 16,
+            "text_size_mobile": 12,
+            "padding_bottom": 0
+          }
+        },
+        "stone_spec_GVGVhe": {
+          "type": "stone_spec",
+          "disabled": true,
+          "settings": {
+            "ms_carat": "2.5 CARAT",
+            "ms_carat_desc": "Standard measure",
+            "ms_color": "E",
+            "ms_color_desc": "Exceptional Colorless Brilliance",
+            "ms_clarity": "VVS2",
+            "ms_clarity_desc": "Perfectly Eye Clean",
+            "ms_cut": "EXCELLENT",
+            "ms_cut_desc": "Perfect brilliance",
+            "ms_shape": "ROUND",
+            "ms_shape_desc": "Preferred style",
+            "ms_origin": "MOISSANITE",
+            "ms_origin_desc": "Gemstone perfection",
+            "tip_carat": "Carat weight in diamonds always refers to its actual weight on a scale, not its size. Today we have precise scales for accurately weight.",
+            "tip_color": "Color is graded on a D–Z scale. D is completely colorless and most valuable. The less color present, the more brilliance and fire it can display.",
+            "tip_clarity": "While most diamonds have natural inclusions, the fewer blemishes, the rarer the stone. Diamonds with higher clarity reflect light better.",
+            "tip_cut": "Your diamond's cut refers to the quality of its polish. An Excellent cut maximizes brilliance, fire, and scintillation.",
+            "ks_width": "1.3mm",
+            "ks_width_desc": "Measured at the base of the ring",
+            "ks_tcw": "0.03 ct",
+            "ks_tcw_desc": "The setting's average total carat weight",
+            "ks_metal": "14k White Gold",
+            "ks_metal_desc": "The secret sauce that makes this piece.",
+            "ks_accent_color": "D-F",
+            "ks_accent_clarity": "VVS",
+            "ks_accent_desc": "Side stones average color & clarity",
+            "ks_profile": "Medium",
+            "ks_profile_desc": "Only stacks with a chevron/curved band",
+            "metal_pct_1": "58.5",
+            "metal_label_1": "Gold",
+            "metal_color_1": "#e8dfc8",
+            "metal_pct_2": "25.4",
+            "metal_label_2": "Copper",
+            "metal_color_2": "#c9785e",
+            "metal_pct_3": "8.7",
+            "metal_label_3": "Zinc",
+            "metal_color_3": "#b0b4bf",
+            "metal_pct_4": "7.4",
+            "metal_label_4": "Nickel",
+            "metal_color_4": "#d0d0d0",
+            "padding_bottom": 0
+          }
+        },
+        "trustz_payment_badge_rnKfx4": {
+          "type": "shopify://apps/trustz/blocks/payment-badge/539d151e-77d2-4b39-b20d-fbce59dc78c7",
+          "disabled": true,
+          "settings": {}
+        },
+        "accordion_jHM8Nn": {
+          "type": "accordion",
+          "settings": {
+            "style": "collapsible",
+            "show_description": true,
+            "show_read_more": true,
+            "default_open": false,
+            "heading": "Product Description",
+            "heading_font_size": "body-medium",
+            "text": "",
+            "text_font_size": "body-medium",
+            "show_icon": false,
+            "icon_name": "icon-award",
+            "icon_size": 20,
+            "icon_color": "",
+            "padding_bottom": 0
+          }
+        },
+        "accordion_tMFjyA": {
+          "type": "accordion",
+          "settings": {
+            "style": "collapsible",
+            "show_description": false,
+            "show_read_more": true,
+            "default_open": false,
+            "heading": "Make It Yours, Without the Extra Fees",
+            "heading_font_size": "body-medium",
+            "text": "<p>At Solarii, customization shouldn't cost a fortune. We’ve waived all labor fees—you only pay for premium materials.</p><p><strong>✨ What’s FREE (On the House):</strong></p><ul><li><strong>Custom Sizing:</strong> Any size, including <strong>1/4 sizes</strong>.</li><li><strong>Personalization:</strong> Free engraving (Name, Date, or Message).</li><li><strong>Design Tweaks:</strong> Adjust stone size or styling.</li><li><strong>Gold Tone:</strong> Choose Yellow, Rose, or White Gold plating at no extra cost.</li></ul><p><strong>💎 Premium Upgrades (At Material Cost):</strong></p><ul><li><strong>Solid Gold:</strong> Upgrade to 10K, 14K, 18K, or 24K Gold.</li><li><strong>Stone Upgrade:</strong> Switch to premium Moissanite.</li></ul><p>👉 <strong>Ready to start?</strong> Email us at service@solariijewelry.com.</p>",
+            "text_font_size": "body-medium",
+            "show_icon": false,
+            "icon_name": "icon-award",
+            "icon_size": 20,
+            "icon_color": "",
+            "padding_bottom": 16
+          }
+        },
+        "icon_1": {
+          "type": "icon",
+          "disabled": true,
+          "settings": {
+            "icon_name": "icon-notes",
+            "image": "shopify://shop_images/16-1.png",
+            "icon_size": 20,
+            "icon_color": "#545454",
+            "text": "<p>Free returns within 30 days.</p>",
+            "text_font_size": "body-medium",
+            "width": "quarter",
+            "padding_bottom": 16
+          }
+        },
+        "icon_2": {
+          "type": "icon",
+          "disabled": true,
+          "settings": {
+            "icon_name": "icon-truck",
+            "image": "shopify://shop_images/16-2.png",
+            "icon_size": 20,
+            "icon_color": "#545454",
+            "text": "<p>Free shipping & gifts</p>",
+            "text_font_size": "body-medium",
+            "width": "quarter",
+            "padding_bottom": 16
+          }
+        },
+        "icon_663HJF": {
+          "type": "icon",
+          "disabled": true,
+          "settings": {
+            "icon_name": "icon-award",
+            "image": "shopify://shop_images/111_0e8b32a0-ddfc-48d4-883e-76c70a175052.png",
+            "icon_size": 20,
+            "icon_color": "#545454",
+            "text": "<p>Lifetime warranty</p>",
+            "text_font_size": "body-medium",
+            "width": "quarter",
+            "padding_bottom": 16
+          }
+        },
+        "icon_KMKHHa": {
+          "type": "icon",
+          "disabled": true,
+          "settings": {
+            "icon_name": "icon-award",
+            "image": "shopify://shop_images/16-4.png",
+            "icon_size": 20,
+            "icon_color": "#545454",
+            "text": "<p>925 Sterling Silver</p>",
+            "text_font_size": "body-medium",
+            "width": "quarter",
+            "padding_bottom": 16
+          }
+        },
+        "icon_kHhhTy": {
+          "type": "icon",
+          "disabled": true,
+          "settings": {
+            "icon_name": "icon-award",
+            "image": "shopify://shop_images/111_fb32095c-66d7-4852-b22b-f581538cd15f.png",
+            "icon_size": 20,
+            "icon_color": "#545454",
+            "text": "<p>Headquartered in California, USA</p>",
+            "text_font_size": "body-medium",
+            "width": "full",
+            "padding_bottom": 16
+          }
+        },
+        "features_xp33Pe": {
+          "type": "features",
+          "settings": {
+            "icon_name": "icon-chat",
+            "icon_size": 20,
+            "title": "Need styling help?",
+            "text_font_size": "body-medium",
+            "text": "<p>Book an appointment with our virtual stylists! <a href=\"/pages/contact-us\" target=\"_blank\" title=\"Contact Us\"><em><strong>service@solariijewelry.com</strong></em></a></p>",
+            "bg_color": "",
+            "color": "",
+            "padding_bottom": 16
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "loyalty_points_cDXRTc",
+        "loox_reviews_loox_rating_RmpBmG",
+        "loox_reviews_loox_snippets_widget_kpeXU3",
+        "price",
+        "countdown_dbJGaa",
+        "accordion_X9nqxr",
+        "variants",
+        "luxury_six_options_n6FBz8",
+        "buttons",
+        "installment_message_gHNJHN",
+        "payment_icons_m9YAi9",
+        "metal_info_Van6UY",
+        "stone_spec_GVGVhe",
+        "trustz_payment_badge_rnKfx4",
+        "accordion_jHM8Nn",
+        "accordion_tMFjyA",
+        "icon_1",
+        "icon_2",
+        "icon_663HJF",
+        "icon_KMKHHa",
+        "icon_kHhhTy",
+        "features_xp33Pe"
+      ],
+      "settings": {
+        "product_sticky_enable": true,
+        "variant_image_scroll": true,
+        "show_cart_bar": true,
+        "enable_zoom": true,
+        "enable_video_looping": true,
+        "image_layout": "grid-1",
+        "image_size": "normal",
+        "mobile_image_style": "thumbs",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "padding_top": 0,
+        "padding_bottom": 30
+      }
+    },
+    "faq": {
+      "type": "section-accordion",
+      "blocks": {
+        "faq-1": {
+          "type": "text",
+          "settings": {
+            "title": "Does moissanite fade or change color?",
+            "heading_font_size": "heading-small",
+            "text": "<p>No, moissanite does not fade. In rare cases, it may show slight hints of yellow or green tones, but we carefully select high-quality stones to avoid any noticeable color changes over time.</p>"
+          }
+        },
+        "text_wCNEX9": {
+          "type": "text",
+          "settings": {
+            "title": "Is moissanite suitable for everyday wear?",
+            "heading_font_size": "heading-small",
+            "text": "<p>Yes, moissanite is highly durable and suitable for everyday wear. With a hardness of 9.25 on the Mohs scale, it is highly resistant to scratches and can withstand daily wear and tear.</p>"
+          }
+        },
+        "text_MEEaGK": {
+          "type": "text",
+          "settings": {
+            "title": "Can moissanite be used for engagement rings?",
+            "heading_font_size": "heading-small",
+            "text": "<p>Absolutely. Moissanite is a popular choice for engagement rings due to its brilliance and durability, especially for those seeking a budget-friendly alternative. Its hardness of 9.25 makes it nearly as durable as a diamond, which has a hardness of 10.</p>"
+          }
+        },
+        "text_d7qpEX": {
+          "type": "text",
+          "settings": {
+            "title": "Will moissanite test as a diamond?",
+            "heading_font_size": "heading-small",
+            "text": "<p>Moissanite can be detected as a diamond by standard diamond testers. However, more advanced equipment can easily distinguish between moissanite and diamonds.</p>"
+          }
+        },
+        "text_KqkMnP": {
+          "type": "text",
+          "settings": {
+            "title": "Is moissanite hypoallergenic?",
+            "heading_font_size": "heading-small",
+            "text": "<p>Yes, moissanite is typically set in hypoallergenic metals like 925 sterling silver or other non-reactive metals, making it suitable for most people, even those with sensitive skin.</p>"
+          }
+        },
+        "text_t7GyjL": {
+          "type": "text",
+          "settings": {
+            "title": "Have more questions?",
+            "heading_font_size": "heading-small",
+            "text": "<p>We’ve highlighted the 5 most common questions here, but if you have more, feel free to check out our full<a href=\"https://solariijewelry.com/pages/faq\" title=\"FAQ\"><em><strong>FAQ</strong></em></a>section for additional details.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq-1",
+        "text_wCNEX9",
+        "text_MEEaGK",
+        "text_d7qpEX",
+        "text_KqkMnP",
+        "text_t7GyjL"
+      ],
+      "settings": {
+        "default_open": false,
+        "title": "Moissanite Jewelry FAQ",
+        "heading_font_size": "heading-small",
+        "show_icon": false,
+        "icon_name": "icon-fast-shipment",
+        "icon_size": 20,
+        "width": "wrapper",
+        "color_scheme": "scheme-1",
+        "icon_color": "#545454",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "section_accordion_kNiVya": {
+      "type": "section-accordion",
+      "blocks": {
+        "icon_J7E79p": {
+          "type": "icon",
+          "settings": {
+            "icon_name": "icon-green-shipment",
+            "icon_size": 20,
+            "icon_color": "",
+            "title": "Free shipping & Free package gifts",
+            "heading_font_size": "heading-small",
+            "icon_alignment": "left",
+            "text": "<p>We do our best to process and ship your order as soon as we can! Below you'll find our shipping options and their estimated shipping times.<br/><br/>• Free Shipping - (6-12 Business Days)<br/>• Express Shipping - (5-8 Business Days)<br/>• Rush Shipping - (3-5 Business Days)</p><p><a href=\"/policies/shipping-policy\" title=\"Shipping Policy\"><strong>Learn More</strong></a></p>",
+            "text_alignment": "text-left"
+          }
+        },
+        "icon_BpFVB4": {
+          "type": "icon",
+          "settings": {
+            "icon_name": "icon-location",
+            "icon_size": 20,
+            "icon_color": "",
+            "title": "Order tracking",
+            "heading_font_size": "heading-small",
+            "icon_alignment": "left",
+            "text": "<p>Tracking numbers are automatically sent once your order has been shipped. Please check your junk folder if you do not receive one 72 hours after placing your order.</p>",
+            "text_alignment": "text-left"
+          }
+        },
+        "icon_D3chie": {
+          "type": "icon",
+          "settings": {
+            "icon_name": "icon-chat",
+            "icon_size": 20,
+            "icon_color": "",
+            "title": "Contact Us",
+            "heading_font_size": "heading-small",
+            "icon_alignment": "left",
+            "text": "<p><strong>If you have any questions about your order, please reach out to us at </strong><a><strong>service@solariijewelry.com</strong></a><strong>. We typically respond within 24 hours.</strong></p>",
+            "text_alignment": "text-left"
+          }
+        }
+      },
+      "block_order": [
+        "icon_J7E79p",
+        "icon_BpFVB4",
+        "icon_D3chie"
+      ],
+      "settings": {
+        "default_open": false,
+        "title": "Shipping & Returns",
+        "heading_font_size": "heading-small",
+        "show_icon": false,
+        "icon_name": "icon-smile",
+        "icon_size": 20,
+        "width": "wrapper",
+        "color_scheme": "scheme-1",
+        "icon_color": "#545454",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "section_accordion_PCmrb3": {
+      "type": "section-accordion",
+      "blocks": {
+        "text_ebkD44": {
+          "type": "text",
+          "settings": {
+            "title": "100% Handcrafted, No Matter the Order Size",
+            "heading_font_size": "heading-small",
+            "text": "<p>We promise that every piece—regardless of price or quantity—is carefully handcrafted by our skilled artisans with the highest level of craftsmanship.</p>"
+          }
+        },
+        "text_MXHHYn": {
+          "type": "text",
+          "settings": {
+            "title": "What You See Is Exactly What You Get",
+            "heading_font_size": "heading-small",
+            "text": "<p>We guarantee our videos and images match the real product. No exaggeration, no surprises.</p>"
+          }
+        },
+        "text_EizRJH": {
+          "type": "text",
+          "settings": {
+            "title": "Hassle-Free After-Sales Support",
+            "heading_font_size": "heading-small",
+            "text": "<p>Enjoy 30-day easy returns, 1-year warranty, and full customer support around the clock. Shop with confidence.</p>"
+          }
+        },
+        "text_fzjJnC": {
+          "type": "text",
+          "settings": {
+            "title": "Eco-Friendly & Sustainable Materials",
+            "heading_font_size": "heading-small",
+            "text": "<p>Our pieces are made with sustainability in mind. All stones are lab-grown, and our packaging is made from biodegradable materials.</p>"
+          }
+        },
+        "text_rbMCCK": {
+          "type": "text",
+          "settings": {
+            "title": "Premium Quality Like Works of Art",
+            "heading_font_size": "heading-small",
+            "text": "<p>We use only the finest materials. Every product is crafted to the highest standard—each one a wearable piece of art.</p>"
+          }
+        },
+        "text_EgP9qK": {
+          "type": "text",
+          "settings": {
+            "title": "Free Customization on All Orders",
+            "heading_font_size": "heading-small",
+            "text": "<p>We offer free customization with every product. You can request any adjustment without extra labor fees—we only charge for material upgrades if needed. No hidden costs, ever.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_ebkD44",
+        "text_MXHHYn",
+        "text_EizRJH",
+        "text_fzjJnC",
+        "text_rbMCCK",
+        "text_EgP9qK"
+      ],
+      "settings": {
+        "default_open": false,
+        "title": "Why Choose Us",
+        "heading_font_size": "heading-small",
+        "show_icon": false,
+        "icon_name": "icon-shield",
+        "icon_size": 20,
+        "width": "wrapper",
+        "color_scheme": "scheme-1",
+        "icon_color": "#545454",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "section_hero_Ud83fb": {
+      "type": "section-hero",
+      "disabled": true,
+      "settings": {
+        "image_1": "shopify://shop_images/20241024-210857.gif",
+        "link": "",
+        "width": "wrapper--full",
+        "height": "image-height",
+        "flex_align_desktop": "align--middle-center-desktop",
+        "content_width": 50,
+        "mobile_height": "image-height--mobile",
+        "flex_align_mobile": "align--middle-center-mobile",
+        "color_scheme": "",
+        "show_text_background": false,
+        "overlay_type": "disabled",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "show_placeholder": true
+      }
+    },
+    "neuromorphic_tabs_showcase_GegBjW": {
+      "type": "neuromorphic-tabs-showcase",
+      "blocks": {
+        "card_iVmByH": {
+          "type": "card",
+          "name": "卡片3",
+          "settings": {
+            "tab_index": "3",
+            "layout": "image_top",
+            "emoji": "⭐",
+            "video_url": "",
+            "title": "Premium Gift Box",
+            "description": "Every order arrives in our signature velvet-lined jewelry box — gift-ready, no extra charge.",
+            "tags": "",
+            "checklist": "",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_rKyHRF": {
+          "type": "card",
+          "name": "卡片3",
+          "settings": {
+            "tab_index": "3",
+            "layout": "image_top",
+            "emoji": "⭐",
+            "video_url": "",
+            "title": "GRA Certificate",
+            "description": "Each moissanite stone includes an authentic GRA grading certificate verifying cut, color, and clarity.",
+            "tags": "",
+            "checklist": "",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_TEEYEU": {
+          "type": "card",
+          "name": "卡片3",
+          "settings": {
+            "tab_index": "3",
+            "layout": "image_top",
+            "emoji": "⭐",
+            "video_url": "",
+            "title": "Complimentary Extras",
+            "description": "Every order includes a polishing cloth, care guide card, and ring sizer — everything you need.",
+            "tags": "",
+            "checklist": "",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_i3dCHc": {
+          "type": "card",
+          "name": "卡片2",
+          "settings": {
+            "tab_index": "2",
+            "layout": "standard",
+            "emoji": "🔄",
+            "video_url": "",
+            "title": "30-Day Free Returns",
+            "description": "Not satisfied? Return any item within 30 days for a full refund — no questions asked, no restocking fees.",
+            "tags": "*No-Hassle\n\nFree Shipping Back",
+            "checklist": "",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_PLMCDA": {
+          "type": "card",
+          "name": "卡片2",
+          "settings": {
+            "tab_index": "2",
+            "layout": "standard",
+            "emoji": "♾️",
+            "video_url": "",
+            "title": "Lifetime Warranty",
+            "description": "Every Solarii piece comes with a lifetime warranty covering manufacturing defects, stone integrity, and setting security.",
+            "tags": "",
+            "checklist": "Stone replacement\n\nRe-plating service\n\nProng repair & tightening\n\nFree cleaning kit",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_AzN7fr": {
+          "type": "card",
+          "name": "卡片2",
+          "settings": {
+            "tab_index": "2",
+            "layout": "standard",
+            "emoji": "💬",
+            "video_url": "",
+            "title": "24/7 Customer Support",
+            "description": "Reach us anytime via email, live chat, or social media. Our dedicated team typically responds within 2 hours.",
+            "tags": "",
+            "checklist": "",
+            "faq_q1": "How do I start a return?",
+            "faq_a1": "Simply contact us via email or live chat, and we'll send you a prepaid return label within 24 hours.",
+            "faq_q2": "What does the warranty cover?",
+            "faq_a2": "Manufacturing defects, stone loosening, prong damage, and finish degradation under normal wear.",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "stat_9Rqt3B": {
+          "type": "stat",
+          "disabled": true,
+          "settings": {
+            "tab_index": "1",
+            "number": "9.25",
+            "label": "Mohs Hardness"
+          }
+        },
+        "stat_kpj7aM": {
+          "type": "stat",
+          "disabled": true,
+          "settings": {
+            "tab_index": "1",
+            "number": "2.65",
+            "label": "Refractive Index"
+          }
+        },
+        "stat_AfnEdR": {
+          "type": "stat",
+          "disabled": true,
+          "settings": {
+            "tab_index": "1",
+            "number": "0.104",
+            "label": "Fire Dispersion"
+          }
+        },
+        "stat_hX6HFc": {
+          "type": "stat",
+          "disabled": true,
+          "settings": {
+            "tab_index": "1",
+            "number": "100%",
+            "label": "Conflict-Free"
+          }
+        },
+        "card_qVHDAt": {
+          "type": "card",
+          "settings": {
+            "tab_index": "1",
+            "layout": "image_top",
+            "emoji": "⭐",
+            "video_url": "",
+            "title": "Premium Moissanite",
+            "description": "D-color, VVS1 clarity stones with Hearts & Arrows cut precision. Each stone is hand-selected for maximum brilliance and fire, rivaling diamonds at a fraction of the cost.",
+            "tags": "",
+            "checklist": "",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_d3xHLA": {
+          "type": "card",
+          "settings": {
+            "tab_index": "1",
+            "layout": "image_top",
+            "emoji": "🪙",
+            "video_url": "",
+            "title": "925 Sterling Silver",
+            "description": "All settings crafted from genuine 925 sterling silver with rhodium plating for lasting shine and durability.",
+            "tags": "",
+            "checklist": "Hypoallergenic & skin-safe\n\nRhodium-plated finish\n\nTarnish resistant\n\nNickel-free & lead-free",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "card_xqeiBa": {
+          "type": "card",
+          "settings": {
+            "tab_index": "1",
+            "layout": "image_top",
+            "emoji": "🪙",
+            "video_url": "",
+            "title": "925 Sterling Silver",
+            "description": "All settings crafted from genuine 925 sterling silver with rhodium plating for lasting shine and durability.",
+            "tags": "",
+            "checklist": "Hypoallergenic & skin-safe\n\nRhodium-plated finish\n\nTarnish resistant\n\nNickel-free & lead-free",
+            "faq_q1": "",
+            "faq_a1": "",
+            "faq_q2": "",
+            "faq_a2": "",
+            "faq_q3": "",
+            "faq_a3": ""
+          }
+        },
+        "tab_r6WFTi": {
+          "type": "tab",
+          "name": "标签页1",
+          "settings": {
+            "tab_name": "Materials"
+          }
+        },
+        "tab_7J74LB": {
+          "type": "tab",
+          "name": "标签页2",
+          "settings": {
+            "tab_name": "AFTER-SALES"
+          }
+        },
+        "tab_D9cDjT": {
+          "type": "tab",
+          "name": "标签页3",
+          "settings": {
+            "tab_name": "Packaging"
+          }
+        }
+      },
+      "block_order": [
+        "card_iVmByH",
+        "card_rKyHRF",
+        "card_TEEYEU",
+        "card_i3dCHc",
+        "card_PLMCDA",
+        "card_AzN7fr",
+        "stat_9Rqt3B",
+        "stat_kpj7aM",
+        "stat_AfnEdR",
+        "stat_hX6HFc",
+        "card_qVHDAt",
+        "card_d3xHLA",
+        "card_xqeiBa",
+        "tab_r6WFTi",
+        "tab_7J74LB",
+        "tab_D9cDjT"
+      ],
+      "name": "Solarii Neu Tabs",
+      "settings": {
+        "eyebrow": "",
+        "title": "Our Commitment",
+        "title_tag": "h2",
+        "subtitle": "Premium quality jewelry with unmatched craftsmanship, service, and value.",
+        "max_width": 1320,
+        "padding_top_desktop": 80,
+        "padding_bottom_desktop": 80,
+        "grid_columns_desktop": 3,
+        "title_size_desktop": 48,
+        "subtitle_size_desktop": 16,
+        "card_title_size": 20,
+        "desc_size": 14,
+        "stat_num_size": 36,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48,
+        "grid_columns_mobile": 1,
+        "title_size_mobile": 28,
+        "subtitle_size_mobile": 14,
+        "bg_color": "#f7f4ef",
+        "bg_color_2": "#efe9df",
+        "accent_color": "#ab8c52",
+        "accent_color_light": "#c4a265",
+        "text_color": "#212121",
+        "muted_color": "#636262"
+      }
+    },
+    "section_rich_text_zitLfP": {
+      "type": "section-rich-text",
+      "blocks": {
+        "heading_cmwym8": {
+          "type": "heading",
+          "settings": {
+            "title": "Our Commitment",
+            "heading_font_size": "heading-large",
+            "padding_bottom": 8,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "heading_cmwym8"
+      ],
+      "name": "Rich text",
+      "settings": {
+        "align_text": "text-center",
+        "width": "wrapper",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "overlay_type": "disabled",
+        "padding_top": 14,
+        "padding_bottom": 0
+      }
+    },
+    "section_double_V6nyJR": {
+      "type": "section-double",
+      "blocks": {
+        "heading_VhGzpw": {
+          "type": "heading",
+          "settings": {
+            "title": "Shop Securely and Confidently with Our Policies.",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 0,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "heading_VhGzpw"
+      ],
+      "name": "Image with text",
+      "settings": {
+        "image_1": "shopify://shop_images/Gemini_Generated_Image_7vzpmq7vzpmq7vzp.jpg",
+        "image_width": "one-half",
+        "text_alignment": "text-center",
+        "layout": "",
+        "width": "wrapper--full",
+        "height": "image-height",
+        "mobile_height": "image-height--mobile",
+        "reverse_blocks": false,
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "show_placeholder": true
+      }
+    },
+    "section_social_videos_bjHLtg": {
+      "type": "section-social-videos",
+      "blocks": {
+        "video_dQGqNW": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-reelUp_os2ztahzebh1747925304115_medium.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_gfPDae": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Jewelry Elevate your love story with the Solarii 925 Sterling Silver Engagement Ring—where timeless elegance meets sustainable brilliance..mp4",
+            "badge_text": ""
+          }
+        },
+        "video_NCyxVz": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/TikSave.io_7567982098183769399-hd (1).mp4",
+            "badge_text": ""
+          }
+        },
+        "video_XKRqD9": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-9b24e86f-fc43-4f4d-bd49-737db98ed0a9.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_BFrDe9": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-reelUp_jlnp5jfkgud1747925675624_original.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_EX9qKB": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-reelUp_iwc6fxj9tm1749134585859_low.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_zQcGww": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-7524375942412782862.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_xRz8ki": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-reelUp_rnhi7z7w1vl1747928308796_low.mp4",
+            "badge_text": ""
+          }
+        },
+        "video_7c4Ewz": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/moast-reelUp_mtfwg840lyl1747987301958_low.mp4",
+            "badge_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "video_dQGqNW",
+        "video_gfPDae",
+        "video_NCyxVz",
+        "video_XKRqD9",
+        "video_BFrDe9",
+        "video_EX9qKB",
+        "video_zQcGww",
+        "video_xRz8ki",
+        "video_7c4Ewz"
+      ],
+      "name": "Social videos",
+      "settings": {
+        "heading": "",
+        "heading_font_size": "heading-medium",
+        "text": "",
+        "text_font_size": "body-medium",
+        "align_text": "text-center",
+        "width": "wrapper",
+        "aspect_ratio": 1.5,
+        "layout_desktop": "slider",
+        "blocks_per_row": 4,
+        "layout_mobile": "slider",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 20,
+        "heading_tag": "automatic"
+      }
+    },
+    "section_rich_text_6RiT6n": {
+      "type": "section-rich-text",
+      "blocks": {
+        "heading_wxCKBK": {
+          "type": "heading",
+          "settings": {
+            "title": "Crafted for every occasion",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "heading_wxCKBK"
+      ],
+      "name": "Rich text",
+      "settings": {
+        "align_text": "text-center",
+        "width": "wrapper",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "overlay_type": "disabled",
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "section_before_after_4FFz6V": {
+      "type": "section-before-after",
+      "blocks": {
+        "heading_N3QjmG": {
+          "type": "heading",
+          "settings": {
+            "heading": "💍 Engagement & Wedding",
+            "heading_font_size": "heading-small",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        },
+        "text_Kb39dN": {
+          "type": "text",
+          "settings": {
+            "description": "<p>Why spend a fortune on a diamond? ✨ Choose a handcrafted, conflict-free ring with lifetime sparkle—love without the high cost.</p>",
+            "text_font_size": "body-medium",
+            "padding_bottom": 16
+          }
+        },
+        "heading_6rt6A6": {
+          "type": "heading",
+          "settings": {
+            "heading": "✈️ Travel",
+            "heading_font_size": "heading-small",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        },
+        "text_CtAzHK": {
+          "type": "text",
+          "settings": {
+            "description": "<p>Adventures call for worry-free shine. 🌊 Keep your heirloom safe at home while your travel ring lights up every journey.<br/></p>",
+            "text_font_size": "body-medium",
+            "padding_bottom": 16
+          }
+        },
+        "heading_EafNC8": {
+          "type": "heading",
+          "settings": {
+            "heading": "🤰 Pregnancy",
+            "heading_font_size": "heading-small",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        },
+        "text_mUa9ra": {
+          "type": "text",
+          "settings": {
+            "description": "<p>Hands changing with love’s new chapter? 💕 Our rings flex with you—no resizing, no worries, just endless glow.<br/></p>",
+            "text_font_size": "body-medium",
+            "padding_bottom": 16
+          }
+        },
+        "heading_tRad8U": {
+          "type": "heading",
+          "settings": {
+            "heading": "🌟 Every Occasion",
+            "heading_font_size": "heading-small",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        },
+        "text_QAfDXM": {
+          "type": "text",
+          "settings": {
+            "description": "<p>Mood shifts, styles shift. ✨ Gold today, silver tomorrow—express it all guilt-free with our affordable treasures.</p>",
+            "text_font_size": "body-medium",
+            "padding_bottom": 16
+          }
+        }
+      },
+      "block_order": [
+        "heading_N3QjmG",
+        "text_Kb39dN",
+        "heading_6rt6A6",
+        "text_CtAzHK",
+        "heading_EafNC8",
+        "text_mUa9ra",
+        "heading_tRad8U",
+        "text_QAfDXM"
+      ],
+      "disabled": true,
+      "name": "Before and after",
+      "settings": {
+        "image_1": "shopify://shop_images/dl.beatsnoop.com-final-U761b5uGV8.jpg",
+        "image_2": "shopify://shop_images/d535a729dae2be9ad41f963393efd5fb.jpg",
+        "aspect_ratio": 0.8,
+        "width": "wrapper--full",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 14
+      }
+    },
+    "section_rich_text_FWwAky": {
+      "type": "section-rich-text",
+      "blocks": {
+        "subheading_aDG3cV": {
+          "type": "subheading",
+          "disabled": true,
+          "settings": {
+            "subheading": "Introducing",
+            "padding_bottom": 16
+          }
+        },
+        "heading_e6dKKV": {
+          "type": "heading",
+          "settings": {
+            "title": "Why Customers Choose Us",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 0,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "subheading_aDG3cV",
+        "heading_e6dKKV"
+      ],
+      "disabled": true,
+      "settings": {
+        "align_text": "text-center",
+        "width": "wrapper",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "overlay_type": "disabled",
+        "padding_top": 14,
+        "padding_bottom": 0
+      }
+    },
+    "section_columns_3xHbHr": {
+      "type": "section-columns",
+      "blocks": {
+        "image_kXYDbL": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/1_a08a1355-3a4b-4cdd-a446-770247096db1.webp",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Artisan Spirit of Tradition",
+            "heading_font_size": "heading-small",
+            "text": "<p>We promise that every ring is handcrafted by skilled artisans, never mass-produced. Regardless of price, each piece embodies true craftsmanship and timeless spirit.</p>",
+            "text_font_size": "body-medium",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        },
+        "image_64T4NM": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/20241024-101444.gif",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Unmatched Durability",
+            "heading_font_size": "heading-small",
+            "text": "<p>Gemstone is built to last. Even the toughest tools can't leave a scratch on its surface, showcasing its superior hardness and resilience.</p>",
+            "text_font_size": "body-medium",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        },
+        "image_XyFLip": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/20241024-101436.gif",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Passes the Diamond Tester",
+            "heading_font_size": "heading-small",
+            "text": "<p>Our Moissanite effortlessly passes diamond tester checks, offering the same authenticity and quality as diamonds at a fraction of the cost.</p>",
+            "text_font_size": "body-medium",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        },
+        "image_PkimeF": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/11_4f76ec9c-d81b-4544-b2a2-f6c7d011c349.jpg",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Advanced Nano Coating Technology",
+            "heading_font_size": "heading-small",
+            "text": "<p>Solarii Alternative uses multi-layer nano and laser coatings on the ring band, ensuring exceptional durability, scratch and corrosion resistance, and long-lasting shine.</p>",
+            "text_font_size": "body-medium",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "image_kXYDbL",
+        "image_64T4NM",
+        "image_XyFLip",
+        "image_PkimeF"
+      ],
+      "disabled": true,
+      "settings": {
+        "title": "",
+        "heading_font_size": "heading-medium",
+        "align_heading": "text-left",
+        "align_text": "text-left",
+        "sg_gap_desktop": 14,
+        "sg_gap_mobile": 10,
+        "sg_sidepad_desktop": 18,
+        "sg_sidepad_mobile": 10,
+        "width": "wrapper--full-padded",
+        "align_columns": "flex-align-top",
+        "layout": "grid",
+        "grid": 4,
+        "layout_mobile": "slider",
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 50,
+        "heading_tag": "automatic"
+      }
+    },
+    "section_rich_text_8iMbx7": {
+      "type": "section-rich-text",
+      "blocks": {
+        "heading_qT9EtY": {
+          "type": "heading",
+          "settings": {
+            "title": "What You Recieve",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 6,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "heading_qT9EtY"
+      ],
+      "disabled": true,
+      "settings": {
+        "align_text": "text-center",
+        "width": "wrapper",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "overlay_type": "disabled",
+        "padding_top": 14,
+        "padding_bottom": 0
+      }
+    },
+    "section_columns_8ejR6x": {
+      "type": "section-columns",
+      "blocks": {
+        "image_nU7PXt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/1_e3d88236-5dfb-47f1-b62f-9094f7c755ff.webp",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Exquisite Packaging",
+            "heading_font_size": "heading-medium",
+            "text": "<p>Receiving your bespoke piece from SolariiJewelry is an incomparable experience. Within your box from us you will receive:<br/>· Shopping Bag<br/>· Jewelry Box<br/>· Polishing Cloth<br/>· Care Guide<br/>· Return&Exchange Card<br/>· Gemstone Certification(Moissanite Products)<br/>· Free Silver Jewelry<br/>· Silver Seal Bag</p>",
+            "text_font_size": "body-small",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        },
+        "image_TLXtjg": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Beige_Purple_Minimalist_Fashion_Member_Benefits_Instagram_Post_e06c4002-4c89-47a3-9c64-18a15b3247ce.jpg",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "How to get free jewelry",
+            "heading_font_size": "heading-medium",
+            "text": "<ul><li>Earn 1500 points→Amethyst&Lapis Lazuli<br/></li><li>Earn 5500 points→Get a 0.3 carat real diamond Rings & $30 Off Instantly</li><li>Earn 12000 points→Get a 0.5 carat real diamond necklace & $35 Off Instantl</li><li>Earn 22000 points→Get a 1.0 carat real diamond ring & $40 Off Instantl</li></ul>",
+            "text_font_size": "body-small",
+            "button_text": "Learn more",
+            "button_url": "shopify://pages/loyalty-program",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--outline",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        },
+        "image_iWkdaF": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/1174e8f1-969a-46bd-9f32-0e934347b33b_337b6594-f07d-4d01-a57f-7a5ff651df15.png",
+            "image_width": 100,
+            "image_shape": "normal",
+            "title": "Sterling Silver Jewelry-Free Gift！",
+            "heading_font_size": "heading-medium",
+            "text": "<p>Receive a free pearl necklace with every order! Whether you're a new or returning customer, enjoy a complimentary pearl necklace with every purchase.</p>",
+            "text_font_size": "body-small",
+            "button_text": "",
+            "button_url": "",
+            "button_type": "btn--primary",
+            "button_size": "",
+            "button_style": "btn--solid",
+            "show_arrow": false,
+            "image_aspect_ratio": 1,
+            "mobile_image_aspect_ratio": 1,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "image_nU7PXt",
+        "image_TLXtjg",
+        "image_iWkdaF"
+      ],
+      "disabled": true,
+      "settings": {
+        "title": "",
+        "heading_font_size": "heading-medium",
+        "align_heading": "text-left",
+        "align_text": "text-left",
+        "sg_gap_desktop": 14,
+        "sg_gap_mobile": 10,
+        "sg_sidepad_desktop": 18,
+        "sg_sidepad_mobile": 10,
+        "width": "wrapper--full-padded",
+        "align_columns": "flex-align-top",
+        "layout": "grid",
+        "grid": 3,
+        "layout_mobile": "slider",
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 50,
+        "heading_tag": "automatic"
+      }
+    },
+    "section_rich_text_pk6qhQ": {
+      "type": "section-rich-text",
+      "blocks": {
+        "heading_wHUdqd": {
+          "type": "heading",
+          "settings": {
+            "title": "SAME APPEARANCE MORE BRILLIANCE",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 6,
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "heading_wHUdqd"
+      ],
+      "disabled": true,
+      "settings": {
+        "align_text": "text-center",
+        "width": "wrapper",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "overlay_type": "disabled",
+        "padding_top": 14,
+        "padding_bottom": 0
+      }
+    },
+    "section_double_kPe6Qc": {
+      "type": "section-double",
+      "blocks": {
+        "heading_JkbGiw": {
+          "type": "heading",
+          "settings": {
+            "title": "Solarii Moissanite: A Revolution in Craftsmanship",
+            "heading_font_size": "heading-medium",
+            "padding_bottom": 16,
+            "heading_tag": "automatic"
+          }
+        },
+        "text_gFxA6B": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Solarii Moissanite uses advanced technology to create stones with unmatched brilliance and durability. With a Mohs hardness of 9.50, it offers diamond-like beauty and lasting elegance, designed to shine for a lifetime.</p>",
+            "text_font_size": "body-medium",
+            "padding_bottom": 16
+          }
+        }
+      },
+      "block_order": [
+        "heading_JkbGiw",
+        "text_gFxA6B"
+      ],
+      "disabled": true,
+      "name": "Image with text",
+      "settings": {
+        "image_1": "shopify://shop_images/5_26.gif",
+        "image_width": "one-half",
+        "text_alignment": "text-left",
+        "layout": "",
+        "width": "wrapper--full-padded",
+        "height": "image-height",
+        "mobile_height": "image-height--mobile",
+        "reverse_blocks": false,
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "show_placeholder": true
+      }
+    },
+    "section_multicolumn_UCyzmj": {
+      "type": "section-multicolumn",
+      "blocks": {
+        "icon_EpRWCj": {
+          "type": "icon",
+          "settings": {
+            "column_width": 33,
+            "icon_name": "icon-shield",
+            "image": "shopify://shop_images/49b13af3-b3e4-4a2a-b7f5-76c32ad93409_823f02d5-37cf-4bbb-9422-1edd53af3445.webp",
+            "icon_size": 30,
+            "icon_alignment": "icon--top",
+            "icon_color": "",
+            "title": "Top 1% Moissanite",
+            "heading_font_size": "heading-small",
+            "text": "<p>Discover superior-grade moissanite; among the top 1% of elite moissanites globally.</p>",
+            "text_font_size": "body-medium",
+            "heading_tag": "automatic"
+          }
+        },
+        "icon_jGVWRC": {
+          "type": "icon",
+          "settings": {
+            "column_width": 33,
+            "icon_name": "icon-trophy",
+            "image": "shopify://shop_images/31844b13-d7fe-4941-b2c5-62ca45a79100_af0524a7-fd98-415b-8d0f-1067edff8ff2.png",
+            "icon_size": 30,
+            "icon_alignment": "icon--top",
+            "icon_color": "",
+            "title": "1% Of The Price!",
+            "heading_font_size": "heading-small",
+            "text": "<p>Identical in every way to a diamond, but costs just 1% of its hefty price tag.</p>",
+            "text_font_size": "body-medium",
+            "heading_tag": "automatic"
+          }
+        },
+        "icon_nQh9mw": {
+          "type": "icon",
+          "settings": {
+            "column_width": 33,
+            "icon_name": "icon-chat",
+            "image": "shopify://shop_images/98239bfa-d6d2-4b21-ab1d-e517c1ebe493_748abcde-408b-4a38-af4b-b021782f4d49.png",
+            "icon_size": 30,
+            "icon_alignment": "icon--top",
+            "icon_color": "",
+            "title": "Passes Diamond Test",
+            "heading_font_size": "heading-small",
+            "text": "<p>Our Moissanite passes the diamond test, maintaining its prestigious reputation.</p>",
+            "text_font_size": "body-medium",
+            "heading_tag": "automatic"
+          }
+        },
+        "icon_xbVM3N": {
+          "type": "icon",
+          "settings": {
+            "column_width": 33,
+            "icon_name": "icon-award",
+            "image": "shopify://shop_images/cd904141-6d24-47d0-8666-e6af53e26f12_1c49369f-b613-41b6-b6c8-1ae65c362039.png",
+            "icon_size": 30,
+            "icon_alignment": "icon--top",
+            "icon_color": "",
+            "title": "Lives For A Lifetime",
+            "heading_font_size": "heading-small",
+            "text": "<p>With a 9.50 Mohs score, Solarii Moissanite stands for unmatched lifetime durability.</p>",
+            "text_font_size": "body-medium",
+            "heading_tag": "automatic"
+          }
+        },
+        "icon_zrzj78": {
+          "type": "icon",
+          "settings": {
+            "column_width": 33,
+            "icon_name": "icon-award",
+            "image": "shopify://shop_images/adb2cf07-c0d7-4a03-b399-e03a2532d479_850f41cb-3931-4425-a9be-abdbb83cbdd4.png",
+            "icon_size": 30,
+            "icon_alignment": "icon--top",
+            "icon_color": "",
+            "title": "Same Presence, More Brilliance",
+            "heading_font_size": "heading-small",
+            "text": "<p>Experience the classic look of a diamond, amplified by an unmatched level of brilliance.</p>",
+            "text_font_size": "body-medium",
+            "heading_tag": "automatic"
+          }
+        }
+      },
+      "block_order": [
+        "icon_EpRWCj",
+        "icon_jGVWRC",
+        "icon_nQh9mw",
+        "icon_xbVM3N",
+        "icon_zrzj78"
+      ],
+      "disabled": true,
+      "name": "Multi column",
+      "settings": {
+        "title": "",
+        "heading_font_size": "heading-medium",
+        "description": "",
+        "align_heading": "text-left",
+        "align_text": "text-left",
+        "width": "wrapper--full-padded",
+        "align_columns": "flex-align-top",
+        "layout_mobile": "slider",
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 11,
+        "heading_tag": "automatic"
+      }
+    },
+    "section_hero_ETyTGY": {
+      "type": "section-hero",
+      "disabled": true,
+      "name": "Image banner",
+      "settings": {
+        "image_1": "shopify://shop_images/solarii.jpg",
+        "link": "",
+        "width": "wrapper--full",
+        "height": "image-height",
+        "flex_align_desktop": "align--middle-center-desktop",
+        "content_width": 50,
+        "mobile_image": "shopify://shop_images/solarii_1600_x_1200.jpg",
+        "mobile_height": "image-height--mobile",
+        "flex_align_mobile": "align--middle-center-mobile",
+        "color_scheme": "",
+        "show_text_background": false,
+        "overlay_type": "disabled",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "show_placeholder": true
+      }
+    },
+    "section_announcement_xHbPWD": {
+      "type": "section-announcement",
+      "blocks": {
+        "text_b4PDNQ": {
+          "type": "text",
+          "settings": {
+            "text": "",
+            "text_font_size": "body-small",
+            "color": "",
+            "target_device_enabled": false,
+            "target_device": "mobile"
+          }
+        }
+      },
+      "block_order": [
+        "text_b4PDNQ"
+      ],
+      "settings": {
+        "slider_speed": 7,
+        "text_alignment": "center",
+        "marquee_speed": 100,
+        "direction": "ticker-rtl",
+        "message_spacing": 10,
+        "show_border": false,
+        "layout": "marquee",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "173471162935c60660": {
+      "type": "apps",
+      "blocks": {
+        "loox_reviews_loox_trust_badge_nrxdw9": {
+          "type": "shopify://apps/loox-reviews/blocks/loox-trust-badge/5c3b337f-fd14-4df5-b1d6-80ec13e6e28e",
+          "settings": {
+            "layout": "horizontal-slim-star",
+            "alignment": "center",
+            "scheme-type": "default",
+            "review-title": "reviews",
+            "rating-icon": true,
+            "average-rating": true,
+            "loox-branding": false,
+            "review-count": true,
+            "open-reviews": true,
+            "show-border": true,
+            "border-radius": 8,
+            "font-size": 20,
+            "background-color": "",
+            "secondary-background-color": "",
+            "text-color": "",
+            "rating-icon-color": "",
+            "border-color": ""
+          }
+        }
+      },
+      "block_order": [
+        "loox_reviews_loox_trust_badge_nrxdw9"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "17347115206f94b4de": {
+      "type": "apps",
+      "blocks": {
+        "loox_reviews_loox_dynamic_section_CMGcKb": {
+          "type": "shopify://apps/loox-reviews/blocks/loox-dynamic-section/5c3b337f-fd14-4df5-b1d6-80ec13e6e28e",
+          "settings": {
+            "reviews_to_display": "",
+            "default_tab": "automatic",
+            "only_photos": false,
+            "aggregated": false,
+            "limit": 20,
+            "hide_thumbnails": false,
+            "maxwidth": 1080,
+            "is_sample": true
+          }
+        }
+      },
+      "block_order": [
+        "loox_reviews_loox_dynamic_section_CMGcKb"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "related": {
+      "type": "related",
+      "blocks": {
+        "related": {
+          "type": "related",
+          "settings": {
+            "product_recommendations_heading": "Related products"
+          }
+        },
+        "recent": {
+          "type": "recent",
+          "settings": {
+            "product_recently_heading": "Recently viewed"
+          }
+        }
+      },
+      "block_order": [
+        "related",
+        "recent"
+      ],
+      "settings": {
+        "enable_tabs": true,
+        "heading_alignment": "text-center",
+        "heading_font_size": "heading-small",
+        "limit": 4,
+        "layout_desktop": "slider",
+        "grid": 4,
+        "rows": 3,
+        "layout_mobile": "slider",
+        "color_scheme": "scheme-9c9f1fe6-23f9-471e-b2f3-03a31f5fb70d",
+        "padding_top": 30,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "main",
+    "faq",
+    "section_accordion_kNiVya",
+    "section_accordion_PCmrb3",
+    "section_hero_Ud83fb",
+    "neuromorphic_tabs_showcase_GegBjW",
+    "section_rich_text_zitLfP",
+    "section_double_V6nyJR",
+    "section_social_videos_bjHLtg",
+    "section_rich_text_6RiT6n",
+    "section_before_after_4FFz6V",
+    "section_rich_text_FWwAky",
+    "section_columns_3xHbHr",
+    "section_rich_text_8iMbx7",
+    "section_columns_8ejR6x",
+    "section_rich_text_pk6qhQ",
+    "section_double_kPe6Qc",
+    "section_multicolumn_UCyzmj",
+    "section_hero_ETyTGY",
+    "section_announcement_xHbPWD",
+    "173471162935c60660",
+    "17347115206f94b4de",
+    "related"
+  ]
+}

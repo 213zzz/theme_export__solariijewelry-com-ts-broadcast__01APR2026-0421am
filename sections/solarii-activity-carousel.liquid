@@ -1,0 +1,1152 @@
+{% liquid
+  assign sid = section.id
+%}
+
+<section id="solarii-activity-carousel-{{ sid }}" class="solarii-activity-carousel">
+  <div class="sac__wrap">
+    {%- if section.blocks.size > 1 -%}
+      <div class="sac__top-pills">
+        <div class="sac__pills">
+          {%- for block in section.blocks limit: 3 -%}
+            <button
+              class="sac__pill{% if forloop.first %} is-active{% endif %}"
+              type="button"
+              data-index="{{ forloop.index0 }}"
+              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="{{ block.settings.title | default: block.settings.pill_label | escape }}"
+            >
+              {{ block.settings.pill_label | default: block.settings.title }}
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+    <div class="sac__stage">
+      <div class="sac__spotlight"></div>
+
+      <div class="sac__scene">
+        <div class="sac__carousel" data-carousel>
+          {%- for block in section.blocks limit: 3 -%}
+            <article
+              class="sac__panel{% if forloop.first %} is-active{% endif %}"
+              {{ block.shopify_attributes }}
+              data-panel
+              data-index="{{ forloop.index0 }}"
+              data-block-id="{{ block.id }}"
+            >
+              <div class="sac__card">
+                <div class="sac__panel-top">
+                  {%- if block.settings.badge != blank -%}
+                    <div class="sac__chip">{{ block.settings.badge }}</div>
+                  {%- endif -%}
+
+                  <div class="sac__number">
+                    {{ block.settings.number | default: forloop.index | prepend: '0' | slice: -2, 2 }}
+                  </div>
+                </div>
+
+                {%- if block.settings.watermark != blank -%}
+                  <div class="sac__watermark">{{ block.settings.watermark }}</div>
+                {%- endif -%}
+
+                <div class="sac__content">
+                  {%- if block.settings.title != blank -%}
+                    <h3 class="sac__title">{{ block.settings.title }}</h3>
+                  {%- endif -%}
+
+                  {%- if block.settings.text != blank -%}
+                    <p class="sac__text">{{ block.settings.text }}</p>
+                  {%- endif -%}
+
+                  {%- if block.settings.feature_1_title != blank or block.settings.feature_1_text != blank or block.settings.feature_2_title != blank or block.settings.feature_2_text != blank or block.settings.feature_3_title != blank or block.settings.feature_3_text != blank -%}
+                    <div class="sac__features">
+                      {%- if block.settings.feature_1_title != blank or block.settings.feature_1_text != blank -%}
+                        <div class="sac__feature">
+                          <h4>{{ block.settings.feature_1_title }}</h4>
+                          <p>{{ block.settings.feature_1_text }}</p>
+                        </div>
+                      {%- endif -%}
+
+                      {%- if block.settings.feature_2_title != blank or block.settings.feature_2_text != blank -%}
+                        <div class="sac__feature">
+                          <h4>{{ block.settings.feature_2_title }}</h4>
+                          <p>{{ block.settings.feature_2_text }}</p>
+                        </div>
+                      {%- endif -%}
+
+                      {%- if block.settings.feature_3_title != blank or block.settings.feature_3_text != blank -%}
+                        <div class="sac__feature">
+                          <h4>{{ block.settings.feature_3_title }}</h4>
+                          <p>{{ block.settings.feature_3_text }}</p>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- if block.settings.footer_note != blank or block.settings.button_label != blank -%}
+                  <div class="sac__footer">
+                    {%- if block.settings.footer_note != blank -%}
+                      <div class="sac__note">{{ block.settings.footer_note }}</div>
+                    {%- endif -%}
+
+                    {%- if block.settings.button_label != blank -%}
+                      {%- if block.settings.button_link != blank -%}
+                        <a class="sac__cta" href="{{ block.settings.button_link }}">
+                          <span>{{ block.settings.button_label }}</span>
+                          <span class="sac__cta-arrow">&#8594;</span>
+                        </a>
+                      {%- else -%}
+                        <span class="sac__cta sac__cta--static">
+                          <span>{{ block.settings.button_label }}</span>
+                          <span class="sac__cta-arrow">&#8594;</span>
+                        </span>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="sac__bottom">
+        <div class="sac__pills">
+          {%- for block in section.blocks limit: 3 -%}
+            <button
+              class="sac__pill{% if forloop.first %} is-active{% endif %}"
+              type="button"
+              data-index="{{ forloop.index0 }}"
+              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="{{ block.settings.title | default: block.settings.pill_label | escape }}"
+            >
+              {{ block.settings.pill_label | default: block.settings.title }}
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <style>
+    #solarii-activity-carousel-{{ sid }} {
+      --pad-top: {{ section.settings.padding_top }}px;
+      --pad-bottom: {{ section.settings.padding_bottom }}px;
+      --controls-lift: {{ section.settings.controls_lift }}px;
+      --carousel-h: {{ section.settings.carousel_height_desktop }}px;
+      --carousel-h-m: {{ section.settings.carousel_height_mobile }}px;
+      --bg-1: #fbf8f3;
+      --bg-2: #f7f0e7;
+      --bg-3: #efe5d8;
+      --card-1: rgba(255, 252, 247, 0.97);
+      --card-2: rgba(249, 242, 233, 0.95);
+      --line: rgba(177, 143, 104, 0.18);
+      --line-soft: rgba(177, 143, 104, 0.10);
+      --text: #2f241b;
+      --text-soft: rgba(47, 36, 27, 0.72);
+      --text-dim: rgba(47, 36, 27, 0.52);
+      --accent: #b18f68;
+      --accent-soft: rgba(177, 143, 104, 0.08);
+      position: relative;
+      overflow: hidden;
+      padding: var(--pad-top) 0 var(--pad-bottom);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(227, 206, 181, 0.54), transparent 22%),
+        radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.82), transparent 18%),
+        radial-gradient(circle at 78% 74%, rgba(232, 214, 192, 0.24), transparent 20%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 44%, var(--bg-3) 100%);
+      font-family: var(--font-body-family);
+    }
+
+    #solarii-activity-carousel-{{ sid }} * {
+      box-sizing: border-box;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__wrap {
+      width: min(calc(100% - 20px), 1760px);
+      margin: 0 auto;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__stage {
+      position: relative;
+      max-width: 1660px;
+      margin: 0 auto;
+      min-height: clamp(520px, 44vw, 640px);
+      padding: 18px 0 0;
+      overflow: visible;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.35), transparent 28%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__spotlight {
+      position: absolute;
+      left: 50%;
+      top: 43%;
+      width: clamp(760px, 70vw, 1320px);
+      height: clamp(220px, 18vw, 300px);
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,0.74), rgba(230,212,189,0.22) 48%, transparent 74%);
+      filter: blur(28px);
+      opacity: 0.78;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__scene {
+      position: relative;
+      z-index: 1;
+      min-height: clamp(540px, 44vw, 640px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 3000px;
+      perspective-origin: 50% 40%;
+      overflow: hidden;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__carousel {
+      --radius: 520px;
+      --lift: -10px;
+      position: relative;
+      width: min(100%, 1500px);
+      height: var(--carousel-h);
+      transform-style: preserve-3d;
+      transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transition: opacity 360ms ease, filter 360ms ease;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+      padding: clamp(30px, 3vw, 42px);
+      border-radius: 42px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 76% 20%, rgba(255,255,255,0.90), transparent 13%),
+        linear-gradient(180deg, var(--card-1), var(--card-2));
+      border: 1px solid var(--line);
+      transform-origin: center center;
+      transform: scale(0.94) translateY(-4px);
+      transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.42), transparent 30%),
+        radial-gradient(circle at 18% 12%, rgba(232,214,192,0.28), transparent 24%);
+      pointer-events: none;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel-top,
+    #solarii-activity-carousel-{{ sid }} .sac__content,
+    #solarii-activity-carousel-{{ sid }} .sac__footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 9px 17px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__number {
+      font-family: var(--font-heading-family);
+      font-size: clamp(72px, 7vw, 118px);
+      line-height: 1;
+      color: rgba(177, 143, 104, 0.15);
+      letter-spacing: -0.06em;
+      font-weight: 700;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__watermark {
+      position: absolute;
+      right: 30px;
+      top: 27%;
+      max-width: 34%;
+      text-align: right;
+      font-family: var(--font-heading-family);
+      font-size: clamp(38px, 3vw, 56px);
+      line-height: 0.95;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: rgba(177, 143, 104, 0.09);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__content {
+      min-height: 0;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__title {
+      margin: 0 0 16px;
+      max-width: 68%;
+      font-family: var(--font-heading-family);
+      font-size: clamp(50px, 4.2vw, 80px);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__text {
+      margin: 0;
+      max-width: 70%;
+      font-size: clamp(16px, 1.28vw, 19px);
+      line-height: 1.78;
+      color: var(--text-soft);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__feature {
+      min-height: 96px;
+      padding: 16px 15px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.34);
+      border: 1px solid var(--line-soft);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__feature h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__feature p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-dim);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 0;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__note {
+      max-width: 58%;
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(47, 36, 27, 0.46);
+      font-weight: 700;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 54px;
+      padding: 12px 18px 12px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(225, 205, 180, 0.42);
+      border: 1px solid rgba(177, 143, 104, 0.2);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__cta--static {
+      cursor: default;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__cta-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.56);
+      flex: 0 0 auto;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-active {
+      opacity: 1;
+      filter: saturate(1) brightness(1);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-active .sac__card {
+      transform: scale(1) translateY(0);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-near {
+      opacity: 0.82;
+      filter: saturate(0.9) brightness(0.97);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-near .sac__card {
+      transform: scale(0.93) translateY(-8px);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-far {
+      opacity: 0.24;
+      filter: saturate(0.7) brightness(0.94) blur(0.25px);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__panel.is-far .sac__card {
+      transform: scale(0.88) translateY(-12px);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__bottom {
+      display: none;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__top-pills {
+      position: relative;
+      z-index: 3;
+      max-width: 1660px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__controls,
+    #solarii-activity-carousel-{{ sid }} .sac__pills {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__nav-btn,
+    #solarii-activity-carousel-{{ sid }} .sac__pill {
+      appearance: none;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.42);
+      color: rgba(47, 36, 27, 0.74);
+      cursor: pointer;
+      transition: 220ms ease;
+      font: inherit;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__nav-btn {
+      min-height: 54px;
+      padding: 0 22px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__pill {
+      min-height: 48px;
+      padding: 0 22px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      background: rgba(255,255,255,0.58);
+      border-color: rgba(177, 143, 104, 0.16);
+      box-shadow: 0 8px 24px rgba(177, 143, 104, 0.08);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__nav-btn:hover,
+    #solarii-activity-carousel-{{ sid }} .sac__pill:hover {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(177, 143, 104, 0.24);
+      color: var(--text);
+    }
+
+    #solarii-activity-carousel-{{ sid }} .sac__pill.is-active {
+      background: linear-gradient(180deg, rgba(235, 220, 201, 0.82), rgba(225, 205, 180, 0.62));
+      color: var(--text);
+      border-color: rgba(177, 143, 104, 0.28);
+      box-shadow: 0 12px 28px rgba(177, 143, 104, 0.14);
+    }
+
+    @media screen and (max-width: 1100px) {
+      #solarii-activity-carousel-{{ sid }} .sac__stage {
+        max-width: 100%;
+        min-height: 560px;
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__scene {
+        min-height: 450px;
+        perspective: 2200px;
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__carousel {
+        width: min(100%, 1080px);
+        height: var(--carousel-h);
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__title {
+        max-width: 78%;
+        font-size: clamp(40px, 5.8vw, 60px);
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__text {
+        max-width: 78%;
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__watermark {
+        max-width: 38%;
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__panel.is-near .sac__card {
+        transform: scale(0.91) translateY(-8px);
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__panel.is-far .sac__card {
+        transform: scale(0.84) translateY(-10px);
+      }
+
+      #solarii-activity-carousel-{{ sid }} .sac__bottom {
+        margin-top: calc(var(--controls-lift) * -0.7);
+      }
+    }
+
+@media screen and (max-width: 749px) {
+  #solarii-activity-carousel-{{ sid }} .sac__wrap {
+    width: min(calc(100% - 16px), 1760px);
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__stage {
+    min-height: 500px;
+    padding-bottom: 0;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__spotlight {
+    width: 340px;
+    height: 150px;
+    top: 38%;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__scene {
+    min-height: 430px;
+    perspective: 1280px;
+    overflow: visible;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__carousel {
+    width: min(100%, 348px);
+    height: var(--carousel-h-m);
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 18px;
+    border-radius: 24px;
+    gap: 12px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__chip {
+    min-height: 34px;
+    font-size: 11px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__number {
+    font-size: 50px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__watermark {
+    right: 16px;
+    top: 23%;
+    max-width: 44%;
+    font-size: 20px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__content {
+    min-height: auto;
+    flex: 0 0 auto;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__title,
+  #solarii-activity-carousel-{{ sid }} .sac__text {
+    max-width: 100%;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__title {
+    margin-bottom: 10px;
+    font-size: 32px;
+    line-height: 1.02;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__text {
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__features {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__feature {
+    min-height: auto;
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__feature h4 {
+    margin: 0 0 5px;
+    font-size: 15px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__feature p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__footer {
+    margin-top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__note {
+    max-width: 100%;
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__cta {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 14px 8px 16px;
+    justify-content: space-between;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__bottom {
+    margin-top: 2px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__pill {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__panel.is-near .sac__card {
+    transform: scale(0.9) translateY(-6px);
+  }
+
+  #solarii-activity-carousel-{{ sid }} .sac__panel.is-far .sac__card {
+    transform: scale(0.82) translateY(-8px);
+  }
+}
+  </style>
+
+  <script>
+    (function() {
+      const root = document.getElementById('solarii-activity-carousel-{{ sid }}');
+      if (!root) return;
+
+      const carousel = root.querySelector('[data-carousel]');
+      const panels = Array.from(root.querySelectorAll('[data-panel]'));
+      if (!carousel || !panels.length) return;
+
+      const prevBtn = root.querySelector('[data-prev]');
+      const nextBtn = root.querySelector('[data-next]');
+      const pills = Array.from(root.querySelectorAll('.sac__top-pills .sac__pill'));
+
+      const autoplayEnabled = {{ section.settings.autoplay_enable | json }};
+      const autoplayDelay = {{ section.settings.autoplay_seconds | times: 1000 | json }};
+      const pauseOnHover = {{ section.settings.pause_on_hover | json }};
+
+      let selectedIndex = 0;
+      let resizeTimer = null;
+      let autoplayTimer = null;
+      let isHovering = false;
+      let isFocused = false;
+      let editorPaused = false;
+
+      function getCount() {
+        return panels.length || 1;
+      }
+
+      function clearAutoplay() {
+        if (autoplayTimer) {
+          window.clearTimeout(autoplayTimer);
+          autoplayTimer = null;
+        }
+      }
+
+      function canAutoplay() {
+        return autoplayEnabled
+          && getCount() > 1
+          && !document.hidden
+          && !isHovering
+          && !isFocused
+          && !editorPaused;
+      }
+
+      function queueAutoplay() {
+        clearAutoplay();
+
+        if (!canAutoplay()) return;
+
+        autoplayTimer = window.setTimeout(function() {
+          goTo(selectedIndex + 1);
+        }, autoplayDelay);
+      }
+
+      function setPositions() {
+        const count = getCount();
+        const width = panels[0].getBoundingClientRect().width || carousel.getBoundingClientRect().width;
+        const theta = 360 / count;
+        const viewport = window.innerWidth || document.documentElement.clientWidth;
+        const baseRadius = count > 1 ? (width / 2) / Math.tan(Math.PI / count) : 0;
+        const tuckFactor = count === 3 ? (viewport < 750 ? 0.9 : 1.14) : 1.02;
+        const radius = Math.round(baseRadius * tuckFactor);
+        const lift = viewport < 750 ? -6 : viewport < 1100 ? -8 : -10;
+
+        carousel.style.setProperty('--radius', radius + 'px');
+        carousel.style.setProperty('--lift', lift + 'px');
+
+        panels.forEach(function(panel, index) {
+          const angle = theta * index;
+          panel.style.transform = count > 1
+            ? 'rotateY(' + angle + 'deg) translateZ(' + radius + 'px)'
+            : 'translateZ(0)';
+        });
+      }
+
+      function normalize(index) {
+        const count = getCount();
+        return ((index % count) + count) % count;
+      }
+
+      function update() {
+        const count = getCount();
+        const theta = 360 / count;
+        const radius = parseFloat(getComputedStyle(carousel).getPropertyValue('--radius')) || 0;
+        const base = 'translateY(var(--lift))';
+
+        carousel.style.transform = count > 1
+          ? base + ' translateZ(' + (-radius) + 'px) rotateY(' + (-selectedIndex * theta) + 'deg)'
+          : base;
+
+        panels.forEach(function(panel, index) {
+          const raw = Math.abs(index - selectedIndex);
+          const distance = Math.min(raw, count - raw);
+
+          panel.classList.toggle('is-active', index === selectedIndex);
+          panel.classList.toggle('is-near', distance === 1);
+          panel.classList.toggle('is-far', distance > 1);
+          panel.style.pointerEvents = index === selectedIndex ? 'auto' : 'none';
+          panel.style.zIndex = index === selectedIndex ? String(count + 2) : String(count - distance);
+          panel.setAttribute('aria-hidden', index === selectedIndex ? 'false' : 'true');
+        });
+
+        pills.forEach(function(pill, index) {
+          const active = index === selectedIndex;
+          pill.classList.toggle('is-active', active);
+          pill.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+      }
+
+      function goTo(index) {
+        selectedIndex = normalize(index);
+        update();
+        queueAutoplay();
+      }
+
+      function init() {
+        setPositions();
+        update();
+        queueAutoplay();
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+          goTo(selectedIndex - 1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+          goTo(selectedIndex + 1);
+        });
+      }
+
+      pills.forEach(function(pill, index) {
+        pill.addEventListener('click', function() {
+          goTo(index);
+        });
+      });
+
+      if (pauseOnHover) {
+        root.addEventListener('mouseenter', function() {
+          isHovering = true;
+          clearAutoplay();
+        });
+
+        root.addEventListener('mouseleave', function() {
+          isHovering = false;
+          queueAutoplay();
+        });
+      }
+
+      root.addEventListener('focusin', function() {
+        isFocused = true;
+        clearAutoplay();
+      });
+
+      root.addEventListener('focusout', function() {
+        window.setTimeout(function() {
+          isFocused = root.contains(document.activeElement);
+          if (!isFocused) {
+            queueAutoplay();
+          }
+        }, 0);
+      });
+
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(init, 120);
+      });
+
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          clearAutoplay();
+        } else {
+          queueAutoplay();
+        }
+      });
+
+      document.addEventListener('shopify:section:load', function(event) {
+        if (event.target && event.target.contains(root)) {
+          init();
+        }
+      });
+
+      document.addEventListener('shopify:block:select', function(event) {
+        if (!event.detail || !event.detail.blockId) return;
+
+        const panel = panels.find(function(item) {
+          return item.dataset.blockId === event.detail.blockId;
+        });
+
+        if (!panel) return;
+
+        editorPaused = true;
+        goTo(parseInt(panel.dataset.index, 10) || 0);
+        clearAutoplay();
+      });
+
+      document.addEventListener('shopify:block:deselect', function() {
+        editorPaused = false;
+        queueAutoplay();
+      });
+
+      init();
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Solarii 3D滚筒活动",
+  "tag": "section",
+  "class": "section section-solarii-activity-carousel",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay_enable",
+      "label": "启用自动轮播",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_seconds",
+      "label": "自动轮播间隔",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "鼠标悬停时暂停",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "carousel_height_desktop",
+      "label": "滚筒高度（电脑版）",
+      "min": 400,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 580
+    },
+    {
+      "type": "range",
+      "id": "carousel_height_mobile",
+      "label": "滚筒高度（手机版）",
+      "min": 400,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "controls_lift",
+      "label": "底部按钮上移距离",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "模块上边距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "模块下边距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "活动卡片",
+      "settings": [
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "左上标签",
+          "default": "Code SP30"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "右上编号",
+          "default": "01"
+        },
+        {
+          "type": "text",
+          "id": "watermark",
+          "label": "右侧淡字",
+          "default": "SP30"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题",
+          "default": "Get $30 Off"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "描述",
+          "default": "Use code SP30 at checkout for instant savings in a cleaner, lighter presentation."
+        },
+        {
+          "type": "text",
+          "id": "feature_1_title",
+          "label": "卖点1标题",
+          "default": "Instant Code"
+        },
+        {
+          "type": "textarea",
+          "id": "feature_1_text",
+          "label": "卖点1文案",
+          "default": "Direct discount message without clutter."
+        },
+        {
+          "type": "text",
+          "id": "feature_2_title",
+          "label": "卖点2标题",
+          "default": "Bridal Ready"
+        },
+        {
+          "type": "textarea",
+          "id": "feature_2_text",
+          "label": "卖点2文案",
+          "default": "Works for rings, sets, and gifting."
+        },
+        {
+          "type": "text",
+          "id": "feature_3_title",
+          "label": "卖点3标题",
+          "default": "Premium Feel"
+        },
+        {
+          "type": "textarea",
+          "id": "feature_3_text",
+          "label": "卖点3文案",
+          "default": "Looks softer and more on-brand."
+        },
+        {
+          "type": "text",
+          "id": "footer_note",
+          "label": "底部说明",
+          "default": "Clean offer presentation for the storefront"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "按钮文字",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "按钮链接"
+        },
+        {
+          "type": "text",
+          "id": "pill_label",
+          "label": "底部切换文字",
+          "default": "SP30"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Solarii 3D滚筒活动",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "badge": "Code SP30",
+            "number": "01",
+            "watermark": "SP30",
+            "title": "Get $30 Off",
+            "text": "Use code SP30 at checkout for instant savings in a cleaner, lighter presentation.",
+            "feature_1_title": "Instant Code",
+            "feature_1_text": "Direct discount message without clutter.",
+            "feature_2_title": "Bridal Ready",
+            "feature_2_text": "Works for rings, sets, and gifting.",
+            "feature_3_title": "Premium Feel",
+            "feature_3_text": "Looks softer and more on-brand.",
+            "footer_note": "Clean offer presentation for the storefront",
+            "button_label": "Shop Now",
+            "pill_label": "SP30"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "badge": "Offer 02",
+            "number": "02",
+            "watermark": "SECOND 50%",
+            "title": "Second Item 50% Off",
+            "text": "Better for pairings, earrings, and gift combinations with a more refined layout.",
+            "feature_1_title": "Pair More",
+            "feature_1_text": "Supports matched looks and sets.",
+            "feature_2_title": "Gift Friendly",
+            "feature_2_text": "Fits couple and celebration purchases.",
+            "feature_3_title": "Higher Basket",
+            "feature_3_text": "Stronger value with one clear message.",
+            "footer_note": "Designed for bundles and gifting",
+            "button_label": "View Sets",
+            "pill_label": "Second 50% Off"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "badge": "Gift Perks",
+            "number": "03",
+            "watermark": "BONUS GIFTS",
+            "title": "Free Gift Perks",
+            "text": "A softer way to show shipping thresholds, free gifts, and necklace perks on qualifying orders.",
+            "feature_1_title": "Free Shipping",
+            "feature_1_text": "Clear for eligible orders.",
+            "feature_2_title": "Gift Bonus",
+            "feature_2_text": "Adds extra value without noise.",
+            "feature_3_title": "$299+ Perk",
+            "feature_3_text": "Good for the necklace threshold message.",
+            "footer_note": "Brighter benefit-style presentation",
+            "button_label": "Explore Perks",
+            "pill_label": "Gift Perks"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

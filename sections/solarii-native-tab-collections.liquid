@@ -1,0 +1,1050 @@
+{% liquid
+  assign sid = section.id
+  assign products_to_show = section.settings.products_to_show | default: 5
+  assign card_sizes = '(min-width: 1200px) calc((100vw - 220px) / 5), (min-width: 750px) calc((100vw - 120px) / 3), 44vw'
+%}
+
+<section id="solarii-native-tabs-{{ sid }}" class="solarii-native-tabs">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="snt__heading-wrap">
+        <h2 class="snt__heading">{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <div class="snt__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="snt__shell">
+      <div class="snt__tabs" role="tablist" aria-label="产品分类切换">
+        {%- for block in section.blocks -%}
+          <button
+            class="snt__tab{% if forloop.first %} is-active{% endif %}"
+            type="button"
+            role="tab"
+            id="snt-tab-{{ sid }}-{{ block.id }}"
+            aria-controls="snt-panel-{{ sid }}-{{ block.id }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            data-target="snt-panel-{{ sid }}-{{ block.id }}"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.title }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {%- for block in section.blocks -%}
+        {%- assign tab_collection = block.settings.collection -%}
+        {%- assign button_url = block.settings.button_link | default: tab_collection.url -%}
+
+        <div
+          id="snt-panel-{{ sid }}-{{ block.id }}"
+          class="snt__panel{% if forloop.first %} is-active{% endif %}"
+          role="tabpanel"
+          aria-labelledby="snt-tab-{{ sid }}-{{ block.id }}"
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          <div class="snt__carousel-wrap">
+            <button class="snt__arrow snt__arrow--prev" type="button" aria-label="上一组">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+
+            <div class="snt__track" data-track>
+              {%- if tab_collection != blank and tab_collection.products_count > 0 -%}
+                {%- for product in tab_collection.products limit: products_to_show -%}
+                  <div class="snt__item">
+                    {% render 'product-grid-item', product: product, index: forloop.index, sizes: card_sizes %}
+                  </div>
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in (1..5) -%}
+                  <div class="snt__item snt__item--placeholder">
+                    <div class="snt__placeholder-card">
+                      {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+                      <div class="snt__placeholder-line"></div>
+                      <div class="snt__placeholder-line snt__placeholder-line--short"></div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+
+            <button class="snt__arrow snt__arrow--next" type="button" aria-label="下一组">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+
+          {%- if block.settings.show_button and button_url != blank -%}
+            <div class="snt__footer">
+              <a class="snt__btn" href="{{ button_url }}">
+                {{ block.settings.button_label }}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <style>
+    #solarii-native-tabs-{{ sid }} {
+      --snt-text: #151515;
+      --snt-muted: #8b847d;
+      --snt-line: rgba(21, 21, 21, 0.10);
+      --snt-gap: 18px;
+      margin: {{ section.settings.margin_top }}px 0 {{ section.settings.margin_bottom }}px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__heading-wrap {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__heading {
+      margin: 0;
+      color: var(--snt-text);
+      font-size: clamp(28px, 3vw, 46px);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__subheading {
+      margin-top: 10px;
+      color: rgba(21, 21, 21, 0.68);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__shell {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__tabs {
+      display: flex;
+      align-items: center;
+      justify-content: {% if section.settings.tabs_align_desktop == 'left' %}flex-start{% else %}center{% endif %};
+      gap: {{ section.settings.tabs_gap_desktop }}px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--snt-line);
+      margin-bottom: {{ section.settings.tabs_to_products_gap_desktop }}px;
+      padding-bottom: 6px;
+      padding-left: 0;
+      padding-right: 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      background: transparent;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__tab {
+      appearance: none;
+      background: transparent;
+      border: 0;
+      padding: 0 0 11px;
+      margin: 0;
+      position: relative;
+      color: var(--snt-muted);
+      font-size: clamp(18px, 1.8vw, 28px);
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-shadow: none;
+      box-shadow: none;
+      filter: none;
+      transform: none;
+      cursor: pointer;
+      transition: color .25s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__tab.is-active {
+      color: var(--snt-text);
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__tab.is-active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--snt-text);
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__panel {
+      display: none;
+      background: transparent;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__panel.is-active {
+      display: block;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__panel[hidden] {
+      display: none !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__carousel-wrap {
+      position: relative;
+      padding: 0 42px;
+      background: transparent;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__track {
+      display: flex;
+      gap: var(--snt-gap);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      scroll-behavior: smooth;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+      background: transparent;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__track::-webkit-scrollbar {
+      display: none;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item {
+      flex: 0 0 calc((100% - (var(--snt-gap) * 4)) / 5);
+      min-width: 220px;
+      scroll-snap-align: start;
+      background: transparent !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item > * {
+      width: 100%;
+      max-width: 100%;
+      background: transparent !important;
+    }
+
+    /* 商品卡主体透明 */
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-item,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__content,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__content,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__info,
+    #solarii-native-tabs-{{ sid }} .snt__item .card__content,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__meta {
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: 0 !important;
+    }
+
+    /* 只给主图区域圆角，不再误伤底部多属性 */
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__link,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-link,
+    #solarii-native-tabs-{{ sid }} .snt__item .image-wrap,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-wrap,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-mask,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-wrap,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__media,
+    #solarii-native-tabs-{{ sid }} .snt__item .media,
+    #solarii-native-tabs-{{ sid }} .snt__item .media-wrapper,
+    #solarii-native-tabs-{{ sid }} .snt__item .card__media,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__image-wrapper,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid__image-ratio,
+    #solarii-native-tabs-{{ sid }} .snt__item .rimage-outer-wrapper,
+    #solarii-native-tabs-{{ sid }} .snt__item .rimage-wrapper,
+    #solarii-native-tabs-{{ sid }} .snt__item .hover-image,
+    #solarii-native-tabs-{{ sid }} .snt__item .secondary-image,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__secondary-image,
+    #solarii-native-tabs-{{ sid }} .snt__item .product__secondary-image,
+    #solarii-native-tabs-{{ sid }} .snt__item .image-wrapper,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__image,
+    #solarii-native-tabs-{{ sid }} .snt__item hover-images,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__under,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__under-shell,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide .image-wrapper {
+      border-radius: {{ section.settings.product_radius_desktop }}px !important;
+      overflow: hidden !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-wrap img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-mask img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-wrap img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__media img,
+    #solarii-native-tabs-{{ sid }} .snt__item .media img,
+    #solarii-native-tabs-{{ sid }} .snt__item .media-wrapper img,
+    #solarii-native-tabs-{{ sid }} .snt__item .card__media img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__image-wrapper img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid__image-ratio img,
+    #solarii-native-tabs-{{ sid }} .snt__item .rimage-wrapper img,
+    #solarii-native-tabs-{{ sid }} .snt__item .hover-image img,
+    #solarii-native-tabs-{{ sid }} .snt__item .secondary-image img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__secondary-image img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product__secondary-image img,
+    #solarii-native-tabs-{{ sid }} .snt__item .image-wrapper img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide img {
+      display: block;
+      border-radius: {{ section.settings.product_radius_desktop }}px !important;
+      overflow: hidden !important;
+      clip-path: inset(0 round {{ section.settings.product_radius_desktop }}px);
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item .image-wrap::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-wrap::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-mask::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-wrap::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__media::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .media::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid__image-ratio::before,
+    #solarii-native-tabs-{{ sid }} .snt__item .image-wrapper::before {
+      border-radius: {{ section.settings.product_radius_desktop }}px !important;
+      overflow: hidden !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    /* 恢复底部多属性 / swatch */
+    #solarii-native-tabs-{{ sid }} .snt__item,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__content,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__content,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__info,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__meta {
+      overflow: visible !important;
+      min-height: 0 !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors-holder {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      gap: {{ section.settings.swatch_gap_desktop }}px !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      height: auto !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+      margin-top: {{ section.settings.swatch_margin_top_desktop }}px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      position: relative !important;
+      z-index: 3 !important;
+      transform: none !important;
+      clip-path: none !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list > *,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors-holder > * {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      max-width: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors a,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches a,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches a,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches a,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches a,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list a,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches a,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image a,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list a,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors button,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches button,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches button,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches button,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches button,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list button,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches button {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: auto !important;
+      max-width: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+
+    /* swatch 自己的小图/小点，不再吃主图圆角和裁剪 */
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches img,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches img,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches img,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image img,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list img,
+    #solarii-native-tabs-{{ sid }} .snt__item .color-swatch,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-element {
+      width: {{ section.settings.swatch_size_desktop }}px !important;
+      height: {{ section.settings.swatch_size_desktop }}px !important;
+      min-width: {{ section.settings.swatch_size_desktop }}px !important;
+      min-height: {{ section.settings.swatch_size_desktop }}px !important;
+      border-radius: 999px !important;
+      overflow: hidden !important;
+      clip-path: none !important;
+      object-fit: cover !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    /* 禁止 swatch 区域再被 hover 图逻辑盖住 */
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors,
+    #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches,
+    #solarii-native-tabs-{{ sid }} .snt__item .swatch-list {
+      pointer-events: auto !important;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__arrow {
+      position: absolute;
+      top: 34%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(21, 21, 21, 0.12);
+      background: rgba(255, 255, 255, 0.96);
+      color: #151515;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 3;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__arrow:hover {
+      transform: translateY(-50%) scale(1.04);
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__arrow[disabled] {
+      opacity: .35;
+      cursor: default;
+      transform: translateY(-50%);
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__arrow--prev {
+      left: 0;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__arrow--next {
+      right: 0;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__footer {
+      text-align: center;
+      margin-top: 24px;
+      background: transparent;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 144px;
+      min-height: 46px;
+      padding: 12px 26px;
+      border: 1px solid #151515;
+      border-radius: 999px;
+      color: #151515;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      background: transparent;
+      transition: all .25s ease;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__btn:hover {
+      background: #151515;
+      color: #fff;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__item--placeholder {
+      pointer-events: none;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__placeholder-card {
+      background: #faf8f5;
+      border-radius: 18px;
+      overflow: hidden;
+      padding-bottom: 16px;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__placeholder-card .placeholder-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #f1ece6;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__placeholder-line {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(21, 21, 21, 0.08);
+      margin: 14px 14px 0;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__placeholder-line--short {
+      width: 45%;
+    }
+
+    #solarii-native-tabs-{{ sid }} .snt__panel.is-static .snt__arrow {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media screen and (max-width: 1199px) {
+      #solarii-native-tabs-{{ sid }} .snt__item {
+        flex-basis: calc((100% - (var(--snt-gap) * 2)) / 3);
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      #solarii-native-tabs-{{ sid }} {
+        --snt-gap: 12px;
+        margin: {{ section.settings.mobile_margin_top }}px 0 {{ section.settings.mobile_margin_bottom }}px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__heading-wrap {
+        margin-bottom: 16px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__heading {
+        font-size: 28px;
+        line-height: 1.08;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__subheading {
+        font-size: 13px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__tabs {
+        justify-content: {% if section.settings.tabs_align_mobile == 'left' %}flex-start{% else %}center{% endif %};
+        gap: {{ section.settings.tabs_gap_mobile }}px;
+        margin-bottom: {{ section.settings.tabs_to_products_gap_mobile }}px;
+        padding-left: {{ section.settings.mobile_tabs_offset }}px;
+        padding-right: 0;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__tab {
+        font-size: 16px;
+        padding-bottom: 10px;
+        font-weight: 700;
+        color: #8b847d;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__tab.is-active {
+        color: #111111;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__carousel-wrap {
+        padding: 0;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__track {
+        scroll-snap-type: x mandatory;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__item {
+        flex: 0 0 calc((100% - 12px) / 2.15);
+        min-width: 148px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__arrow {
+        display: none;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__footer {
+        margin-top: 18px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__btn {
+        min-width: 132px;
+        min-height: 42px;
+        padding: 11px 22px;
+        font-size: 13px;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__link,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-link,
+      #solarii-native-tabs-{{ sid }} .snt__item .image-wrap,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-wrap,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-mask,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-wrap,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__media,
+      #solarii-native-tabs-{{ sid }} .snt__item .media,
+      #solarii-native-tabs-{{ sid }} .snt__item .media-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .card__media,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__image-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid__image-ratio,
+      #solarii-native-tabs-{{ sid }} .snt__item .rimage-outer-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .rimage-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .hover-image,
+      #solarii-native-tabs-{{ sid }} .snt__item .secondary-image,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__secondary-image,
+      #solarii-native-tabs-{{ sid }} .snt__item .product__secondary-image,
+      #solarii-native-tabs-{{ sid }} .snt__item .image-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__image,
+      #solarii-native-tabs-{{ sid }} .snt__item hover-images,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__under,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__under-shell,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide .image-wrapper,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-wrap img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__image-mask img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-block__image-wrap img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__media img,
+      #solarii-native-tabs-{{ sid }} .snt__item .media img,
+      #solarii-native-tabs-{{ sid }} .snt__item .media-wrapper img,
+      #solarii-native-tabs-{{ sid }} .snt__item .card__media img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__image-wrapper img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid__image-ratio img,
+      #solarii-native-tabs-{{ sid }} .snt__item .rimage-wrapper img,
+      #solarii-native-tabs-{{ sid }} .snt__item .hover-image img,
+      #solarii-native-tabs-{{ sid }} .snt__item .secondary-image img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__secondary-image img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product__secondary-image img,
+      #solarii-native-tabs-{{ sid }} .snt__item .image-wrapper img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__bg__slide img {
+        border-radius: {{ section.settings.product_radius_mobile }}px !important;
+        clip-path: inset(0 round {{ section.settings.product_radius_mobile }}px);
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches,
+      #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches,
+      #solarii-native-tabs-{{ sid }} .snt__item .swatch-list,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors-holder {
+        gap: {{ section.settings.swatch_gap_mobile }}px !important;
+        margin-top: {{ section.settings.swatch_margin_top_mobile }}px !important;
+      }
+
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__colors img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__swatches img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-block__swatches img,
+      #solarii-native-tabs-{{ sid }} .snt__item .product-item__swatches img,
+      #solarii-native-tabs-{{ sid }} .snt__item .variant-swatches img,
+      #solarii-native-tabs-{{ sid }} .snt__item .swatch-list img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-swatches img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image img,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-list img,
+      #solarii-native-tabs-{{ sid }} .snt__item .color-swatch,
+      #solarii-native-tabs-{{ sid }} .snt__item .swatch,
+      #solarii-native-tabs-{{ sid }} .snt__item .grid-product__color-image-element {
+        width: {{ section.settings.swatch_size_mobile }}px !important;
+        height: {{ section.settings.swatch_size_mobile }}px !important;
+        min-width: {{ section.settings.swatch_size_mobile }}px !important;
+        min-height: {{ section.settings.swatch_size_mobile }}px !important;
+        border-radius: 999px !important;
+        clip-path: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    (function() {
+      var section = document.getElementById('solarii-native-tabs-{{ sid }}');
+      if (!section) return;
+
+      var tabs = Array.prototype.slice.call(section.querySelectorAll('.snt__tab'));
+      var panels = Array.prototype.slice.call(section.querySelectorAll('.snt__panel'));
+
+      function activateTab(button) {
+        if (!button) return;
+        var targetId = button.getAttribute('data-target');
+
+        tabs.forEach(function(tab) {
+          var isActive = tab === button;
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach(function(panel) {
+          var isActive = panel.id === targetId;
+          panel.classList.toggle('is-active', isActive);
+          if (isActive) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', 'hidden');
+          }
+        });
+      }
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          activateTab(tab);
+        });
+      });
+
+      panels.forEach(function(panel) {
+        var track = panel.querySelector('[data-track]');
+        var prev = panel.querySelector('.snt__arrow--prev');
+        var next = panel.querySelector('.snt__arrow--next');
+
+        if (!track || !prev || !next) return;
+
+        function getStep() {
+          var firstItem = track.querySelector('.snt__item');
+          if (!firstItem) return track.clientWidth * 0.9;
+
+          var trackStyles = window.getComputedStyle(track);
+          var gap = parseFloat(trackStyles.gap || trackStyles.columnGap || 18) || 18;
+          return firstItem.getBoundingClientRect().width + gap;
+        }
+
+        function updateArrows() {
+          var maxScroll = track.scrollWidth - track.clientWidth - 4;
+          prev.disabled = track.scrollLeft <= 4;
+          next.disabled = track.scrollLeft >= maxScroll;
+          panel.classList.toggle('is-static', track.scrollWidth <= track.clientWidth + 4);
+        }
+
+        prev.addEventListener('click', function() {
+          track.scrollBy({ left: -getStep() * 2, behavior: 'smooth' });
+        });
+
+        next.addEventListener('click', function() {
+          track.scrollBy({ left: getStep() * 2, behavior: 'smooth' });
+        });
+
+        track.addEventListener('scroll', updateArrows, { passive: true });
+        window.addEventListener('resize', updateArrows);
+
+        if (window.ResizeObserver) {
+          var ro = new ResizeObserver(function() {
+            updateArrows();
+          });
+          ro.observe(track);
+        }
+
+        updateArrows();
+      });
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Solarii 原生商品Tabs",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "标题",
+      "default": "Explore More Styles"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "副标题"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "每个分类显示产品数",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "tabs_align_desktop",
+      "label": "电脑端Tab对齐",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tabs_gap_desktop",
+      "label": "电脑端Tab间距",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "tabs_to_products_gap_desktop",
+      "label": "电脑端Tab与产品区间距",
+      "min": 6,
+      "max": 40,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "tabs_align_mobile",
+      "label": "手机端Tab对齐",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "左对齐" },
+        { "value": "center", "label": "居中" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tabs_gap_mobile",
+      "label": "手机端Tab间距",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_tabs_offset",
+      "label": "手机端Tab左偏移",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tabs_to_products_gap_mobile",
+      "label": "手机端Tab与产品区间距",
+      "min": 6,
+      "max": 32,
+      "step": 2,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "product_radius_desktop",
+      "label": "电脑端产品圆角",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "product_radius_mobile",
+      "label": "手机端产品圆角",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "swatch_size_desktop",
+      "label": "电脑端多属性大小",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "swatch_gap_desktop",
+      "label": "电脑端多属性间距",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "swatch_margin_top_desktop",
+      "label": "电脑端多属性上间距",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "swatch_size_mobile",
+      "label": "手机端多属性大小",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "swatch_gap_mobile",
+      "label": "手机端多属性间距",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "swatch_margin_top_mobile",
+      "label": "手机端多属性上间距",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "电脑端上边距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "电脑端下边距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_top",
+      "label": "手机端上边距",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_bottom",
+      "label": "手机端下边距",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "分类Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab名称",
+          "default": "Holiday Jewelry"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "选择产品系列"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button",
+          "label": "显示底部按钮",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "按钮文字",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "按钮链接（不填则默认跳到该系列）"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Solarii 原生商品Tabs",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "title": "Holiday Jewelry"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "Convertible Jewelry"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

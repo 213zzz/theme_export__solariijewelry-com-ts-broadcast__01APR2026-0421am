@@ -1,0 +1,220 @@
+{% comment %}
+  OS2.0 Section: 来图定制（Kachava-style Hero）
+  Includes:
+    {{ 'custom-design-from-photo.css' | asset_url | stylesheet_tag }}
+    {{ 'custom-design-from-photo.js'  | asset_url | script_tag }}
+{% endcomment %}
+
+{{ 'custom-design-from-photo.css' | asset_url | stylesheet_tag }}
+{{ 'custom-design-from-photo.js'  | asset_url | script_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign show_left = section.settings.show_left
+  assign show_right = section.settings.show_right
+  assign enable_anim = section.settings.enable_animation
+  assign intensity = section.settings.animation_intensity
+  assign overlay_opacity = section.settings.overlay_opacity | default: 25
+-%}
+
+{%- style -%}
+  /* Extra hard-scope to this section wrapper (theme overrides friendly) */
+  #shopify-section-{{ section.id }} { position: relative; }
+{%- endstyle -%}
+
+<div
+  class="cdfp-hero"
+  data-cdfp-root
+  data-section-id="{{ sid }}"
+  data-enabled="{{ enable_anim }}"
+  data-intensity="{{ intensity }}"
+  style="
+    --cdfp-bg: {{ section.settings.bg_color }};
+    --cdfp-text: {{ section.settings.text_color }};
+    --cdfp-accent: {{ section.settings.accent_color }};
+    --cdfp-overlay: {{ overlay_opacity | times: 0.01 }};
+    --cdfp-min-h: {{ section.settings.min_height }}px;
+  "
+>
+  <!-- Background -->
+  <div class="cdfp-hero__bg" aria-hidden="true">
+    {%- if section.settings.center_image != blank -%}
+      {%- assign b = section.settings.center_image -%}
+      <img
+        class="cdfp-hero__bg-img"
+        data-cdfp-img
+        loading="lazy"
+        alt="{{ b.alt | escape | default: 'Background illustration' }}"
+        src="{{ b | image_url: width: 2400 }}"
+        srcset="
+          {{ b | image_url: width: 900 }} 900w,
+          {{ b | image_url: width: 1400 }} 1400w,
+          {{ b | image_url: width: 2000 }} 2000w,
+          {{ b | image_url: width: 2400 }} 2400w
+        "
+        sizes="100vw"
+      >
+    {%- else -%}
+      <!-- If no center image: try theme assets/custom-center.png, else fallback gradient via JS placeholder -->
+      <img class="cdfp-hero__bg-img" data-cdfp-img loading="lazy" alt="Background illustration" src="{{ 'custom-center.png' | asset_url }}">
+    {%- endif -%}
+    <div class="cdfp-hero__overlay" aria-hidden="true"></div>
+    <div class="cdfp-hero__bg-fallback" data-cdfp-placeholder hidden aria-hidden="true">
+      <div class="cdfp-hero__bg-grad"></div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="cdfp-hero__inner">
+    <div class="cdfp-hero__content">
+      {%- if section.settings.kicker != blank -%}
+        <div class="cdfp-hero__kicker">{{ section.settings.kicker }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.title != blank -%}
+        <h2 class="cdfp-hero__title">{{ section.settings.title }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="cdfp-hero__desc rte">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      <ul class="cdfp-hero__bullets" role="list">
+        {%- if section.settings.bullet_1 != blank -%}<li>{{ section.settings.bullet_1 }}</li>{%- endif -%}
+        {%- if section.settings.bullet_2 != blank -%}<li>{{ section.settings.bullet_2 }}</li>{%- endif -%}
+        {%- if section.settings.bullet_3 != blank -%}<li>{{ section.settings.bullet_3 }}</li>{%- endif -%}
+      </ul>
+
+      {%- if section.settings.button_label != blank -%}
+        <a class="cdfp-hero__btn" href="{{ section.settings.button_link | default: '#' }}">
+          {{ section.settings.button_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <!-- Left / Right characters -->
+  {%- if show_left -%}
+    <div class="cdfp-hero__side cdfp-hero__side--left">
+      <div class="cdfp-hero__char cdfp-anim" data-cdfp-char>
+        {%- if section.settings.left_image != blank -%}
+          {%- assign l = section.settings.left_image -%}
+          <img
+            class="cdfp-hero__char-img"
+            data-cdfp-img
+            loading="lazy"
+            alt="{{ l.alt | escape | default: 'Cartoon jeweler crafting a ring' }}"
+            src="{{ l | image_url: width: 1200 }}"
+            srcset="
+              {{ l | image_url: width: 480 }} 480w,
+              {{ l | image_url: width: 720 }} 720w,
+              {{ l | image_url: width: 960 }} 960w,
+              {{ l | image_url: width: 1200 }} 1200w
+            "
+            sizes="(min-width: 990px) 28vw, 45vw"
+          >
+        {%- else -%}
+          <img class="cdfp-hero__char-img" data-cdfp-img loading="lazy" alt="Cartoon jeweler crafting a ring" src="{{ 'custom-left.png' | asset_url }}">
+        {%- endif -%}
+
+        <div class="cdfp-hero__char-fallback" data-cdfp-placeholder hidden aria-hidden="true">
+          <svg viewBox="0 0 260 260" role="img" aria-label="placeholder">
+            <rect x="18" y="18" width="224" height="224" rx="28" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.45)"/>
+            <circle cx="92" cy="102" r="26" fill="rgba(255,255,255,.35)"/>
+            <rect x="76" y="136" width="138" height="18" rx="9" fill="rgba(255,255,255,.30)"/>
+            <rect x="76" y="164" width="96" height="14" rx="7" fill="rgba(255,255,255,.22)"/>
+          </svg>
+        </div>
+
+        <span class="cdfp-doodad cdfp-doodad--star cdfp-anim" aria-hidden="true"></span>
+        <span class="cdfp-doodad cdfp-doodad--spark cdfp-anim" aria-hidden="true"></span>
+        <span class="cdfp-doodad cdfp-doodad--hammer cdfp-anim" aria-hidden="true"></span>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if show_right -%}
+    <div class="cdfp-hero__side cdfp-hero__side--right">
+      <div class="cdfp-hero__char cdfp-hero__char--alt cdfp-anim" data-cdfp-char>
+        {%- if section.settings.right_image != blank -%}
+          {%- assign r = section.settings.right_image -%}
+          <img
+            class="cdfp-hero__char-img"
+            data-cdfp-img
+            loading="lazy"
+            alt="{{ r.alt | escape | default: 'Cartoon jeweler crafting a ring' }}"
+            src="{{ r | image_url: width: 1200 }}"
+            srcset="
+              {{ r | image_url: width: 480 }} 480w,
+              {{ r | image_url: width: 720 }} 720w,
+              {{ r | image_url: width: 960 }} 960w,
+              {{ r | image_url: width: 1200 }} 1200w
+            "
+            sizes="(min-width: 990px) 28vw, 45vw"
+          >
+        {%- else -%}
+          <img class="cdfp-hero__char-img" data-cdfp-img loading="lazy" alt="Cartoon jeweler crafting a ring" src="{{ 'custom-right.png' | asset_url }}">
+        {%- endif -%}
+
+        <div class="cdfp-hero__char-fallback" data-cdfp-placeholder hidden aria-hidden="true">
+          <svg viewBox="0 0 260 260" role="img" aria-label="placeholder">
+            <rect x="18" y="18" width="224" height="224" rx="28" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.45)"/>
+            <circle cx="168" cy="102" r="26" fill="rgba(255,255,255,.35)"/>
+            <rect x="46" y="136" width="138" height="18" rx="9" fill="rgba(255,255,255,.30)"/>
+            <rect x="66" y="164" width="96" height="14" rx="7" fill="rgba(255,255,255,.22)"/>
+          </svg>
+        </div>
+
+        <span class="cdfp-doodad cdfp-doodad--ring cdfp-anim" aria-hidden="true"></span>
+        <span class="cdfp-doodad cdfp-doodad--star cdfp-anim" aria-hidden="true"></span>
+        <span class="cdfp-doodad cdfp-doodad--spark cdfp-anim" aria-hidden="true"></span>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "来图定制",
+  "tag": "section",
+  "class": "cdfp-section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "小标题（可选）", "default": "来图定制" },
+    { "type": "text", "id": "title", "label": "标题", "default": "来图定制你的专属戒指" },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "说明",
+      "default": "<p>上传图片或灵感图，我们帮你把想法变成真实珠宝。轻量沟通，快速确认，安心交付。</p>"
+    },
+    { "type": "text", "id": "bullet_1", "label": "卖点 1", "default": "1 对 1 沟通确认细节" },
+    { "type": "text", "id": "bullet_2", "label": "卖点 2", "default": "支持改尺寸/改镶口/改主石" },
+    { "type": "text", "id": "bullet_3", "label": "卖点 3", "default": "出图确认后再制作更放心" },
+
+    { "type": "text", "id": "button_label", "label": "按钮文字", "default": "开始来图定制" },
+    { "type": "url", "id": "button_link", "label": "按钮链接" },
+
+    { "type": "header", "content": "图片" },
+    { "type": "image_picker", "id": "center_image", "label": "中间主视觉（整块背景插画）" },
+    { "type": "image_picker", "id": "left_image", "label": "左侧卡通人物（PNG透明背景最佳）" },
+    { "type": "image_picker", "id": "right_image", "label": "右侧卡通人物（PNG透明背景最佳）" },
+
+    { "type": "checkbox", "id": "show_left", "label": "显示左侧人物", "default": true },
+    { "type": "checkbox", "id": "show_right", "label": "显示右侧人物", "default": true },
+
+    { "type": "header", "content": "配色" },
+    { "type": "color", "id": "bg_color", "label": "背景色（无背景图时）", "default": "#F7F3EE" },
+    { "type": "color", "id": "text_color", "label": "文字色", "default": "#FFFFFF" },
+    { "type": "color", "id": "accent_color", "label": "点缀色（按钮/小元素）", "default": "#B78A3A" },
+    { "type": "range", "id": "overlay_opacity", "label": "文字可读性遮罩（%）", "min": 0, "max": 65, "step": 5, "default": 20 },
+
+    { "type": "header", "content": "布局" },
+    { "type": "range", "id": "min_height", "label": "桌面端最小高度（px）", "min": 420, "max": 760, "step": 20, "default": 560 },
+
+    { "type": "header", "content": "动效" },
+    { "type": "checkbox", "id": "enable_animation", "label": "启用动效", "default": true },
+    { "type": "range", "id": "animation_intensity", "label": "动效强度（1=low，2=medium，3=high）", "min": 1, "max": 3, "step": 1, "default": 2 }
+  ],
+  "presets": [{ "name": "来图定制（插画背景 Hero）" }]
+}
+{% endschema %}

@@ -1,0 +1,225 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign installment_count = block.settings.installment_count | default: 4
+  assign show_afterpay = block.settings.show_afterpay
+  assign show_klarna = block.settings.show_klarna
+  assign show_paypal = block.settings.show_paypal
+  assign installment_amount = current_variant.price | times: 1.0 | divided_by: installment_count | round
+  assign installment_money = installment_amount | money
+
+  if settings.currency_code_enable
+    assign installment_money = installment_amount | money_with_currency
+  endif
+
+  assign provider_count = 0
+  if show_afterpay
+    assign provider_count = provider_count | plus: 1
+  endif
+  if show_klarna
+    assign provider_count = provider_count | plus: 1
+  endif
+  if show_paypal
+    assign provider_count = provider_count | plus: 1
+  endif
+-%}
+
+{%- if provider_count > 0 and current_variant != blank -%}
+  <product-installment-message
+    class="product__block product__installment-message block-padding"
+    data-section-id="{{ section.id }}"
+    data-installment-count="{{ installment_count }}"
+    data-currency-code="{{ cart.currency.iso_code | default: shop.currency }}"
+    data-money-with-currency="{{ settings.currency_code_enable }}"
+    data-paypal-client-id="{{ block.settings.paypal_client_id | escape }}"
+    {{ block.shopify_attributes }}
+    {{ block_style }}
+  >
+    <div class="product__installment-message__top">
+      <div class="product__installment-message__label">Flexible Payment</div>
+      <div class="product__installment-message__price">From <span data-installment-amount>{{ installment_money }}</span> × {{ installment_count }}</div>
+    </div>
+
+    <div class="product__installment-message__main">
+      Pay later with <strong>{{ installment_count }} interest-free payments</strong> at checkout.
+    </div>
+
+    <div class="product__installment-message__brands" aria-label="Installment providers">
+      {%- if show_afterpay -%}
+        <button
+          type="button"
+          class="product__installment-brand-btn"
+          data-installment-open="afterpay"
+          aria-label="Learn more about Afterpay"
+        >Afterpay</button>
+      {%- endif -%}
+
+      {%- if show_klarna -%}
+        <button
+          type="button"
+          class="product__installment-brand-btn"
+          data-installment-open="klarna"
+          aria-label="Learn more about Klarna"
+        >Klarna</button>
+      {%- endif -%}
+
+      {%- if show_paypal -%}
+        <button
+          type="button"
+          class="product__installment-brand-btn"
+          data-installment-open="paypal"
+          aria-label="Learn more about PayPal Pay Later"
+        >PayPal</button>
+      {%- endif -%}
+
+      <a href="#" class="product__installment-learn-more" data-installment-open="{% if show_afterpay %}afterpay{% elsif show_klarna %}klarna{% elsif show_paypal %}paypal{% endif %}">Learn more</a>
+    </div>
+
+    {%- if show_paypal -%}
+      <div data-paypal-provider hidden style="display:none">
+        <div data-paypal-message></div>
+      </div>
+      <p data-paypal-fallback hidden style="display:none"></p>
+    {%- endif -%}
+
+    {%- if show_afterpay -%}
+      <div class="product-installment-modal" data-installment-modal="afterpay" hidden aria-hidden="true">
+        <div class="product-installment-modal__backdrop" data-installment-close></div>
+        <div class="product-installment-modal__shell">
+          <div class="product-installment-modal__panel" role="dialog" aria-modal="true" aria-labelledby="installment-afterpay-title-{{ block.id }}">
+            <button
+              type="button"
+              class="product-installment-modal__close"
+              data-installment-close
+              aria-label="{{ 'general.accessibility.close' | t }}"
+            >
+              {%- render 'icon-cancel' -%}
+            </button>
+
+            <div class="product-installment-modal__brand product-installment-modal__brand--afterpay">
+              {%- if block.settings.afterpay_logo != blank -%}
+                <img
+                  src="{{ block.settings.afterpay_logo | image_url: width: 240 }}"
+                  alt="Afterpay"
+                  width="132"
+                  height="34"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <span class="product-installment-modal__brand-text">Afterpay</span>
+              {%- endif -%}
+            </div>
+
+            <h3 class="product-installment-modal__title" id="installment-afterpay-title-{{ block.id }}">Buy now, pay later with Afterpay.</h3>
+            <p class="product-installment-modal__lead">
+              <strong>Buy now, pay later.</strong>
+              Afterpay lets you check out today and pay later when it is available at checkout.
+            </p>
+            <ul class="product-installment-modal__list">
+              <li>Add item(s) to your cart.</li>
+              <li>Select Afterpay at checkout.</li>
+              <li>Receive your order now and complete payment later through Afterpay.</li>
+              <li>Availability, approval, and payment timing are handled by Afterpay.</li>
+            </ul>
+            <p class="product-installment-modal__fineprint">
+              Taxes and shipping are calculated at checkout. Availability, approval, and fees may vary by market and customer eligibility.
+            </p>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if show_klarna -%}
+      <div class="product-installment-modal" data-installment-modal="klarna" hidden aria-hidden="true">
+        <div class="product-installment-modal__backdrop" data-installment-close></div>
+        <div class="product-installment-modal__shell">
+          <div class="product-installment-modal__panel" role="dialog" aria-modal="true" aria-labelledby="installment-klarna-title-{{ block.id }}">
+            <button
+              type="button"
+              class="product-installment-modal__close"
+              data-installment-close
+              aria-label="{{ 'general.accessibility.close' | t }}"
+            >
+              {%- render 'icon-cancel' -%}
+            </button>
+
+            <div class="product-installment-modal__brand product-installment-modal__brand--klarna">
+              {%- if block.settings.klarna_logo != blank -%}
+                <img
+                  src="{{ block.settings.klarna_logo | image_url: width: 240 }}"
+                  alt="Klarna"
+                  width="132"
+                  height="34"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <span class="product-installment-modal__brand-text">Klarna.</span>
+              {%- endif -%}
+            </div>
+
+            <h3 class="product-installment-modal__title" id="installment-klarna-title-{{ block.id }}">Shop and pay the Klarna way.</h3>
+            <p class="product-installment-modal__lead">
+              <strong>{{ installment_count }} payments.</strong>
+              Split your purchase into {{ installment_count }} payments with Klarna when it is offered at checkout.
+            </p>
+            <ul class="product-installment-modal__list">
+              <li>Add item(s) to your cart.</li>
+              <li>Go to checkout and choose Klarna.</li>
+              <li>Enter your debit or credit card information.</li>
+              <li>Your first payment is taken when the order is processed, and the remaining {{ installment_count | minus: 1 }} payments follow automatically.</li>
+            </ul>
+            <p class="product-installment-modal__fineprint">
+              Availability is subject to approval and checkout eligibility. Terms, taxes, and shipping are confirmed at checkout.
+            </p>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if show_paypal -%}
+      <div class="product-installment-modal" data-installment-modal="paypal" hidden aria-hidden="true">
+        <div class="product-installment-modal__backdrop" data-installment-close></div>
+        <div class="product-installment-modal__shell">
+          <div class="product-installment-modal__panel" role="dialog" aria-modal="true" aria-labelledby="installment-paypal-title-{{ block.id }}">
+            <button
+              type="button"
+              class="product-installment-modal__close"
+              data-installment-close
+              aria-label="{{ 'general.accessibility.close' | t }}"
+            >
+              {%- render 'icon-cancel' -%}
+            </button>
+
+            <div class="product-installment-modal__brand product-installment-modal__brand--paypal">
+              {%- if block.settings.paypal_logo != blank -%}
+                <img
+                  src="{{ block.settings.paypal_logo | image_url: width: 260 }}"
+                  alt="PayPal Pay Later"
+                  width="150"
+                  height="34"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <span class="product-installment-modal__brand-text">PayPal Pay Later</span>
+              {%- endif -%}
+            </div>
+
+            <h3 class="product-installment-modal__title" id="installment-paypal-title-{{ block.id }}">Pay in {{ installment_count }} with PayPal.</h3>
+            <p class="product-installment-modal__lead">
+              <strong>Pay in {{ installment_count }}.</strong>
+              If eligible, PayPal Pay Later can split this purchase into {{ installment_count }} payments of <strong data-installment-amount>{{ installment_money }}</strong>.
+            </p>
+            <ul class="product-installment-modal__list">
+              <li>Add item(s) to your cart.</li>
+              <li>Select PayPal at checkout if Pay Later is available.</li>
+              <li>Your estimated installment amount updates with the current product price.</li>
+              <li>Approval, eligibility, and final terms are determined by PayPal at checkout.</li>
+            </ul>
+            <p class="product-installment-modal__fineprint">
+              Taxes and shipping are calculated at checkout. PayPal Pay Later availability varies by order amount and customer eligibility.
+            </p>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </product-installment-message>
+{%- endif -%}

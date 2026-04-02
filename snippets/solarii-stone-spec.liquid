@@ -1,0 +1,136 @@
+{%- comment -%}
+  snippets/solarii-stone-spec.liquid
+  Called from product.liquid:
+    {%- when 'stone_spec' -%}
+      {%- render 'solarii-stone-spec', block: block, block_style: block_style -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign ms_carat       = block.settings.ms_carat       | default: '2.5 CARAT'
+  assign ms_color       = block.settings.ms_color       | default: 'E'
+  assign ms_clarity     = block.settings.ms_clarity     | default: 'VVS2'
+  assign ms_cut         = block.settings.ms_cut         | default: 'EXCELLENT'
+  assign ms_shape       = block.settings.ms_shape       | default: 'ROUND'
+  assign ms_origin      = block.settings.ms_origin      | default: 'MOISSANITE'
+  assign ms_carat_desc  = block.settings.ms_carat_desc  | default: 'Standard measure'
+  assign ms_color_desc  = block.settings.ms_color_desc  | default: 'Exceptional Colorless Brilliance'
+  assign ms_clarity_desc= block.settings.ms_clarity_desc| default: 'Perfectly Eye Clean'
+  assign ms_cut_desc    = block.settings.ms_cut_desc    | default: 'Perfect brilliance'
+  assign ms_shape_desc  = block.settings.ms_shape_desc  | default: 'Preferred style'
+  assign ms_origin_desc = block.settings.ms_origin_desc | default: 'Gemstone perfection'
+
+  assign tip_carat   = block.settings.tip_carat   | default: "Carat weight in diamonds always refers to its actual weight on a scale, not its size. Today we have precise scales for accurately weight."
+  assign tip_color   = block.settings.tip_color   | default: "Color is graded on a D–Z scale. D is completely colorless and most valuable. The less color present, the more brilliance and fire it can display."
+  assign tip_clarity = block.settings.tip_clarity | default: "While most diamonds have natural inclusions, the fewer blemishes, the rarer the stone. Diamonds with higher clarity reflect light better."
+  assign tip_cut     = block.settings.tip_cut     | default: "Your diamond's cut refers to the quality of its polish. An Excellent cut maximizes brilliance, fire, and scintillation."
+
+  assign ks_width          = block.settings.ks_width          | default: '1.3mm'
+  assign ks_width_desc     = block.settings.ks_width_desc     | default: 'Measured at the base of the ring'
+  assign ks_tcw            = block.settings.ks_tcw            | default: '0.03 ct'
+  assign ks_tcw_desc       = block.settings.ks_tcw_desc       | default: "The setting's average total carat weight"
+  assign ks_metal          = block.settings.ks_metal          | default: '14k White Gold'
+  assign ks_metal_desc     = block.settings.ks_metal_desc     | default: 'The secret sauce that makes this piece.'
+  assign ks_accent_color   = block.settings.ks_accent_color   | default: 'D-F'
+  assign ks_accent_clarity = block.settings.ks_accent_clarity | default: 'VVS'
+  assign ks_accent_desc    = block.settings.ks_accent_desc    | default: 'Side stones average color & clarity'
+  assign ks_profile        = block.settings.ks_profile        | default: 'Medium'
+  assign ks_profile_desc   = block.settings.ks_profile_desc   | default: 'Only stacks with a chevron/curved band'
+
+  assign d1_pct   = block.settings.metal_pct_1   | default: '58.5'
+  assign d1_label = block.settings.metal_label_1 | default: 'Gold'
+  assign d1_color = block.settings.metal_color_1 | default: '#e8dfc8'
+  assign d2_pct   = block.settings.metal_pct_2   | default: '25.4'
+  assign d2_label = block.settings.metal_label_2 | default: 'Copper'
+  assign d2_color = block.settings.metal_color_2 | default: '#c9785e'
+  assign d3_pct   = block.settings.metal_pct_3   | default: '8.7'
+  assign d3_label = block.settings.metal_label_3 | default: 'Zinc'
+  assign d3_color = block.settings.metal_color_3 | default: '#b0b4bf'
+  assign d4_pct   = block.settings.metal_pct_4   | default: '7.4'
+  assign d4_label = block.settings.metal_label_4 | default: 'Nickel'
+  assign d4_color = block.settings.metal_color_4 | default: '#d0d0d0'
+
+  assign d1_remain = 100 | minus: d1_pct
+  assign d2_remain = 100 | minus: d2_pct
+  assign d3_remain = 100 | minus: d3_pct
+  assign d4_remain = 100 | minus: d4_pct
+  assign d2_offset = 100 | minus: d1_pct | plus: 25
+  assign d3_offset = d2_offset | minus: d2_pct
+  assign d4_offset = d3_offset | minus: d3_pct
+-%}
+
+<div class="ssc-overlay" id="sscOverlay"></div>
+<div class="ssc-drawer-wrap" id="sscDrawerWrap">
+  <button class="ssc-float-x" id="sscFloatClose" type="button"><svg viewBox="0 0 18 18"><line x1="4" y1="4" x2="14" y2="14"/><line x1="14" y1="4" x2="4" y2="14"/></svg></button>
+  <div class="ssc-drawer">
+    <div class="ssc-drawer-head"><span class="ssc-drawer-title" id="sscDrawerTitle"></span><button class="ssc-drawer-x" id="sscDrawerClose" type="button"><svg viewBox="0 0 18 18"><line x1="4" y1="4" x2="14" y2="14"/><line x1="14" y1="4" x2="4" y2="14"/></svg></button></div>
+    <div class="ssc-drawer-body" id="sscDrawerBody"></div>
+  </div>
+</div>
+
+<div class="product__block block-padding" {{ block.shopify_attributes }} {{ block_style }}>
+  <div
+    class="ssc"
+    data-ssc
+    data-ssc-product-title="{{ product.title | escape }}"
+    data-ssc-default-metal="{{ ks_metal | escape }}"
+  >
+    <template data-ssc-source>{% if product.description != blank and product.description != '<!---->' %}{{ product.description }}{% endif %}</template>
+
+    <div class="ssc-tabs">
+      <button class="ssc-tab is-active" data-ssc-tab="ms" type="button">Main Stone</button>
+      <button class="ssc-tab" data-ssc-tab="ks" type="button">Settings</button>
+    </div>
+
+    <div class="ssc-panel ssc-ms is-active" data-ssc-panel="ms">
+      <div class="ssc-grid">
+        <div class="ssc-row">
+          <div class="ssc-cell"><span class="ssc-tip" data-ssc-tip data-ssc-title="Carat" data-ssc-body="{{ tip_carat | escape }}">?</span><div class="ssc-label">Carat</div><div class="ssc-val" data-ssc-field="ms_carat">{{ ms_carat }}</div><div class="ssc-desc">{{ ms_carat_desc }}</div></div>
+          <div class="ssc-cell"><span class="ssc-tip" data-ssc-tip data-ssc-title="Color" data-ssc-body="{{ tip_color | escape }}">?</span><div class="ssc-label">Color</div><div class="ssc-val" data-ssc-field="ms_color">{{ ms_color }}</div><div class="ssc-desc">{{ ms_color_desc }}</div></div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-cell"><span class="ssc-tip" data-ssc-tip data-ssc-title="Clarity" data-ssc-body="{{ tip_clarity | escape }}">?</span><div class="ssc-label">Clarity</div><div class="ssc-val" data-ssc-field="ms_clarity">{{ ms_clarity }}</div><div class="ssc-desc">{{ ms_clarity_desc }}</div></div>
+          <div class="ssc-cell"><span class="ssc-tip" data-ssc-tip data-ssc-title="Cut" data-ssc-body="{{ tip_cut | escape }}">?</span><div class="ssc-label">Cut</div><div class="ssc-val" data-ssc-field="ms_cut">{{ ms_cut }}</div><div class="ssc-desc">{{ ms_cut_desc }}</div></div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-cell"><div class="ssc-label">Shape</div><div class="ssc-val" data-ssc-field="ms_shape">{{ ms_shape }}</div><div class="ssc-desc">{{ ms_shape_desc }}</div></div>
+          <div class="ssc-cell"><div class="ssc-label">Stone Origin</div><div class="ssc-val" data-ssc-field="ms_origin">{{ ms_origin }}</div><div class="ssc-desc">{{ ms_origin_desc }}</div></div>
+        </div>
+      </div>
+      <div class="ssc-cert">
+        <div class="ssc-label">Certification</div>
+        <div class="ssc-cert-badge">
+          <div class="ssc-cert-icon"><svg viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="#22c55e" stroke-width="2"/><path d="M12 18.5l3.5 3.5 8.5-8.5" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="ssc-cert-text"><span>GEMOLOGICAL</span><span>CERTIFICATE INCLUDED</span></div>
+        </div>
+        <div class="ssc-desc">Guaranteed authenticity</div>
+      </div>
+    </div>
+
+    <div class="ssc-panel ssc-ks" data-ssc-panel="ks">
+      <div class="ssc-ks-header"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg><span>Know your setting</span></div>
+      <div class="ssc-ks-row">
+        <div class="ssc-card"><div class="ssc-kl"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M4 8v8"/><path d="M20 8v8"/></svg>WIDTH</div><div class="ssc-kv" data-ssc-field="ks_width">{{ ks_width }}</div><div class="ssc-kd">{{ ks_width_desc }}</div></div>
+        <div class="ssc-card"><div class="ssc-kl"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.5 2.4 7.2L12 16.5 5.6 21l2.4-7.3-6-4.5h7.6z"/></svg>APPROX. TCW</div><div class="ssc-kv" data-ssc-field="ks_tcw">{{ ks_tcw }}</div><div class="ssc-kd">{{ ks_tcw_desc }}</div></div>
+      </div>
+      <div class="ssc-ks-full"><div class="ssc-card ssc-metal">
+        <div class="ssc-kl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9.5a4 4 0 0 0-6 0"/></svg>METAL</div>
+        <div class="ssc-kv ssc-kv-sm" data-ssc-field="ks_metal">{{ ks_metal }}</div>
+        <div class="ssc-comp" data-ssc-metal-comp>
+          <svg class="ssc-donut" viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" fill="none" stroke="{{ d1_color }}" stroke-width="5" stroke-dasharray="{{ d1_pct }} {{ d1_remain }}" stroke-dashoffset="25" data-ssc-metal-circle="1"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="{{ d2_color }}" stroke-width="5" stroke-dasharray="{{ d2_pct }} {{ d2_remain }}" stroke-dashoffset="{{ d2_offset }}" data-ssc-metal-circle="2"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="{{ d3_color }}" stroke-width="5" stroke-dasharray="{{ d3_pct }} {{ d3_remain }}" stroke-dashoffset="{{ d3_offset }}" data-ssc-metal-circle="3"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="{{ d4_color }}" stroke-width="5" stroke-dasharray="{{ d4_pct }} {{ d4_remain }}" stroke-dashoffset="{{ d4_offset }}" data-ssc-metal-circle="4"/></svg>
+          <div class="ssc-legend">
+            <div class="ssc-legend-i" data-ssc-metal-legend="1"><span class="ssc-legend-d" style="background:{{ d1_color }}" data-ssc-metal-dot="1"></span><span data-ssc-metal-text="1">{{ d1_pct }}% {{ d1_label }}</span></div>
+            <div class="ssc-legend-i" data-ssc-metal-legend="2"><span class="ssc-legend-d" style="background:{{ d2_color }}" data-ssc-metal-dot="2"></span><span data-ssc-metal-text="2">{{ d2_pct }}% {{ d2_label }}</span></div>
+            <div class="ssc-legend-i" data-ssc-metal-legend="3"><span class="ssc-legend-d" style="background:{{ d3_color }}" data-ssc-metal-dot="3"></span><span data-ssc-metal-text="3">{{ d3_pct }}% {{ d3_label }}</span></div>
+            <div class="ssc-legend-i" data-ssc-metal-legend="4"><span class="ssc-legend-d" style="background:{{ d4_color }}" data-ssc-metal-dot="4"></span><span data-ssc-metal-text="4">{{ d4_pct }}% {{ d4_label }}</span></div>
+          </div>
+        </div>
+        <div class="ssc-kd">{{ ks_metal_desc }}<small data-ssc-metal-note>*All white gold pieces are Rhodium plated</small></div>
+      </div></div>
+      <div class="ssc-ks-row">
+        <div class="ssc-card"><div class="ssc-kl"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 17l-6.5 4 2-7.5L2 9h7z"/></svg>ACCENT GEMS</div><div class="ssc-av"><div><div class="ssc-av-n" data-ssc-field="ks_accent_color">{{ ks_accent_color }}</div><div class="ssc-av-l">Color</div></div><div><div class="ssc-av-n" data-ssc-field="ks_accent_clarity">{{ ks_accent_clarity }}</div><div class="ssc-av-l">Clarity</div></div></div><div class="ssc-kd">{{ ks_accent_desc }}</div></div>
+        <div class="ssc-card"><div class="ssc-kl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>PROFILE</div><div class="ssc-kv ssc-kv-sm" data-ssc-field="ks_profile">{{ ks_profile }}</div><div class="ssc-profile-icon"><svg viewBox="0 0 48 32" fill="none" stroke="#c5bdb2" stroke-width="1.5"><path d="M4 28c0-12 8-22 20-22s20 10 20 22" stroke-linecap="round"/><path d="M10 28c0-9 5-16 14-16s14 7 14 16" stroke-dasharray="3 3" opacity=".5"/></svg></div><div class="ssc-kd">{{ ks_profile_desc }}</div></div>
+      </div>
+      <div class="ssc-card ssc-extras"><div class="ssc-kl" style="margin-bottom:0"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.5 2.4 7.2L12 16.5 5.6 21l2.4-7.3-6-4.5h7.6z"/></svg>EXTRAS</div><span class="ssc-extras-link">Add Extra Features</span></div>
+    </div>
+  </div>
+</div>

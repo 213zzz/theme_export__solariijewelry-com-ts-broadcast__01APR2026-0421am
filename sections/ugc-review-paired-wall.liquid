@@ -1,0 +1,2508 @@
+{% liquid
+  assign sid = section.id
+%}
+
+{%- capture row_1_markup -%}
+  {%- assign row_1_count = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.row == '1' -%}
+
+      {%- if block.type == 'media' -%}
+        {%- comment -%} ── Media-only card (Instagram style) ── {%- endcomment -%}
+        <div class="ugc-review-wall__media-item"
+          data-ugc-lightbox
+          data-ugc-link="{{ block.settings.link }}"
+          {%- if block.settings.video != blank -%}
+            data-ugc-media="video"
+          {%- elsif block.settings.image != blank -%}
+            data-ugc-media="image"
+            data-ugc-src="{{ block.settings.image | image_url: width: 1200 }}"
+          {%- endif -%}
+          {%- if block.settings.product != blank -%}
+            data-ugc-product-title="{{ block.settings.product.title | escape }}"
+            data-ugc-product-price="{{ block.settings.product.price | money }}"
+            data-ugc-product-url="{{ block.settings.product.url }}"
+            {%- if block.settings.product.featured_image != blank -%}
+              data-ugc-product-img="{{ block.settings.product.featured_image | image_url: width: 200 }}"
+            {%- endif -%}
+          {%- endif -%}
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.video != blank -%}
+            <template class="ugc-review-wall__media-tpl">
+              {{ block.settings.video | video_tag: autoplay: false, loop: true, muted: false, controls: true, playsinline: true, image_size: '1200x' }}
+            </template>
+          {%- endif -%}
+          <div class="ugc-review-wall__media-visual">
+            {%- if block.settings.video != blank -%}
+              {{ block.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+            {%- elsif block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 900 }}"
+                alt="{{ block.settings.alt | default: '' | escape }}"
+                loading="lazy"
+                width="450" height="560"
+              >
+            {%- else -%}
+              <div class="ugc-review-wall__media-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}
+              <div class="ugc-review-wall__media-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- if block.settings.product != blank -%}
+            <div class="ugc-review-wall__media-product">
+              {%- if block.settings.product.featured_image != blank -%}
+                <img
+                  class="ugc-review-wall__media-product-img"
+                  src="{{ block.settings.product.featured_image | image_url: width: 120 }}"
+                  alt="{{ block.settings.product.title | escape }}"
+                  loading="lazy"
+                  width="48" height="48"
+                >
+              {%- endif -%}
+              <div class="ugc-review-wall__media-product-info">
+                <strong>{{ block.settings.product.title | escape }}</strong>
+                <span>{{ block.settings.product.price | money }}</span>
+              </div>
+              <span class="ugc-review-wall__media-product-cta">View details</span>
+            </div>
+          {%- endif -%}
+        </div>
+
+      {%- else -%}
+        {%- comment -%} ── Story + review card (original) ── {%- endcomment -%}
+        {%- assign row_1_count = row_1_count | plus: 1 -%}
+        <article class="ugc-review-wall__story" {{ block.shopify_attributes }}>
+          <div class="ugc-review-wall__story-head">
+            <div class="ugc-review-wall__story-no">
+              {%- if row_1_count < 10 -%}0{{ row_1_count }}{%- else -%}{{ row_1_count }}{%- endif -%}
+            </div>
+            <span>{{ block.settings.story_label | escape }}</span>
+            <div class="ugc-review-wall__story-line"></div>
+          </div>
+
+          <div class="ugc-review-wall__story-body">
+            <div class="ugc-review-wall__review-card">
+              {%- if block.settings.review_label != blank -%}
+                <div class="ugc-review-wall__review-label">{{ block.settings.review_label | escape }}</div>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__author">
+                {%- if block.settings.avatar != blank -%}
+                  <img
+                    class="ugc-review-wall__avatar"
+                    src="{{ block.settings.avatar | image_url: width: 120 }}"
+                    alt="{{ block.settings.author | escape }}"
+                    loading="lazy"
+                    width="46"
+                    height="46"
+                  >
+                {%- endif -%}
+
+                <div>
+                  <strong>{{ block.settings.author | escape }}</strong>
+                  {%- if block.settings.author_meta != blank -%}
+                    <span>{{ block.settings.author_meta | escape }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              {%- if block.settings.rating > 0 -%}
+                <div class="ugc-review-wall__stars" aria-label="{{ block.settings.rating }} stars">
+                  {%- for i in (1..5) -%}
+                    {%- if i <= block.settings.rating -%}
+                      <span>★</span>
+                    {%- else -%}
+                      <span class="ugc-review-wall__star--empty">★</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.review_text != blank -%}
+                <p class="ugc-review-wall__review-text">{{ block.settings.review_text | escape }}</p>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__review-meta">
+                {%- if block.settings.review_tag != blank -%}
+                  <span class="ugc-review-wall__review-tag">{{ block.settings.review_tag | escape }}</span>
+                {%- endif -%}
+
+                {%- if block.settings.link != blank -%}
+                  <a class="ugc-review-wall__arrow" href="{{ block.settings.link }}" aria-label="Open story">
+                    <span>→</span>
+                  </a>
+                {%- else -%}
+                  <span class="ugc-review-wall__arrow" aria-hidden="true">
+                    <span>→</span>
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <div class="ugc-review-wall__ugc-card">
+              {%- if block.settings.link != blank -%}
+                <a class="ugc-review-wall__ugc-link" href="{{ block.settings.link }}" aria-label="Open UGC">
+              {%- endif -%}
+
+              {%- if block.settings.ugc_video != blank -%}
+                {{ block.settings.ugc_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+              {%- elsif block.settings.ugc_image != blank -%}
+                <img
+                  src="{{ block.settings.ugc_image | image_url: width: 900 }}"
+                  alt="{{ block.settings.author | escape }}"
+                  loading="lazy"
+                  width="472"
+                  height="584"
+                >
+              {%- else -%}
+                <div class="ugc-review-wall__ugc-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.ugc_label != blank -%}
+                <div class="ugc-review-wall__ugc-label">{{ block.settings.ugc_label | escape }}</div>
+              {%- endif -%}
+
+              {%- if block.settings.link != blank -%}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </article>
+      {%- endif -%}
+
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture row_2_markup -%}
+  {%- assign row_2_count = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.row == '2' -%}
+
+      {%- if block.type == 'media' -%}
+        <div class="ugc-review-wall__media-item"
+          data-ugc-lightbox
+          data-ugc-link="{{ block.settings.link }}"
+          {%- if block.settings.video != blank -%}
+            data-ugc-media="video"
+          {%- elsif block.settings.image != blank -%}
+            data-ugc-media="image"
+            data-ugc-src="{{ block.settings.image | image_url: width: 1200 }}"
+          {%- endif -%}
+          {%- if block.settings.product != blank -%}
+            data-ugc-product-title="{{ block.settings.product.title | escape }}"
+            data-ugc-product-price="{{ block.settings.product.price | money }}"
+            data-ugc-product-url="{{ block.settings.product.url }}"
+            {%- if block.settings.product.featured_image != blank -%}
+              data-ugc-product-img="{{ block.settings.product.featured_image | image_url: width: 200 }}"
+            {%- endif -%}
+          {%- endif -%}
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.video != blank -%}
+            <template class="ugc-review-wall__media-tpl">
+              {{ block.settings.video | video_tag: autoplay: false, loop: true, muted: false, controls: true, playsinline: true, image_size: '1200x' }}
+            </template>
+          {%- endif -%}
+          <div class="ugc-review-wall__media-visual">
+            {%- if block.settings.video != blank -%}
+              {{ block.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+            {%- elsif block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 900 }}"
+                alt="{{ block.settings.alt | default: '' | escape }}"
+                loading="lazy"
+                width="450" height="560"
+              >
+            {%- else -%}
+              <div class="ugc-review-wall__media-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}
+              <div class="ugc-review-wall__media-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- if block.settings.product != blank -%}
+            <div class="ugc-review-wall__media-product">
+              {%- if block.settings.product.featured_image != blank -%}
+                <img
+                  class="ugc-review-wall__media-product-img"
+                  src="{{ block.settings.product.featured_image | image_url: width: 120 }}"
+                  alt="{{ block.settings.product.title | escape }}"
+                  loading="lazy"
+                  width="48" height="48"
+                >
+              {%- endif -%}
+              <div class="ugc-review-wall__media-product-info">
+                <strong>{{ block.settings.product.title | escape }}</strong>
+                <span>{{ block.settings.product.price | money }}</span>
+              </div>
+              <span class="ugc-review-wall__media-product-cta">View details</span>
+            </div>
+          {%- endif -%}
+        </div>
+
+      {%- else -%}
+        {%- assign row_2_count = row_2_count | plus: 1 -%}
+        <article class="ugc-review-wall__story" {{ block.shopify_attributes }}>
+          <div class="ugc-review-wall__story-head">
+            <div class="ugc-review-wall__story-no">
+              {%- if row_2_count < 10 -%}0{{ row_2_count }}{%- else -%}{{ row_2_count }}{%- endif -%}
+            </div>
+            <span>{{ block.settings.story_label | escape }}</span>
+            <div class="ugc-review-wall__story-line"></div>
+          </div>
+
+          <div class="ugc-review-wall__story-body">
+            <div class="ugc-review-wall__review-card">
+              {%- if block.settings.review_label != blank -%}
+                <div class="ugc-review-wall__review-label">{{ block.settings.review_label | escape }}</div>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__author">
+                {%- if block.settings.avatar != blank -%}
+                  <img
+                    class="ugc-review-wall__avatar"
+                    src="{{ block.settings.avatar | image_url: width: 120 }}"
+                    alt="{{ block.settings.author | escape }}"
+                    loading="lazy"
+                    width="46"
+                    height="46"
+                  >
+                {%- endif -%}
+
+                <div>
+                  <strong>{{ block.settings.author | escape }}</strong>
+                  {%- if block.settings.author_meta != blank -%}
+                    <span>{{ block.settings.author_meta | escape }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              {%- if block.settings.rating > 0 -%}
+                <div class="ugc-review-wall__stars" aria-label="{{ block.settings.rating }} stars">
+                  {%- for i in (1..5) -%}
+                    {%- if i <= block.settings.rating -%}
+                      <span>★</span>
+                    {%- else -%}
+                      <span class="ugc-review-wall__star--empty">★</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.review_text != blank -%}
+                <p class="ugc-review-wall__review-text">{{ block.settings.review_text | escape }}</p>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__review-meta">
+                {%- if block.settings.review_tag != blank -%}
+                  <span class="ugc-review-wall__review-tag">{{ block.settings.review_tag | escape }}</span>
+                {%- endif -%}
+
+                {%- if block.settings.link != blank -%}
+                  <a class="ugc-review-wall__arrow" href="{{ block.settings.link }}" aria-label="Open story">
+                    <span>→</span>
+                  </a>
+                {%- else -%}
+                  <span class="ugc-review-wall__arrow" aria-hidden="true">
+                    <span>→</span>
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <div class="ugc-review-wall__ugc-card">
+              {%- if block.settings.link != blank -%}
+                <a class="ugc-review-wall__ugc-link" href="{{ block.settings.link }}" aria-label="Open UGC">
+              {%- endif -%}
+
+              {%- if block.settings.ugc_video != blank -%}
+                {{ block.settings.ugc_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+              {%- elsif block.settings.ugc_image != blank -%}
+                <img
+                  src="{{ block.settings.ugc_image | image_url: width: 900 }}"
+                  alt="{{ block.settings.author | escape }}"
+                  loading="lazy"
+                  width="472"
+                  height="584"
+                >
+              {%- else -%}
+                <div class="ugc-review-wall__ugc-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.ugc_label != blank -%}
+                <div class="ugc-review-wall__ugc-label">{{ block.settings.ugc_label | escape }}</div>
+              {%- endif -%}
+
+              {%- if block.settings.link != blank -%}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </article>
+      {%- endif -%}
+
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture row_1_focus_markup -%}
+  {%- assign row_1_story_focus_count = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'story' and block.settings.row == '1' -%}
+      {%- assign row_1_story_focus_count = row_1_story_focus_count | plus: 1 -%}
+      <div class="ugc-review-wall__focus-slide" data-ugc-focus-slide>
+        {%- if block.settings.link != blank -%}
+          <a
+            class="ugc-review-wall__focus-media"
+            href="{{ block.settings.link }}"
+            aria-label="Open UGC from {{ block.settings.author | escape }}"
+          >
+        {%- else -%}
+          <div class="ugc-review-wall__focus-media">
+        {%- endif -%}
+            {%- if block.settings.ugc_video != blank -%}
+              {{ block.settings.ugc_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+            {%- elsif block.settings.ugc_image != blank -%}
+              <img
+                src="{{ block.settings.ugc_image | image_url: width: 900 }}"
+                alt="{{ block.settings.author | escape }}"
+                loading="lazy"
+                width="472"
+                height="584"
+              >
+            {%- else -%}
+              <div class="ugc-review-wall__ugc-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            <div class="ugc-review-wall__focus-badge">
+              <span class="ugc-review-wall__focus-no">
+                {%- if row_1_story_focus_count < 10 -%}0{{ row_1_story_focus_count }}{%- else -%}{{ row_1_story_focus_count }}{%- endif -%}
+              </span>
+              {%- if block.settings.story_label != blank -%}
+                <span class="ugc-review-wall__focus-label">{{ block.settings.story_label | escape }}</span>
+              {%- endif -%}
+            </div>
+        {%- if block.settings.link != blank -%}
+          </a>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+
+        <template class="ugc-review-wall__focus-review-template">
+          <div class="ugc-review-wall__focus-review-inner">
+            {%- if block.settings.review_label != blank -%}
+              <div class="ugc-review-wall__focus-review-label">{{ block.settings.review_label | escape }}</div>
+            {%- endif -%}
+
+            {%- if block.settings.rating > 0 -%}
+              <div class="ugc-review-wall__focus-stars" aria-label="{{ block.settings.rating }} stars">
+                {%- for i in (1..5) -%}
+                  {%- if i <= block.settings.rating -%}
+                    <span>★</span>
+                  {%- else -%}
+                    <span class="ugc-review-wall__star--empty">★</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.review_text != blank -%}
+              <p class="ugc-review-wall__focus-text">{{ block.settings.review_text | escape }}</p>
+            {%- endif -%}
+
+            <div class="ugc-review-wall__focus-author-row">
+              {%- if block.settings.avatar != blank -%}
+                <img
+                  class="ugc-review-wall__focus-avatar"
+                  src="{{ block.settings.avatar | image_url: width: 120 }}"
+                  alt="{{ block.settings.author | escape }}"
+                  loading="lazy"
+                  width="40"
+                  height="40"
+                >
+              {%- else -%}
+                <span class="ugc-review-wall__focus-avatar ugc-review-wall__focus-avatar--placeholder">
+                  {{ block.settings.author | default: 'A' | slice: 0, 1 | escape }}
+                </span>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__focus-author-text">
+                <strong>{{ block.settings.author | escape }}</strong>
+                {%- if block.settings.author_meta != blank -%}
+                  <span>{{ block.settings.author_meta | escape }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {%- if block.settings.review_tag != blank -%}
+              <div class="ugc-review-wall__focus-tag">{{ block.settings.review_tag | escape }}</div>
+            {%- endif -%}
+          </div>
+        </template>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture row_2_focus_markup -%}
+  {%- assign row_2_story_focus_count = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'story' and block.settings.row == '2' -%}
+      {%- assign row_2_story_focus_count = row_2_story_focus_count | plus: 1 -%}
+      <div class="ugc-review-wall__focus-slide" data-ugc-focus-slide>
+        {%- if block.settings.link != blank -%}
+          <a
+            class="ugc-review-wall__focus-media"
+            href="{{ block.settings.link }}"
+            aria-label="Open UGC from {{ block.settings.author | escape }}"
+          >
+        {%- else -%}
+          <div class="ugc-review-wall__focus-media">
+        {%- endif -%}
+            {%- if block.settings.ugc_video != blank -%}
+              {{ block.settings.ugc_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '900x' }}
+            {%- elsif block.settings.ugc_image != blank -%}
+              <img
+                src="{{ block.settings.ugc_image | image_url: width: 900 }}"
+                alt="{{ block.settings.author | escape }}"
+                loading="lazy"
+                width="472"
+                height="584"
+              >
+            {%- else -%}
+              <div class="ugc-review-wall__ugc-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'ugc-review-wall__ugc-placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            <div class="ugc-review-wall__focus-badge">
+              <span class="ugc-review-wall__focus-no">
+                {%- if row_2_story_focus_count < 10 -%}0{{ row_2_story_focus_count }}{%- else -%}{{ row_2_story_focus_count }}{%- endif -%}
+              </span>
+              {%- if block.settings.story_label != blank -%}
+                <span class="ugc-review-wall__focus-label">{{ block.settings.story_label | escape }}</span>
+              {%- endif -%}
+            </div>
+        {%- if block.settings.link != blank -%}
+          </a>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+
+        <template class="ugc-review-wall__focus-review-template">
+          <div class="ugc-review-wall__focus-review-inner">
+            {%- if block.settings.review_label != blank -%}
+              <div class="ugc-review-wall__focus-review-label">{{ block.settings.review_label | escape }}</div>
+            {%- endif -%}
+
+            {%- if block.settings.rating > 0 -%}
+              <div class="ugc-review-wall__focus-stars" aria-label="{{ block.settings.rating }} stars">
+                {%- for i in (1..5) -%}
+                  {%- if i <= block.settings.rating -%}
+                    <span>★</span>
+                  {%- else -%}
+                    <span class="ugc-review-wall__star--empty">★</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.review_text != blank -%}
+              <p class="ugc-review-wall__focus-text">{{ block.settings.review_text | escape }}</p>
+            {%- endif -%}
+
+            <div class="ugc-review-wall__focus-author-row">
+              {%- if block.settings.avatar != blank -%}
+                <img
+                  class="ugc-review-wall__focus-avatar"
+                  src="{{ block.settings.avatar | image_url: width: 120 }}"
+                  alt="{{ block.settings.author | escape }}"
+                  loading="lazy"
+                  width="40"
+                  height="40"
+                >
+              {%- else -%}
+                <span class="ugc-review-wall__focus-avatar ugc-review-wall__focus-avatar--placeholder">
+                  {{ block.settings.author | default: 'A' | slice: 0, 1 | escape }}
+                </span>
+              {%- endif -%}
+
+              <div class="ugc-review-wall__focus-author-text">
+                <strong>{{ block.settings.author | escape }}</strong>
+                {%- if block.settings.author_meta != blank -%}
+                  <span>{{ block.settings.author_meta | escape }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {%- if block.settings.review_tag != blank -%}
+              <div class="ugc-review-wall__focus-tag">{{ block.settings.review_tag | escape }}</div>
+            {%- endif -%}
+          </div>
+        </template>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- assign row_1_markup = row_1_markup | strip -%}
+{%- assign row_2_markup = row_2_markup | strip -%}
+{%- assign row_1_focus_markup = row_1_focus_markup | strip -%}
+{%- assign row_2_focus_markup = row_2_focus_markup | strip -%}
+
+<section
+  id="ugc-review-wall-{{ sid }}"
+  class="ugc-review-wall-section"
+  data-pause-on-hover="{{ section.settings.pause_on_hover }}"
+>
+  <div class="ugc-review-wall">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'heading' -%}
+        <div class="ugc-review-wall__header" {{ block.shopify_attributes }}
+          style="
+            --hd-size: {{ block.settings.heading_size }}px;
+            --hd-sub-size: {{ block.settings.subheading_size }}px;
+            --hd-align: {{ block.settings.heading_align }};
+            --hd-m-size: {{ block.settings.m_heading_size }}px;
+            --hd-m-sub-size: {{ block.settings.m_subheading_size }}px;
+            --hd-m-align: {{ block.settings.m_heading_align }};
+            {%- if block.settings.heading_color != blank -%}--hd-color: {{ block.settings.heading_color }};{%- endif -%}
+            {%- if block.settings.subheading_color != blank -%}--hd-sub-color: {{ block.settings.subheading_color }};{%- endif -%}
+          "
+        >
+          {%- if block.settings.heading != blank -%}
+            <h2 class="ugc-review-wall__heading">{{ block.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if block.settings.subheading != blank -%}
+            <p class="ugc-review-wall__subheading">{{ block.settings.subheading }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <div class="ugc-review-wall__viewport">
+      {%- if row_1_markup != blank -%}
+        <div class="ugc-review-wall__row">
+          <div class="ugc-review-wall__track ugc-review-wall__track--a">
+            <div class="ugc-review-wall__set">{{ row_1_markup }}</div>
+            <div class="ugc-review-wall__set" aria-hidden="true">{{ row_1_markup }}</div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if row_2_markup != blank -%}
+        <div class="ugc-review-wall__row">
+          <div class="ugc-review-wall__track ugc-review-wall__track--b">
+            <div class="ugc-review-wall__set">{{ row_2_markup }}</div>
+            <div class="ugc-review-wall__set" aria-hidden="true">{{ row_2_markup }}</div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if row_1_focus_markup != blank or row_2_focus_markup != blank -%}
+      <div class="ugc-review-wall__mobile-focus">
+        {%- if row_1_focus_markup != blank -%}
+          <div
+            class="ugc-review-wall__focus-carousel"
+            data-ugc-focus
+            data-ugc-autoplay="{{ section.settings.mobile_speed_row_1 | times: 100 }}"
+          >
+            <div class="ugc-review-wall__focus-stage" data-ugc-focus-stage>
+              <div class="ugc-review-wall__focus-track">
+                {{ row_1_focus_markup }}
+              </div>
+            </div>
+            <div class="ugc-review-wall__focus-review" data-ugc-focus-review></div>
+          </div>
+        {%- endif -%}
+
+        {%- if row_2_focus_markup != blank -%}
+          <div
+            class="ugc-review-wall__focus-carousel"
+            data-ugc-focus
+            data-ugc-autoplay="{{ section.settings.mobile_speed_row_2 | times: 100 }}"
+          >
+            <div class="ugc-review-wall__focus-stage" data-ugc-focus-stage>
+              <div class="ugc-review-wall__focus-track">
+                {{ row_2_focus_markup }}
+              </div>
+            </div>
+            <div class="ugc-review-wall__focus-review" data-ugc-focus-review></div>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ── Lightbox modal for media cards ── {%- endcomment -%}
+  <div class="ugc-review-wall__lightbox" id="ugc-lightbox-{{ sid }}" aria-hidden="true">
+    <div class="ugc-review-wall__lightbox-backdrop"></div>
+    <div class="ugc-review-wall__lightbox-dialog">
+      <button class="ugc-review-wall__lightbox-close" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="ugc-review-wall__lightbox-media"></div>
+      <div class="ugc-review-wall__lightbox-footer">
+        <div class="ugc-review-wall__lightbox-product"></div>
+        <a class="ugc-review-wall__lightbox-ins" href="#" target="_blank" rel="noopener noreferrer" onclick="window.open(this.href,'_blank');return false;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          <span>View on Instagram</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #ugc-review-wall-{{ sid }} {
+    --ugc-bg: {{ section.settings.bg_color }};
+    --ugc-panel: {{ section.settings.card_color | color_modify: 'alpha', 0.88 }};
+    --ugc-text: {{ section.settings.text_color }};
+    --ugc-muted: {{ section.settings.muted_color }};
+    --ugc-line: {{ section.settings.text_color | color_modify: 'alpha', 0.10 }};
+    --ugc-line-2: {{ section.settings.text_color | color_modify: 'alpha', 0.16 }};
+    --ugc-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    --ugc-radius: 28px;
+    --ugc-gap: 22px;
+    --ugc-pair-width: 700px;
+    --ugc-speed-a: {{ section.settings.speed_row_1 }}s;
+    --ugc-speed-b: {{ section.settings.speed_row_2 }}s;
+    --ugc-space-top: {{ section.settings.padding_top }}px;
+    --ugc-space-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  #ugc-review-wall-{{ sid }} * {
+    box-sizing: border-box;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__header {
+    text-align: var(--hd-align, center);
+    padding: 0 24px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 7;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__heading {
+    font-size: var(--hd-size, 36px);
+    font-weight: 600;
+    color: var(--hd-color, var(--ugc-text));
+    margin: 0 0 6px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__subheading {
+    font-size: var(--hd-sub-size, 16px);
+    font-weight: 400;
+    color: var(--hd-sub-color, var(--ugc-muted));
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall {
+    overflow: hidden;
+    position: relative;
+    padding: var(--ugc-space-top) 0 var(--ugc-space-bottom);
+    background: linear-gradient(180deg, {{ section.settings.bg_color | color_mix: '#ffffff', 80 }} 0%, var(--ugc-bg) 100%);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    background-image: linear-gradient(to right, var(--ugc-bg), rgba(255,255,255,0) 8%, rgba(255,255,255,0) 92%, var(--ugc-bg));
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__viewport {
+    display: grid;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__row {
+    overflow: hidden;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__track--a {
+    animation: ugc-review-wall-move-left-{{ sid }} var(--ugc-speed-a) linear infinite;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__track--b {
+    animation: ugc-review-wall-move-right-{{ sid }} var(--ugc-speed-b) linear infinite;
+  }
+
+  #ugc-review-wall-{{ sid }}[data-pause-on-hover="true"]:hover .ugc-review-wall__track {
+    animation-play-state: paused;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__set {
+    display: flex;
+    gap: 26px;
+    flex-shrink: 0;
+    padding-right: 26px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story {
+    width: var(--ugc-pair-width);
+    min-width: var(--ugc-pair-width);
+    display: grid;
+    gap: 12px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--ugc-muted);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0 6px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story-no {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--ugc-line-2);
+    background: rgba(255,255,255,0.72);
+    color: var(--ugc-text);
+    font-size: 11px;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story-line {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(to right, var(--ugc-line-2), transparent 88%);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 236px;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__story-body::before {
+    content: "";
+    position: absolute;
+    left: calc(100% - 236px - 9px);
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background: var(--ugc-line-2);
+    transform: translateY(-50%);
+    opacity: 0.8;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-card,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card {
+    position: relative;
+    border-radius: var(--ugc-radius);
+    overflow: hidden;
+    min-height: 292px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-card {
+    background: var(--ugc-panel);
+    box-shadow: var(--ugc-shadow);
+    padding: 22px 24px 20px;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: 14px;
+    backdrop-filter: blur(12px);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-label,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-label {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 11px;
+    border-radius: 999px;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-label {
+    background: rgba(0,0,0,0.04);
+    color: var(--ugc-muted);
+    border: 1px solid var(--ugc-line);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-label {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 3;
+    background: rgba(255,255,255,0.86);
+    color: var(--ugc-text);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.55);
+    pointer-events: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    object-fit: cover;
+    background: rgba(0,0,0,0.06);
+    flex: 0 0 auto;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__avatar--placeholder {
+    background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.03));
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__author strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--ugc-text);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__author span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.2;
+    color: var(--ugc-muted);
+    margin-top: 3px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__stars {
+    display: flex;
+    gap: 4px;
+    font-size: 13px;
+    line-height: 1;
+    color: var(--ugc-text);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__star--empty {
+    opacity: 0.25;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-text {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.45;
+    letter-spacing: -0.03em;
+    color: var(--ugc-text);
+    max-width: 95%;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__review-tag {
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ugc-muted);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__arrow {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: var(--ugc-text);
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    flex: 0 0 auto;
+    text-decoration: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card {
+    background: rgba(0,0,0,0.05);
+    box-shadow: var(--ugc-shadow);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card video,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card video {
+    object-fit: cover;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card video {
+    background: #000000;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-placeholder {
+    background: rgba(0,0,0,0.04);
+    padding: 20px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-placeholder-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 34%;
+    background: linear-gradient(to top, rgba(0,0,0,0.18), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__mobile-focus {
+    display: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-stage {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-stage::-webkit-scrollbar {
+    display: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-track {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+    align-items: flex-start;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-slide {
+    flex: 0 0 min(252px, calc(100vw - 138px));
+    opacity: 0.44;
+    transform: scale(0.84);
+    transform-origin: center top;
+    transition: transform 0.38s ease, opacity 0.38s ease;
+    scroll-snap-align: center;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media {
+    position: relative;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    aspect-ratio: 4 / 5.4;
+    border-radius: 32px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.06);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.10);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media video,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media .ugc-review-wall__ugc-placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media video {
+    object-fit: cover;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 44%;
+    background: linear-gradient(to top, rgba(0,0,0,0.24), transparent);
+    pointer-events: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-badge {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-no {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    background: rgba(23,23,22,0.92);
+    flex: 0 0 auto;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-label {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.90);
+    color: var(--ugc-text);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(12px);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review {
+    position: relative;
+    z-index: 2;
+    width: calc(100% - 28px);
+    margin: -28px auto 0;
+    min-height: 170px;
+    padding: 18px 18px 16px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.94);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review::after {
+    content: "“";
+    position: absolute;
+    right: 18px;
+    bottom: 12px;
+    font-size: 40px;
+    line-height: 1;
+    color: rgba(0,0,0,0.10);
+    pointer-events: none;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review-inner {
+    display: grid;
+    gap: 12px;
+    text-align: center;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.04);
+    color: var(--ugc-muted);
+    border: 1px solid var(--ugc-line);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-stars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    font-size: 14px;
+    line-height: 1;
+    color: #f49b13;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.58;
+    letter-spacing: -0.01em;
+    color: var(--ugc-text);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    object-fit: cover;
+    background: rgba(0,0,0,0.06);
+    flex: 0 0 auto;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-avatar--placeholder {
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ugc-text);
+    background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.03));
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-text {
+    min-width: 0;
+    text-align: left;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-text strong {
+    display: block;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--ugc-text);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-text span {
+    display: block;
+    font-size: 10px;
+    line-height: 1.3;
+    color: var(--ugc-muted);
+    margin-top: 2px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-tag {
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ugc-muted);
+  }
+
+  @media (max-width: 1100px) {
+    #ugc-review-wall-{{ sid }} {
+      --ugc-pair-width: 620px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__story-body {
+      grid-template-columns: 1fr 210px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__story-body::before {
+      left: calc(100% - 210px - 9px);
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__review-card,
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__ugc-card {
+      min-height: 270px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__review-text {
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #ugc-review-wall-{{ sid }} {
+      --ugc-pair-width: min(318px, calc(100vw - 56px));
+      --ugc-speed-a: {{ section.settings.mobile_speed_row_1 }}s;
+      --ugc-speed-b: {{ section.settings.mobile_speed_row_2 }}s;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__header {
+      padding: 0 16px;
+      margin-bottom: 14px;
+      --hd-size: var(--hd-m-size, 24px);
+      --hd-sub-size: var(--hd-m-sub-size, 14px);
+      --hd-align: var(--hd-m-align, center);
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall {
+      padding: {{ section.settings.mobile_padding_top }}px 0 {{ section.settings.mobile_padding_bottom }}px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall::before {
+      display: none;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__viewport {
+      gap: 14px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__set {
+      gap: 16px;
+      padding-right: 16px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__viewport .ugc-review-wall__story {
+      display: none;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__mobile-focus {
+      display: grid;
+      gap: 26px;
+      margin-top: 18px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-carousel {
+      display: grid;
+      gap: 0;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-stage {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 10px 16px 0;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-track {
+      gap: 10px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-slide {
+      flex-basis: min(248px, calc(100vw - 134px));
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-media {
+      border-radius: 30px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-badge {
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-no {
+      width: 26px;
+      height: 26px;
+      font-size: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-label,
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review-label {
+      font-size: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review {
+      width: calc(100% - 22px);
+      margin-top: -24px;
+      min-height: 156px;
+      padding: 16px 16px 15px;
+      border-radius: 24px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review::after {
+      right: 14px;
+      bottom: 8px;
+      font-size: 34px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-review-inner {
+      gap: 10px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-stars {
+      font-size: 13px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-text {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-avatar {
+      width: 38px;
+      height: 38px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-row {
+      gap: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-text strong {
+      font-size: 13px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-author-text span,
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__focus-tag {
+      font-size: 9px;
+    }
+  }
+
+  /* ── Media card (Instagram style) ── */
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item {
+    width: 292px;
+    min-width: 292px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-anchor {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-visual {
+    position: relative;
+    border-radius: var(--ugc-radius);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: rgba(0,0,0,0.04);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-visual img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-visual video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item:hover .ugc-review-wall__media-visual img,
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item:hover .ugc-review-wall__media-visual video {
+    transform: scale(1.04);
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-visual::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0,0,0,0.22), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.04);
+    padding: 20px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-icon {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(8px);
+    display: grid;
+    place-items: center;
+    color: var(--ugc-text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item:hover .ugc-review-wall__media-icon {
+    background: #ffffff;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: rgba(0,0,0,0.04);
+    flex: 0 0 auto;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-info strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ugc-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-info span {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ugc-muted);
+    margin-top: 2px;
+  }
+
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-cta {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ugc-text);
+    white-space: nowrap;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item {
+      width: 200px;
+      min-width: 200px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      top: 8px;
+      left: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product {
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      gap: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-img {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-info strong {
+      font-size: 10px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-info span {
+      font-size: 10px;
+    }
+
+    #ugc-review-wall-{{ sid }} .ugc-review-wall__media-product-cta {
+      font-size: 9px;
+    }
+  }
+
+  /* ── Media card cursor ── */
+  #ugc-review-wall-{{ sid }} .ugc-review-wall__media-item[data-ugc-lightbox] {
+    cursor: pointer;
+  }
+
+  /* ── Lightbox modal ── */
+  #ugc-lightbox-{{ sid }} {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #ugc-lightbox-{{ sid }}[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-dialog {
+    position: relative;
+    z-index: 1;
+    width: 90vw;
+    max-width: 480px;
+    max-height: 88vh;
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.3s ease;
+  }
+
+  #ugc-lightbox-{{ sid }}[aria-hidden="false"] .ugc-review-wall__lightbox-dialog {
+    transform: translateY(0) scale(1);
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(8px);
+    color: #111;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-close:hover {
+    background: #fff;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-media {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: #f2f2f2;
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-media img,
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-footer {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #eee;
+    flex: 0 0 auto;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product.is-visible {
+    display: flex;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex: 0 0 auto;
+    background: #f5f5f5;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product-text strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-product-text span {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    margin-top: 1px;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-ins {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    flex: 0 0 auto;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-ins.is-visible {
+    display: inline-flex;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-ins:hover {
+    opacity: 0.88;
+  }
+
+  #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-ins svg {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-dialog {
+      max-width: 92vw;
+    }
+
+    #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-footer {
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 14px;
+    }
+
+    #ugc-lightbox-{{ sid }} .ugc-review-wall__lightbox-ins {
+      width: 100%;
+      justify-content: center;
+      padding: 10px 16px;
+    }
+  }
+
+  @keyframes ugc-review-wall-move-left-{{ sid }} {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+
+  @keyframes ugc-review-wall-move-right-{{ sid }} {
+    from { transform: translate3d(-50%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+</style>
+
+<script>
+(function() {
+  var SEC = document.getElementById("ugc-review-wall-{{ sid }}");
+  if (!SEC) return;
+  var LB  = document.getElementById("ugc-lightbox-{{ sid }}");
+  if (!LB) return;
+
+  var mediaEl   = LB.querySelector(".ugc-review-wall__lightbox-media");
+  var productEl = LB.querySelector(".ugc-review-wall__lightbox-product");
+  var insBtn    = LB.querySelector(".ugc-review-wall__lightbox-ins");
+  var closeBtn  = LB.querySelector(".ugc-review-wall__lightbox-close");
+  var backdrop  = LB.querySelector(".ugc-review-wall__lightbox-backdrop");
+
+  /* Extract Instagram embed URL from a link */
+  function getInsEmbedUrl(url) {
+    if (!url) return null;
+    var m = url.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    if (m) return "https://www.instagram.com/" + m[1] + "/" + m[2] + "/embed/";
+    return null;
+  }
+
+  function openLB(card) {
+    var type = card.getAttribute("data-ugc-media");
+    var src  = card.getAttribute("data-ugc-src");
+    var link = card.getAttribute("data-ugc-link");
+    var insEmbed = getInsEmbedUrl(link);
+
+    /* Reset media area */
+    mediaEl.innerHTML = "";
+    mediaEl.style.aspectRatio = "";
+
+    if (type === "video") {
+      /* Clone the <template> inside the card which holds the full <video> tag */
+      var tpl = card.querySelector(".ugc-review-wall__media-tpl");
+      if (tpl && tpl.content) {
+        var clone = tpl.content.cloneNode(true);
+        mediaEl.appendChild(clone);
+        var v = mediaEl.querySelector("video");
+        if (v) { v.muted = false; v.controls = true; try { v.play(); } catch(e) {} }
+      }
+    } else if (type === "image" && src) {
+      var img = document.createElement("img");
+      img.src = src;
+      img.alt = "";
+      mediaEl.appendChild(img);
+    } else if (insEmbed) {
+      /* No uploaded media — use Instagram embed iframe */
+      mediaEl.style.aspectRatio = "auto";
+      var iframe = document.createElement("iframe");
+      iframe.src = insEmbed;
+      iframe.width = "100%";
+      iframe.style.cssText = "border:none;min-height:520px;display:block;";
+      iframe.setAttribute("allowfullscreen", "");
+      iframe.setAttribute("allow", "autoplay; encrypted-media");
+      iframe.loading = "lazy";
+      mediaEl.appendChild(iframe);
+    }
+
+    /* Product tag */
+    var pTitle = card.getAttribute("data-ugc-product-title");
+    var pPrice = card.getAttribute("data-ugc-product-price");
+    var pImg   = card.getAttribute("data-ugc-product-img");
+    var pUrl   = card.getAttribute("data-ugc-product-url");
+
+    if (pTitle) {
+      var html = "";
+      if (pImg) html += '<img src="' + pImg + '" alt="" width="40" height="40">';
+      html += '<div class="ugc-review-wall__lightbox-product-text">';
+      if (pUrl) html += '<a href="' + pUrl + '" style="text-decoration:none;color:inherit">';
+      html += '<strong>' + pTitle + '</strong>';
+      html += '<span>' + (pPrice || '') + '</span>';
+      if (pUrl) html += '</a>';
+      html += '</div>';
+      productEl.innerHTML = html;
+      productEl.classList.add("is-visible");
+    } else {
+      productEl.innerHTML = "";
+      productEl.classList.remove("is-visible");
+    }
+
+    /* Instagram button */
+    if (link) {
+      insBtn.href = link;
+      insBtn.classList.add("is-visible");
+    } else {
+      insBtn.classList.remove("is-visible");
+    }
+
+    LB.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLB() {
+    LB.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    /* Pause video / remove iframe */
+    var v = mediaEl.querySelector("video");
+    if (v) { try { v.pause(); } catch(e) {} }
+    setTimeout(function() {
+      mediaEl.innerHTML = "";
+      mediaEl.style.aspectRatio = "";
+    }, 300);
+  }
+
+  /* Delegate click on media cards – only on the card itself, not on lightbox */
+  SEC.addEventListener("click", function(e) {
+    var card = e.target.closest("[data-ugc-lightbox]");
+    if (!card || !SEC.contains(card)) return;
+    e.preventDefault();
+    openLB(card);
+  });
+
+  /* Lightbox close – separate listeners so ins button click is NOT blocked */
+  closeBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    closeLB();
+  });
+  backdrop.addEventListener("click", function(e) {
+    e.stopPropagation();
+    closeLB();
+  });
+
+  /* Let clicks inside dialog pass through normally (for ins button, product links) */
+  LB.querySelector(".ugc-review-wall__lightbox-dialog").addEventListener("click", function(e) {
+    /* Only stop propagation to backdrop, don't prevent default so links work */
+    e.stopPropagation();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && LB.getAttribute("aria-hidden") === "false") closeLB();
+  });
+
+  function initFocusCarousel(root) {
+    var stage = root.querySelector("[data-ugc-focus-stage]");
+    var review = root.querySelector("[data-ugc-focus-review]");
+    var slides = Array.prototype.slice.call(root.querySelectorAll("[data-ugc-focus-slide]"));
+    if (!stage || !review || !slides.length) return;
+
+    var activeIndex = 0;
+    var scrollTimer = null;
+    var autoplayTimer = null;
+    var rawDelay = parseInt(root.getAttribute("data-ugc-autoplay"), 10);
+    var autoplayDelay = isNaN(rawDelay) ? 4200 : Math.min(Math.max(rawDelay, 3200), 6200);
+
+    function renderReview(index) {
+      var slide = slides[index];
+      if (!slide) return;
+      var tpl = slide.querySelector(".ugc-review-wall__focus-review-template");
+      review.innerHTML = tpl ? tpl.innerHTML : "";
+    }
+
+    function scrollToIndex(index, behavior) {
+      var slide = slides[index];
+      if (!slide) return;
+
+      var targetLeft = slide.offsetLeft - ((stage.clientWidth - slide.offsetWidth) / 2);
+      if (targetLeft < 0) targetLeft = 0;
+
+      if (behavior === "auto" || typeof stage.scrollTo !== "function") {
+        stage.scrollLeft = targetLeft;
+      } else {
+        stage.scrollTo({ left: targetLeft, behavior: behavior });
+      }
+    }
+
+    function setActive(index, shouldScroll, behavior) {
+      if (!slides.length) return;
+
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+      activeIndex = index;
+
+      slides.forEach(function(slide, slideIndex) {
+        slide.classList.toggle("is-active", slideIndex === activeIndex);
+      });
+
+      renderReview(activeIndex);
+
+      if (shouldScroll) {
+        scrollToIndex(activeIndex, behavior || "smooth");
+      }
+    }
+
+    function detectActiveFromScroll() {
+      var stageCenter = stage.scrollLeft + (stage.clientWidth / 2);
+      var nextIndex = activeIndex;
+      var minDistance = Infinity;
+
+      slides.forEach(function(slide, slideIndex) {
+        var slideCenter = slide.offsetLeft + (slide.offsetWidth / 2);
+        var distance = Math.abs(slideCenter - stageCenter);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nextIndex = slideIndex;
+        }
+      });
+
+      if (nextIndex !== activeIndex) {
+        setActive(nextIndex, false);
+      }
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) {
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      if (!mobileQuery.matches || slides.length < 2) return;
+
+      autoplayTimer = window.setInterval(function() {
+        setActive(activeIndex + 1, true, "smooth");
+      }, autoplayDelay);
+    }
+
+    function syncAfterScroll() {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(function() {
+        detectActiveFromScroll();
+        startAutoplay();
+      }, 110);
+    }
+
+    stage.addEventListener("scroll", syncAfterScroll, { passive: true });
+    stage.addEventListener("touchstart", stopAutoplay, { passive: true });
+    stage.addEventListener("pointerdown", stopAutoplay);
+    stage.addEventListener("mouseenter", stopAutoplay);
+    stage.addEventListener("mouseleave", startAutoplay);
+
+    window.addEventListener("resize", function() {
+      if (!mobileQuery.matches) {
+        stopAutoplay();
+        return;
+      }
+
+      window.requestAnimationFrame(function() {
+        scrollToIndex(activeIndex, "auto");
+      });
+    });
+
+    function handleBreakpointChange() {
+      if (!mobileQuery.matches) {
+        stopAutoplay();
+        return;
+      }
+
+      window.requestAnimationFrame(function() {
+        scrollToIndex(activeIndex, "auto");
+        startAutoplay();
+      });
+    }
+
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener("change", handleBreakpointChange);
+    } else if (mobileQuery.addListener) {
+      mobileQuery.addListener(handleBreakpointChange);
+    }
+
+    setActive(0, false);
+    window.requestAnimationFrame(function() {
+      scrollToIndex(0, "auto");
+      startAutoplay();
+    });
+  }
+
+  var mobileQuery = window.matchMedia ? window.matchMedia("(max-width: 768px)") : { matches: window.innerWidth <= 768 };
+  Array.prototype.forEach.call(SEC.querySelectorAll("[data-ugc-focus]"), initFocusCarousel);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "UGC评论配对墙",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "背景颜色",
+      "default": "#f6f5ef"
+    },
+    {
+      "type": "color",
+      "id": "card_color",
+      "label": "卡片颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字颜色",
+      "default": "#171716"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "辅助文字颜色",
+      "default": "#6d7068"
+    },
+    {
+      "type": "header",
+      "content": "── 滚动速度 ──"
+    },
+    {
+      "type": "range",
+      "id": "speed_row_1",
+      "label": "桌面端第一行速度",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "s",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "speed_row_2",
+      "label": "桌面端第二行速度",
+      "min": 20,
+      "max": 90,
+      "step": 2,
+      "unit": "s",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "mobile_speed_row_1",
+      "label": "手机端第一行速度",
+      "min": 20,
+      "max": 90,
+      "step": 2,
+      "unit": "s",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "mobile_speed_row_2",
+      "label": "手机端第二行速度",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "s",
+      "default": 48
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "悬停时暂停",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "桌面端上间距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "桌面端下间距",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "手机端上间距",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "手机端下间距",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "📝 标题",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "标题文字",
+          "default": "UGC"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "副标题文字"
+        },
+        {
+          "type": "header",
+          "content": "── 桌面端样式 ──"
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "标题字号",
+          "min": 18,
+          "max": 72,
+          "step": 2,
+          "unit": "px",
+          "default": 36
+        },
+        {
+          "type": "range",
+          "id": "subheading_size",
+          "label": "副标题字号",
+          "min": 12,
+          "max": 36,
+          "step": 1,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "select",
+          "id": "heading_align",
+          "label": "对齐方式",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "左对齐" },
+            { "value": "center", "label": "居中" },
+            { "value": "right", "label": "右对齐" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "标题颜色"
+        },
+        {
+          "type": "color",
+          "id": "subheading_color",
+          "label": "副标题颜色"
+        },
+        {
+          "type": "header",
+          "content": "── 手机端样式 ──"
+        },
+        {
+          "type": "range",
+          "id": "m_heading_size",
+          "label": "标题字号",
+          "min": 14,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "m_subheading_size",
+          "label": "副标题字号",
+          "min": 10,
+          "max": 28,
+          "step": 1,
+          "unit": "px",
+          "default": 14
+        },
+        {
+          "type": "select",
+          "id": "m_heading_align",
+          "label": "对齐方式",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "左对齐" },
+            { "value": "center", "label": "居中" },
+            { "value": "right", "label": "右对齐" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "media",
+      "name": "📸 媒体卡片",
+      "settings": [
+        {
+          "type": "select",
+          "id": "row",
+          "label": "所在行",
+          "default": "1",
+          "options": [
+            { "value": "1", "label": "第一行" },
+            { "value": "2", "label": "第二行" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "图片" },
+        { "type": "video", "id": "video", "label": "视频（上传）" },
+        { "type": "text", "id": "alt", "label": "图片描述（Alt）" },
+        {
+          "type": "header",
+          "content": "── 链接 ──"
+        },
+        { "type": "url", "id": "link", "label": "Instagram / 外部链接", "info": "添加链接后左上角显示 Instagram 图标" },
+        {
+          "type": "header",
+          "content": "── 产品标签（可选）──"
+        },
+        { "type": "product", "id": "product", "label": "关联产品", "info": "选择产品后卡片底部显示产品名称和价格" }
+      ]
+    },
+    {
+      "type": "story",
+      "name": "内容组",
+      "settings": [
+        {
+          "type": "select",
+          "id": "row",
+          "label": "所在行",
+          "default": "1",
+          "options": [
+            {
+              "value": "1",
+              "label": "第一行"
+            },
+            {
+              "value": "2",
+              "label": "第二行"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "story_label",
+          "label": "顶部标签",
+          "default": "同组内容"
+        },
+        {
+          "type": "text",
+          "id": "review_label",
+          "label": "评论标签",
+          "default": "评论"
+        },
+        {
+          "type": "text",
+          "id": "ugc_label",
+          "label": "UGC标签",
+          "default": "UGC"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "头像"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "姓名",
+          "default": "Chris Tann"
+        },
+        {
+          "type": "text",
+          "id": "author_meta",
+          "label": "副标题",
+          "default": "已验证购买"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "评分",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "评论内容",
+          "default": "细节比我预想的还要精致，实物非常有存在感，戴上后一点都不像廉价快时尚的首饰。"
+        },
+        {
+          "type": "text",
+          "id": "review_tag",
+          "label": "评论底部标签",
+          "default": "真实客户评价"
+        },
+        {
+          "type": "video",
+          "id": "ugc_video",
+          "label": "UGC视频"
+        },
+        {
+          "type": "image_picker",
+          "id": "ugc_image",
+          "label": "UGC图片"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "链接"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "UGC评论配对墙",
+      "blocks": [
+        {
+          "type": "story",
+          "settings": {
+            "row": "1",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Chris Tann",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "细节比我预想的还要精致，实物非常有存在感，戴上后一点都不像廉价快时尚的首饰。",
+            "review_tag": "Real customer review"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "row": "1",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Emily R.",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "包装很有仪式感，戒指比图片更有质感，拿来求婚或送礼都非常合适。",
+            "review_tag": "Unboxing review"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "row": "1",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Grace D.",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "不是那种只能拍照好看的款，日常戴也很顺手，近看依然精致。",
+            "review_tag": "Daily wear review"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "row": "2",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Nina H.",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "客服回复很快，定制过程也很顺，成品和我想要的感觉基本一致。",
+            "review_tag": "Custom review"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "row": "2",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Amy R.",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "我本来担心网上买会有色差，结果实物比页面更干净、更亮，也更高级。",
+            "review_tag": "Close up review"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "row": "2",
+            "story_label": "Same customer story",
+            "review_label": "Review",
+            "ugc_label": "UGC",
+            "author": "Ella A.",
+            "author_meta": "Verified Buyer",
+            "rating": 5,
+            "review_text": "拿到手的第一感觉就是高级，不只是戒指本身，整体呈现也很完整。",
+            "review_tag": "Gift reaction review"
+          }
+        },
+        {
+          "type": "media",
+          "settings": {
+            "row": "1"
+          }
+        },
+        {
+          "type": "media",
+          "settings": {
+            "row": "2"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

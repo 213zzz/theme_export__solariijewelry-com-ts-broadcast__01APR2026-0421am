@@ -1,0 +1,48 @@
+<!-- /snippets/product-payment-icons.liquid -->
+{%- comment -%}
+  Auto-detects enabled payment types from the shop and renders their SVG icons.
+  Supports: heading with alignment/size, marquee scrolling, desktop/mobile icon sizes.
+  Usage: {% render 'product-payment-icons', block: block, block_style: block_style %}
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = block.settings.heading
+  assign heading_align = block.settings.heading_align | default: 'center'
+  assign heading_size = block.settings.heading_size | default: 'body-small'
+  assign marquee_enable = block.settings.marquee_enable
+  assign marquee_speed = block.settings.marquee_speed | default: 30
+  assign icon_h_desktop = block.settings.icon_height_desktop | default: 28
+  assign icon_h_mobile = block.settings.icon_height_mobile | default: 22
+-%}
+
+<div
+  class="product__block product-payment-icons block-padding"
+  {{ block.shopify_attributes }}
+  {{ block_style }}
+  style="--pi-icon-h-desktop: {{ icon_h_desktop }}px; --pi-icon-h-mobile: {{ icon_h_mobile }}px; --pi-marquee-speed: {{ marquee_speed }}s;"
+>
+  {%- if heading != blank -%}
+    <p class="product-payment-icons__heading {{ heading_size }}" style="text-align: {{ heading_align }};">
+      {{ heading }}
+    </p>
+  {%- endif -%}
+
+  {%- if marquee_enable -%}
+    <div class="product-payment-icons__marquee-wrap">
+      <div class="product-payment-icons__marquee">
+        {%- for type in shop.enabled_payment_types -%}
+          <span class="product-payment-icons__item">{{ type | payment_type_svg_tag }}</span>
+        {%- endfor -%}
+        {%- for type in shop.enabled_payment_types -%}
+          <span class="product-payment-icons__item" aria-hidden="true">{{ type | payment_type_svg_tag }}</span>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- else -%}
+    <div class="product-payment-icons__list">
+      {%- for type in shop.enabled_payment_types -%}
+        <span class="product-payment-icons__item">{{ type | payment_type_svg_tag }}</span>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

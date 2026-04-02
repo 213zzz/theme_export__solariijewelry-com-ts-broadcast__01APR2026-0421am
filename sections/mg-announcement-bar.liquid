@@ -1,0 +1,758 @@
+{%- comment -%}
+  Modgents 风格公告栏 — iOS 26 Liquid Glass Edition
+  桌面：左侧固定文字 | 倒计时(玻璃胶囊) | 右侧轮播文字
+  手机：左侧两行（固定文字 + 轮播文字）| 右侧倒计时
+{%- endcomment -%}
+
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: '#000000'
+  assign text_color = section.settings.text_color | default: '#ffffff'
+  assign sep_color = section.settings.sep_color | default: 'rgba(255,255,255,0.35)'
+  assign font_size = section.settings.font_size | default: 13
+  assign slide_speed = section.settings.slide_speed | default: 3
+  assign show_countdown = section.settings.show_countdown
+  assign end_date = section.settings.end_date | default: '2026-12-31'
+  assign end_time = section.settings.end_time | default: '23:59'
+  assign period = section.settings.period | default: 'pm'
+  assign left_text = section.settings.left_text
+  assign padding_top = section.settings.padding_top | default: 8
+  assign padding_bottom = section.settings.padding_bottom | default: 8
+  assign slider_width = section.settings.slider_width | default: 280
+-%}
+
+{%- style -%}
+  #MgAnnouncement--{{ section.id }} {
+    --mg-bg: rgba(0, 0, 0, 0.65);
+    --mg-text: {{ text_color }};
+    --mg-sep: {{ sep_color }};
+    --mg-font-size: {{ font_size }}px;
+    --mg-pt: {{ padding_top }}px;
+    --mg-pb: {{ padding_bottom }}px;
+    --mg-slider-w: {{ slider_width }}px;
+  }
+{%- endstyle -%}
+
+<style>
+  /* ═══════════════════════════════════════════════════════
+     iOS 26 Liquid Glass — Announcement Bar
+     半透明深色玻璃 · 底部折射高光线 · 倒计时玻璃胶囊
+     渐隐分隔线 · 四档文字透明度层次
+     ═══════════════════════════════════════════════════════ */
+
+  /* ── 容器: 半透明深色玻璃 ── */
+  /* 强制半透明, 覆盖主题框架的实色背景 */
+  #MgAnnouncement--{{ section.id }}.mg-ann-wrapper {
+    background: rgba(0, 0, 0, 0.65) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(1.9) brightness(0.92);
+    backdrop-filter: blur(50px) saturate(1.9) brightness(0.92);
+    padding: var(--mg-pt) 0 var(--mg-pb);
+    overflow: hidden;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* ── 底部高光折射线 ── */
+  #MgAnnouncement--{{ section.id }}.mg-ann-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0.5px;
+    background: linear-gradient(
+      90deg,
+      transparent 5%,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.04) 75%,
+      transparent 95%
+    );
+    pointer-events: none;
+  }
+
+  /* ── 主容器 ── */
+  #MgAnnouncement--{{ section.id }} .mg-ann {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    white-space: nowrap;
+    font-size: var(--mg-font-size);
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    color: var(--mg-text);
+    line-height: 1;
+    padding: 0 24px;
+    box-sizing: border-box;
+    opacity: 0.85;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann a {
+    color: var(--mg-text) !important;
+    text-decoration: none !important;
+    transition: opacity 0.3s ease;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann a:hover {
+    opacity: 1 !important;
+    text-decoration: underline !important;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann strong {
+    font-weight: 600;
+    color: #fff;
+    opacity: 1;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann-fixed {
+    flex-shrink: 0;
+    color: var(--mg-text);
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-ann-fixed p {
+    margin: 0;
+    display: inline;
+  }
+
+  /* ── 分隔线: 渐隐竖线 ── */
+  #MgAnnouncement--{{ section.id }} .mg-ann-sep {
+    display: inline-block;
+    width: 0.5px;
+    height: 16px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--mg-sep),
+      transparent
+    );
+    flex-shrink: 0;
+    margin: 0 22px;
+  }
+
+  /* ── 倒计时: 玻璃胶囊 ── */
+  #MgAnnouncement--{{ section.id }} .mg-cd {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    padding: 5px 14px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-cd-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 26px;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-cd-num {
+    font-size: calc(var(--mg-font-size));
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-cd-label {
+    font-size: 7.5px;
+    font-weight: 500;
+    color: var(--mg-text);
+    opacity: 0.4;
+    text-transform: uppercase;
+    margin-top: 2px;
+    letter-spacing: 0.6px;
+    line-height: 1;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-cd-colon {
+    font-size: calc(var(--mg-font-size) - 1px);
+    font-weight: 500;
+    color: var(--mg-text);
+    opacity: 0.3;
+    padding: 0 1px;
+    align-self: flex-start;
+    line-height: 1;
+  }
+
+  /* ── 轮播容器 ── */
+  #MgAnnouncement--{{ section.id }} .mg-slider,
+  #MgAnnouncement--{{ section.id }} .mg-mobile-slider {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slider {
+    height: 1.4em;
+    width: var(--mg-slider-w);
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-mobile-slider {
+    display: none;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slide-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: var(--mg-text);
+    white-space: nowrap;
+    will-change: transform, opacity;
+    transform: translateX(110%);
+    opacity: 0;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slide-item p {
+    margin: 0;
+    display: inline;
+    opacity: 0.65;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slide-item.mg-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: none;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slide-item.mg-exit {
+    transform: translateX(-110%);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease 0.1s;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-slide-item.mg-enter {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-mobile-only {
+    display: none;
+  }
+
+  #MgAnnouncement--{{ section.id }} .mg-desktop-only {
+    display: block;
+  }
+
+  /* ── Shopify 主题兼容: 强制所有父级透明 ── */
+  #shopify-section-{{ section.id }} {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  #shopify-section-{{ section.id }} .announcement__wrapper--top {
+    --bg: transparent !important;
+    --text: {{ text_color }} !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  #shopify-section-{{ section.id }} .announcement__wrapper--top .announcement__bar-outer {
+    padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  /* 覆盖任何可能的内联样式或主题变量 */
+  #shopify-section-{{ section.id }} [style*="background"] {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     Mobile — 749px
+     ═══════════════════════════════════════════════════════ */
+  @media screen and (max-width: 749px) {
+    #MgAnnouncement--{{ section.id }}.mg-ann-wrapper {
+      padding: 8px 0;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 10px;
+      width: 100%;
+      padding: 0 14px;
+      white-space: normal;
+      font-size: 11.5px;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-width: 0;
+      gap: 3px;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann-fixed {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      line-height: 1.15;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: rgba(245, 245, 247, 0.9);
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann-fixed p {
+      display: block;
+      margin: 0;
+      white-space: normal;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann-fixed strong {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-ann-sep,
+    #MgAnnouncement--{{ section.id }} .mg-desktop-only {
+      display: none !important;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-mobile-only {
+      display: block;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-mobile-slider {
+      display: block;
+      width: 100%;
+      height: 1.1em;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-mobile-slider .mg-slide-item {
+      justify-content: flex-start;
+      font-size: 10.5px;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-mobile-slider .mg-slide-item p {
+      display: block;
+      margin: 0;
+      opacity: 0.5;
+    }
+
+    /* ── Mobile 倒计时: 紧凑玻璃胶囊 ── */
+    #MgAnnouncement--{{ section.id }} .mg-cd {
+      justify-self: end;
+      gap: 2px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 0.5px solid rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-cd-unit {
+      min-width: 20px;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-cd-num {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-cd-label {
+      font-size: 6.5px;
+      margin-top: 1.5px;
+      opacity: 0.35;
+      letter-spacing: 0.4px;
+    }
+
+    #MgAnnouncement--{{ section.id }} .mg-cd-colon {
+      font-size: 10px;
+      padding: 0;
+      margin: 0 0.5px;
+      opacity: 0.2;
+    }
+  }
+</style>
+
+<div id="MgAnnouncement--{{ section.id }}" class="mg-ann-wrapper" data-section-id="{{ section.id }}">
+  <div class="mg-ann">
+
+    <div class="mg-ann-left">
+      {%- if left_text != blank -%}
+        <span class="mg-ann-fixed">{{ left_text }}</span>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="mg-mobile-slider mg-mobile-only" id="mgSliderMobile--{{ section.id }}" data-speed="{{ slide_speed }}">
+          {%- for block in section.blocks -%}
+            <div class="mg-slide-item{% if forloop.first %} mg-active{% endif %}" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if show_countdown -%}
+      <span class="mg-ann-sep"></span>
+
+      {%- assign end_datetime = end_date | append: 'T' -%}
+      {%- if period == 'pm' -%}
+        {%- assign time_parts = end_time | split: ':' -%}
+        {%- assign hour = time_parts[0] | plus: 0 -%}
+        {%- if hour < 12 -%}
+          {%- assign hour = hour | plus: 12 -%}
+        {%- endif -%}
+        {%- assign end_datetime = end_datetime | append: hour | append: ':' | append: time_parts[1] | append: ':00' -%}
+      {%- else -%}
+        {%- assign end_datetime = end_datetime | append: end_time | append: ':00' -%}
+      {%- endif -%}
+
+      <span class="mg-cd" id="mgCd--{{ section.id }}" data-end="{{ end_datetime }}">
+        <span class="mg-cd-unit">
+          <span class="mg-cd-num" data-mg-hours>00</span>
+          <span class="mg-cd-label">{{ section.settings.label_hours }}</span>
+        </span>
+        <span class="mg-cd-colon">:</span>
+        <span class="mg-cd-unit">
+          <span class="mg-cd-num" data-mg-mins>00</span>
+          <span class="mg-cd-label">{{ section.settings.label_mins }}</span>
+        </span>
+        <span class="mg-cd-colon">:</span>
+        <span class="mg-cd-unit">
+          <span class="mg-cd-num" data-mg-secs>00</span>
+          <span class="mg-cd-label">{{ section.settings.label_secs }}</span>
+        </span>
+      </span>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <span class="mg-ann-sep mg-desktop-only"></span>
+
+      <div class="mg-slider mg-desktop-only" id="mgSliderDesktop--{{ section.id }}" data-speed="{{ slide_speed }}">
+        {%- for block in section.blocks -%}
+          <div class="mg-slide-item{% if forloop.first %} mg-active{% endif %}" {{ block.shopify_attributes }}>
+            {{ block.settings.text }}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+(function() {
+  var sectionId = '{{ section.id }}';
+
+  var wrapper = document.getElementById('MgAnnouncement--' + sectionId);
+  if (!wrapper) return;
+
+  var oldTimer = wrapper._mgInterval;
+  if (oldTimer) clearInterval(oldTimer);
+
+  /* 倒计时 */
+  var cdEl = document.getElementById('mgCd--' + sectionId);
+  if (cdEl) {
+    var endTime = new Date(cdEl.getAttribute('data-end')).getTime();
+    var hEl = cdEl.querySelector('[data-mg-hours]');
+    var mEl = cdEl.querySelector('[data-mg-mins]');
+    var sEl = cdEl.querySelector('[data-mg-secs]');
+
+    function updateCd() {
+      var diff = Math.max(0, endTime - Date.now());
+      var h = Math.floor(diff / 36e5);
+      var m = Math.floor((diff % 36e5) / 6e4);
+      var s = Math.floor((diff % 6e4) / 1e3);
+
+      if (hEl) hEl.textContent = h < 10 ? '0' + h : h;
+      if (mEl) mEl.textContent = m < 10 ? '0' + m : m;
+      if (sEl) sEl.textContent = s < 10 ? '0' + s : s;
+
+      if (diff > 0) {
+        setTimeout(updateCd, 1000);
+      }
+    }
+    updateCd();
+  }
+
+  function initSlider(sliderId) {
+    var slider = document.getElementById(sliderId);
+    if (!slider) return null;
+
+    var items = slider.querySelectorAll('.mg-slide-item');
+    if (!items.length) return null;
+
+    if (items.length === 1) {
+      items[0].classList.add('mg-active');
+      return null;
+    }
+
+    var current = 0;
+    var total = items.length;
+    var isAnimating = false;
+    var speed = (parseInt(slider.getAttribute('data-speed'), 10) || 3) * 1000;
+
+    items.forEach(function(item, index) {
+      if (index === 0) {
+        item.classList.add('mg-active');
+      } else {
+        item.style.transform = 'translateX(110%)';
+        item.style.opacity = '0';
+      }
+    });
+
+    return setInterval(function() {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      var next = (current + 1) % total;
+      var currentItem = items[current];
+      var nextItem = items[next];
+
+      currentItem.classList.remove('mg-active');
+      currentItem.classList.add('mg-exit');
+
+      nextItem.classList.remove('mg-exit');
+      nextItem.style.transform = 'translateX(110%)';
+      nextItem.style.opacity = '0';
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          nextItem.classList.add('mg-enter');
+          nextItem.style.transform = '';
+          nextItem.style.opacity = '';
+        });
+      });
+
+      setTimeout(function() {
+        currentItem.classList.remove('mg-exit');
+        currentItem.style.transform = 'translateX(110%)';
+        currentItem.style.opacity = '0';
+
+        nextItem.classList.remove('mg-enter');
+        nextItem.classList.add('mg-active');
+
+        current = next;
+        isAnimating = false;
+      }, 600);
+    }, speed);
+  }
+
+  var intervals = [];
+  var desktopInterval = initSlider('mgSliderDesktop--' + sectionId);
+  var mobileInterval = initSlider('mgSliderMobile--' + sectionId);
+
+  if (desktopInterval) intervals.push(desktopInterval);
+  if (mobileInterval) intervals.push(mobileInterval);
+
+  wrapper._mgInterval = {
+    clear: function() {
+      intervals.forEach(function(timer) {
+        clearInterval(timer);
+      });
+    }
+  };
+})();
+</script>
+
+{% schema %}
+{
+  "name": "✨ Announcement bar",
+  "class": "page-announcement",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Left side — Fixed text"
+    },
+    {
+      "type": "richtext",
+      "id": "left_text",
+      "label": "Text",
+      "default": "<p>Get 20% Off ✨ Code: <strong>SAVE20</strong></p>"
+    },
+    {
+      "type": "header",
+      "content": "Countdown timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Show countdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date",
+      "default": "2026-12-31",
+      "placeholder": "2026-12-31",
+      "info": "Format: YYYY-MM-DD"
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "End time",
+      "default": "11:59",
+      "placeholder": "11:59",
+      "info": "Format: HH:MM (12-hour)"
+    },
+    {
+      "type": "radio",
+      "id": "period",
+      "label": "AM / PM",
+      "options": [
+        { "value": "am", "label": "AM" },
+        { "value": "pm", "label": "PM" }
+      ],
+      "default": "pm"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours label",
+      "default": "HR"
+    },
+    {
+      "type": "text",
+      "id": "label_mins",
+      "label": "Minutes label",
+      "default": "MIN"
+    },
+    {
+      "type": "text",
+      "id": "label_secs",
+      "label": "Seconds label",
+      "default": "SEC"
+    },
+    {
+      "type": "header",
+      "content": "Right side — Slider"
+    },
+    {
+      "type": "range",
+      "id": "slide_speed",
+      "label": "Slide interval",
+      "unit": "sec",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "slider_width",
+      "label": "Slider area width",
+      "info": "Increase if text gets cut off",
+      "unit": "px",
+      "min": 150,
+      "max": 500,
+      "step": 10,
+      "default": 280
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sep_color",
+      "label": "Separator color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "unit": "px",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "unit": "px",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "unit": "px",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Fast & Free Shipping</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "✨ Announcement bar",
+      "blocks": [
+        { "type": "slide", "settings": { "text": "<p>Fast & Free Shipping</p>" } },
+        { "type": "slide", "settings": { "text": "<p>Lifetime Warranty + Easy Returns</p>" } },
+        { "type": "slide", "settings": { "text": "<p>⭐ 10,000+ 5-Star Reviews</p>" } }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

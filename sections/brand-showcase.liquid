@@ -1,0 +1,675 @@
+{% comment %}
+  ============================================================
+  Solarii Brand Showcase — Liquid Glass Edition
+  保存为: sections/brand-showcase-glass.liquid
+  Shopify 后台 → 自定义主题 → 添加板块 → Brand Showcase Glass
+  ============================================================
+{% endcomment %}
+
+{{ 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600&display=swap' | stylesheet_tag }}
+
+{% style %}
+  #bs-glass-{{ section.id }} *{margin:0;padding:0;box-sizing:border-box}
+  #bs-glass-{{ section.id }}{
+    --card-bg:rgba(255,255,255,0.96);
+    --glass-bg-active:#ffffff;
+    --glass-border:rgba(0,0,0,0.08);
+    --glass-highlight:rgba(255,255,255,0.9);
+    --glass-radius:28px;
+    --glass-radius-sm:16px;
+    --text-1:#1a1a1a;--text-2:#3d3d3d;--text-3:#666;--text-4:#999;
+    font-family:-apple-system,'SF Pro Display','Noto Sans SC','Helvetica Neue',sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:{{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
+    background:{{ section.settings.bg_color }};
+    position:relative;overflow:hidden;
+  }
+
+  /* Glass Card */
+  #bs-glass-{{ section.id }} .bs-card{
+    position:relative;z-index:1;width:100%;max-width:{{ section.settings.max_width }}px;margin:0 auto;
+    border-radius:var(--glass-radius);overflow:hidden;background:var(--card-bg);
+    border:1px solid var(--glass-border);
+    box-shadow:0 16px 48px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.03);
+  }
+
+  /* Header */
+  #bs-glass-{{ section.id }} .bs-hdr{padding:40px 44px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  #bs-glass-{{ section.id }} .bs-hdr h2{font-size:24px;font-weight:700;color:var(--text-1);letter-spacing:-0.3px}
+  #bs-glass-{{ section.id }} .bs-hdr .sub{font-size:13px;color:var(--text-4);font-style:italic;letter-spacing:.5px}
+
+  /* Tabs */
+  #bs-glass-{{ section.id }} .bs-tabs{display:flex;padding:24px 44px 0;gap:6px}
+  #bs-glass-{{ section.id }} .bs-tab{
+    flex:1;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 0 16px;background:transparent;border:1px solid transparent;border-radius:var(--glass-radius-sm);
+    cursor:pointer;color:var(--text-4);font-family:inherit;font-size:15px;
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+  }
+  #bs-glass-{{ section.id }} .bs-tab:hover{background:rgba(0,0,0,0.02);border-color:rgba(0,0,0,0.06)}
+  #bs-glass-{{ section.id }} .bs-tab.active{
+    color:var(--text-1);background:var(--glass-bg-active);border-color:var(--glass-border);
+    box-shadow:inset .5px .5px 0 var(--glass-highlight),0 8px 24px rgba(0,0,0,0.06);
+  }
+  #bs-glass-{{ section.id }} .bs-tab .ico{display:flex;align-items:center;opacity:.3;transition:opacity .35s}
+  #bs-glass-{{ section.id }} .bs-tab.active .ico{opacity:.75}
+  #bs-glass-{{ section.id }} .bs-tab .lbl{font-weight:400;transition:font-weight .35s}
+  #bs-glass-{{ section.id }} .bs-tab.active .lbl{font-weight:600}
+  #bs-glass-{{ section.id }} .bs-ptrack{position:absolute;bottom:5px;left:18%;right:18%;height:2.5px;background:rgba(0,0,0,0.05);border-radius:2px;overflow:hidden}
+  #bs-glass-{{ section.id }} .bs-pbar{height:100%;border-radius:2px;background:linear-gradient(90deg, {{ section.settings.progress_color | color_modify: 'alpha', 0.2 }}, {{ section.settings.progress_color }});width:0;position:relative}
+  #bs-glass-{{ section.id }} .bs-tab.active .bs-pbar::after{
+    content:'';position:absolute;top:-.5px;bottom:-.5px;width:50%;border-radius:2px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent);
+    animation:bsShimmer-{{ section.id }} 2.2s ease-in-out infinite;
+  }
+  @keyframes bsShimmer-{{ section.id }}{0%{left:-60%}100%{left:160%}}
+  #bs-glass-{{ section.id }} .bs-div{height:1px;margin:0 28px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.08) 20%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.08) 80%,transparent)}
+
+  /* Content */
+  #bs-glass-{{ section.id }} .bs-ct{display:grid;grid-template-columns:1.15fr 1fr;min-height:400px}
+  #bs-glass-{{ section.id }} .bs-ct.fi{animation:bsFadeI-{{ section.id }} .45s cubic-bezier(.25,.46,.45,.94)}
+  @keyframes bsFadeI-{{ section.id }}{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Text */
+  #bs-glass-{{ section.id }} .bs-txt{padding:40px 44px;display:flex;flex-direction:column;justify-content:center}
+  #bs-glass-{{ section.id }} .bs-ey{font-size:11px;font-weight:600;color:var(--text-4);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+  #bs-glass-{{ section.id }} .bs-txt h3{font-size:22px;font-weight:700;color:var(--text-1);line-height:1.45;margin-bottom:5px}
+  #bs-glass-{{ section.id }} .bs-txt h4{font-size:14px;font-weight:400;color:var(--text-4);font-style:italic;margin-bottom:18px;font-family:'Playfair Display',serif}
+  #bs-glass-{{ section.id }} .bs-dcn{font-size:14.5px;line-height:1.85;color:var(--text-2);font-weight:400;margin-bottom:8px}
+  #bs-glass-{{ section.id }} .bs-den{font-size:13.5px;line-height:1.8;color:var(--text-3);font-weight:400;margin-bottom:26px}
+  #bs-glass-{{ section.id }} .bs-tags{display:flex;flex-wrap:wrap;gap:8px}
+  #bs-glass-{{ section.id }} .bs-tag{
+    padding:7px 16px;font-size:12px;font-weight:500;color:var(--text-2);
+    background:rgba(248,248,248,0.96);
+    border:1px solid rgba(0,0,0,0.06);border-radius:100px;
+    box-shadow:none;
+    opacity:0;animation:bsSlU-{{ section.id }} .4s ease forwards;transition:background .25s,box-shadow .25s;
+  }
+  #bs-glass-{{ section.id }} .bs-tag:hover{background:#ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
+  #bs-glass-{{ section.id }} .bs-tag:nth-child(1){animation-delay:0s}
+  #bs-glass-{{ section.id }} .bs-tag:nth-child(2){animation-delay:.08s}
+  #bs-glass-{{ section.id }} .bs-tag:nth-child(3){animation-delay:.16s}
+  @keyframes bsSlU-{{ section.id }}{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Visual */
+  #bs-glass-{{ section.id }} .bs-vis{
+    position:relative;overflow:hidden;min-height:340px;
+    border-left:1px solid rgba(0,0,0,0.08);
+    background:#ffffff;
+  }
+  #bs-glass-{{ section.id }} .bs-media-wrap{width:100%;height:100%;min-height:340px;background:#ffffff}
+  #bs-glass-{{ section.id }} .bs-media-image,
+  #bs-glass-{{ section.id }} .bs-media-video{display:block;width:100%;height:100%;min-height:340px;object-fit:cover}
+  #bs-glass-{{ section.id }} .bs-media-video{background:#000}
+  #bs-glass-{{ section.id }} .bs-dots{position:absolute;top:18px;right:18px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;opacity:.12;z-index:1}
+  #bs-glass-{{ section.id }} .bs-dot{width:4px;height:4px;border-radius:50%;background:rgba(0,0,0,0.35)}
+  #bs-glass-{{ section.id }} .bs-spin{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:190px;height:190px;border-radius:50%;
+    background:conic-gradient(from 0deg,rgba(250,250,248,0.3) 0%,rgba(220,210,195,0.5) 25%,rgba(200,190,170,0.4) 50%,rgba(220,210,195,0.5) 75%,rgba(250,250,248,0.3) 100%);
+    opacity:.25;animation:bsSpin-{{ section.id }} 20s linear infinite;
+  }
+  @keyframes bsSpin-{{ section.id }}{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  #bs-glass-{{ section.id }} .bs-ring{position:absolute;top:50%;left:50%;border-radius:50%;transform:translate(-50%,-50%);border:1px solid rgba(0,0,0,0.04)}
+  #bs-glass-{{ section.id }} .bs-ring.r1{width:140px;height:140px;animation:bsRP-{{ section.id }} 3.5s ease-in-out infinite}
+  #bs-glass-{{ section.id }} .bs-ring.r2{width:200px;height:200px;border-color:rgba(0,0,0,0.03);animation:bsRP-{{ section.id }} 5s ease-in-out infinite}
+  #bs-glass-{{ section.id }} .bs-ring.r3{width:260px;height:260px;border-color:rgba(0,0,0,0.02);animation:bsRP-{{ section.id }} 6.5s ease-in-out infinite}
+  @keyframes bsRP-{{ section.id }}{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.6;transform:translate(-50%,-50%) scale(1.05)}}
+  #bs-glass-{{ section.id }} .bs-dash{
+    position:absolute;top:50%;left:50%;width:180px;height:180px;transform:translate(-50%,-50%);
+    border-radius:50%;border:1px dashed rgba(0,0,0,0.06);animation:bsSpin-{{ section.id }} 30s linear infinite reverse;
+  }
+  #bs-glass-{{ section.id }} .bs-vc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;z-index:2}
+  #bs-glass-{{ section.id }} .bs-vb{font-size:52px;font-weight:200;color:var(--text-1);font-family:'Playfair Display',serif}
+  #bs-glass-{{ section.id }} .bs-vs{font-size:12px;color:var(--text-4);letter-spacing:4px;text-transform:uppercase}
+
+  /* Footer */
+  #bs-glass-{{ section.id }} .bs-ft{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(0,0,0,0.08);background:#ffffff}
+  #bs-glass-{{ section.id }} .bs-fi{padding:24px 12px;text-align:center;border-right:1px solid rgba(0,0,0,0.06);transition:background .3s}
+  #bs-glass-{{ section.id }} .bs-fi:last-child{border-right:none}
+  #bs-glass-{{ section.id }} .bs-fi:hover{background:rgba(0,0,0,0.02)}
+  #bs-glass-{{ section.id }} .bs-fn{font-size:20px;font-weight:600;color:var(--text-1);font-family:'Playfair Display',serif}
+  #bs-glass-{{ section.id }} .bs-fl{font-size:12px;color:var(--text-3);margin-top:3px;letter-spacing:.5px}
+
+  /* Mobile */
+  @media(max-width:768px){
+    #bs-glass-{{ section.id }}{padding:16px 12px}
+    #bs-glass-{{ section.id }} .bs-card{--glass-radius:22px}
+    #bs-glass-{{ section.id }} .bs-hdr{padding:28px 24px 0;gap:10px}
+    #bs-glass-{{ section.id }} .bs-hdr h2{font-size:20px}
+    #bs-glass-{{ section.id }} .bs-hdr .sub{font-size:11px}
+    #bs-glass-{{ section.id }} .bs-tabs{padding:18px 16px 0;gap:4px}
+    #bs-glass-{{ section.id }} .bs-tab{font-size:13px;padding:9px 4px 14px;gap:5px;border-radius:12px}
+    #bs-glass-{{ section.id }} .bs-tab .ico svg{width:15px;height:15px}
+    #bs-glass-{{ section.id }} .bs-ptrack{left:12%;right:12%;height:2px}
+    #bs-glass-{{ section.id }} .bs-div{margin:0 16px}
+    #bs-glass-{{ section.id }} .bs-ct{grid-template-columns:1fr;min-height:auto}
+    #bs-glass-{{ section.id }} .bs-txt{padding:28px 24px 24px}
+    #bs-glass-{{ section.id }} .bs-ey{font-size:10px;letter-spacing:2.5px;margin-bottom:10px}
+    #bs-glass-{{ section.id }} .bs-txt h3{font-size:19px;margin-bottom:4px}
+    #bs-glass-{{ section.id }} .bs-txt h4{font-size:13px;margin-bottom:14px}
+    #bs-glass-{{ section.id }} .bs-dcn{font-size:14px;margin-bottom:6px}
+    #bs-glass-{{ section.id }} .bs-den{font-size:13px;margin-bottom:20px}
+    #bs-glass-{{ section.id }} .bs-tags{gap:6px}
+    #bs-glass-{{ section.id }} .bs-tag{padding:6px 14px;font-size:11px}
+    #bs-glass-{{ section.id }} .bs-vis{
+      border-left:none;border-top:1px solid rgba(0,0,0,0.08);
+      min-height:220px;margin:0 16px 16px;border-radius:16px;
+      background:#ffffff;
+    }
+    #bs-glass-{{ section.id }} .bs-media-wrap,
+    #bs-glass-{{ section.id }} .bs-media-image,
+    #bs-glass-{{ section.id }} .bs-media-video{min-height:220px}
+    #bs-glass-{{ section.id }} .bs-vb{font-size:40px}
+    #bs-glass-{{ section.id }} .bs-vs{font-size:11px;letter-spacing:3px}
+    #bs-glass-{{ section.id }} .bs-spin{width:150px;height:150px}
+    #bs-glass-{{ section.id }} .bs-ring.r1{width:110px;height:110px}
+    #bs-glass-{{ section.id }} .bs-ring.r2{width:160px;height:160px}
+    #bs-glass-{{ section.id }} .bs-ring.r3{width:210px;height:210px}
+    #bs-glass-{{ section.id }} .bs-dash{width:140px;height:140px}
+    #bs-glass-{{ section.id }} .bs-dots{top:12px;right:12px;grid-template-columns:repeat(4,1fr);gap:4px}
+    #bs-glass-{{ section.id }} .bs-dot{width:3px;height:3px}
+    #bs-glass-{{ section.id }} .bs-ft{grid-template-columns:repeat(2,1fr)}
+    #bs-glass-{{ section.id }} .bs-fi{padding:18px 10px}
+    #bs-glass-{{ section.id }} .bs-fi:nth-child(1),
+    #bs-glass-{{ section.id }} .bs-fi:nth-child(2){border-bottom:1px solid rgba(0,0,0,0.06)}
+    #bs-glass-{{ section.id }} .bs-fi:nth-child(2){border-right:none}
+    #bs-glass-{{ section.id }} .bs-fn{font-size:17px}
+    #bs-glass-{{ section.id }} .bs-fl{font-size:11px}
+  }
+  @media(max-width:380px){
+    #bs-glass-{{ section.id }} .bs-tab .lbl{font-size:12px}
+    #bs-glass-{{ section.id }} .bs-tab .ico{display:none}
+    #bs-glass-{{ section.id }} .bs-vb{font-size:34px}
+  }
+{% endstyle %}
+
+<section id="bs-glass-{{ section.id }}">
+
+  <div class="bs-card">
+
+    <!-- Header -->
+    <div class="bs-hdr">
+      <h2>{{ section.settings.heading }}</h2>
+      <span class="sub">{{ section.settings.heading_en }}</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bs-tabs" id="bs-tabs-{{ section.id }}">
+      {% for block in section.blocks %}
+        <button class="bs-tab {% if forloop.index0 == 0 %}active{% endif %}"
+                data-index="{{ forloop.index0 }}"
+                onclick="bsGlassSw_{{ section.id | replace: '-', '_' }}({{ forloop.index0 }})">
+          <span class="ico">
+            {% if block.settings.icon_type == 'diamond' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>
+            {% elsif block.settings.icon_type == 'layers' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            {% elsif block.settings.icon_type == 'shield' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            {% elsif block.settings.icon_type == 'heart' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            {% else %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/></svg>
+            {% endif %}
+          </span>
+          <span class="lbl">{{ block.settings.tab_label }}</span>
+          <div class="bs-ptrack"><div class="bs-pbar" id="bs-bar-{{ section.id }}-{{ forloop.index0 }}"></div></div>
+        </button>
+      {% endfor %}
+    </div>
+
+    <div class="bs-div"></div>
+
+    <!-- Content -->
+    <div class="bs-ct fi" id="bs-ct-{{ section.id }}"></div>
+
+    <!-- Footer -->
+    <div class="bs-ft">
+      <div class="bs-fi">
+        <div class="bs-fn">{{ section.settings.footer_1_value }}</div>
+        <div class="bs-fl">{{ section.settings.footer_1_label }}</div>
+      </div>
+      <div class="bs-fi">
+        <div class="bs-fn">{{ section.settings.footer_2_value }}</div>
+        <div class="bs-fl">{{ section.settings.footer_2_label }}</div>
+      </div>
+      <div class="bs-fi">
+        <div class="bs-fn">{{ section.settings.footer_3_value }}</div>
+        <div class="bs-fl">{{ section.settings.footer_3_label }}</div>
+      </div>
+      <div class="bs-fi">
+        <div class="bs-fn">{{ section.settings.footer_4_value }}</div>
+        <div class="bs-fl">{{ section.settings.footer_4_label }}</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var SID = '{{ section.id }}';
+  var SFID = SID.replace(/-/g,'_');
+  var DURATION = {{ section.settings.autoplay_speed }}000;
+
+  var tabsData = [
+    {% for block in section.blocks %}
+    {% capture block_media_html %}
+      {% if block.settings.visual_video != blank %}
+        <div class="bs-media-wrap">
+          {{ block.settings.visual_video | video_tag: class: 'bs-media-video', controls: true, loop: true, muted: true, playsinline: true }}
+        </div>
+      {% elsif block.settings.visual_image != blank %}
+        <div class="bs-media-wrap">
+          {{ block.settings.visual_image | image_url: width: 1400 | image_tag: class: 'bs-media-image', loading: 'lazy' }}
+        </div>
+      {% endif %}
+    {% endcapture %}
+    {
+      ey: {{ block.settings.eyebrow | json }},
+      tc: {{ block.settings.title_cn | json }},
+      te: {{ block.settings.title_en | json }},
+      dc: {{ block.settings.desc_cn | json }},
+      de: {{ block.settings.desc_en | json }},
+      t1: {{ block.settings.tag_1 | json }},
+      t2: {{ block.settings.tag_2 | json }},
+      t3: {{ block.settings.tag_3 | json }},
+      bt: {{ block.settings.visual_big_text | json }},
+      st: {{ block.settings.visual_small_text | json }},
+      vt: {{ block.settings.visual_type | json }},
+      mh: {{ block_media_html | strip | strip_newlines | json }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  var active = 0, startTime = Date.now(), elapsed = 0, paused = false, raf;
+  var ct = document.getElementById('bs-ct-' + SID);
+  var card = document.querySelector('#bs-glass-' + SID + ' .bs-card');
+
+  card.addEventListener('mouseenter', function(){ paused = true; });
+  card.addEventListener('mouseleave', function(){ paused = false; startTime = Date.now(); });
+
+  function dots(n){ var s=''; for(var i=0;i<n;i++) s+='<div class="bs-dot"></div>'; return s; }
+
+  function vh(t){
+    var c='<div class="bs-vc"><span class="bs-vb">'+t.bt+'</span><span class="bs-vs">'+t.st+'</span></div>';
+    var d='<div class="bs-dots">'+dots(15)+'</div>';
+    if(t.vt==='rings') return d+'<div class="bs-ring r1"></div><div class="bs-ring r2"></div><div class="bs-ring r3"></div>'+c;
+    if(t.vt==='dashed') return d+'<div class="bs-dash"></div>'+c;
+    return d+'<div class="bs-spin"></div>'+c;
+  }
+
+  function render(i){
+    var t=tabsData[i], tags='';
+    if(t.t1) tags+='<span class="bs-tag">'+t.t1+'</span>';
+    if(t.t2) tags+='<span class="bs-tag">'+t.t2+'</span>';
+    if(t.t3) tags+='<span class="bs-tag">'+t.t3+'</span>';
+    ct.innerHTML=
+      '<div class="bs-txt">'+
+        '<div class="bs-ey">'+t.ey+'</div>'+
+        '<h3>'+t.tc+'</h3><h4>'+t.te+'</h4>'+
+        '<p class="bs-dcn">'+t.dc+'</p>'+
+        '<p class="bs-den">'+t.de+'</p>'+
+        '<div class="bs-tags">'+tags+'</div>'+
+      '</div>'+
+      '<div class="bs-vis">'+(t.mh ? t.mh : vh(t))+'</div>';
+    ct.classList.remove('fi'); void ct.offsetHeight; ct.classList.add('fi');
+  }
+
+  function updateTabs(){
+    document.querySelectorAll('#bs-tabs-'+SID+' .bs-tab').forEach(function(b,i){
+      b.classList.toggle('active', i===active);
+    });
+  }
+
+  function resetBars(){
+    for(var i=0; i<tabsData.length; i++){
+      var bar = document.getElementById('bs-bar-'+SID+'-'+i);
+      if(bar) bar.style.width='0%';
+    }
+  }
+
+  window['bsGlassSw_'+SFID] = function(idx){
+    if(idx===active) return;
+    active=idx; elapsed=0; startTime=Date.now();
+    resetBars(); updateTabs(); render(active);
+  };
+
+  function tick(){
+    if(!paused){
+      var now=Date.now(); elapsed+=now-startTime; startTime=now;
+      var p=Math.min(elapsed/DURATION,1);
+      var bar=document.getElementById('bs-bar-'+SID+'-'+active);
+      if(bar) bar.style.width=(p*100)+'%';
+      if(p>=1){
+        var next=(active+1)%tabsData.length;
+        active=next; elapsed=0; startTime=Date.now();
+        resetBars(); updateTabs(); render(active);
+      }
+    } else { startTime=Date.now(); }
+    raf=requestAnimationFrame(tick);
+  }
+
+  render(0);
+  raf=requestAnimationFrame(tick);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Brand Showcase Glass",
+  "tag": "section",
+  "class": "brand-showcase-glass",
+  "settings": [
+    {
+      "type": "header",
+      "content": "📝 标题设置"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "主标题",
+      "default": "关于我们的品牌"
+    },
+    {
+      "type": "text",
+      "id": "heading_en",
+      "label": "英文副标题",
+      "default": "About Solarii Jewelry"
+    },
+    {
+      "type": "header",
+      "content": "🎨 背景与样式"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "模块背景颜色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "进度条颜色",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "最大宽度 (px)",
+      "min": 1600,
+      "max": 2400,
+      "step": 50,
+      "default": 2200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "上边距",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "下边距",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "自动切换速度（秒）",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 5,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "📊 底部数据栏"
+    },
+    {
+      "type": "text",
+      "id": "footer_1_value",
+      "label": "数据 1 - 数值",
+      "default": "Lifetime"
+    },
+    {
+      "type": "text",
+      "id": "footer_1_label",
+      "label": "数据 1 - 标签",
+      "default": "终身质保"
+    },
+    {
+      "type": "text",
+      "id": "footer_2_value",
+      "label": "数据 2 - 数值",
+      "default": "Free"
+    },
+    {
+      "type": "text",
+      "id": "footer_2_label",
+      "label": "数据 2 - 标签",
+      "default": "全球免运费"
+    },
+    {
+      "type": "text",
+      "id": "footer_3_value",
+      "label": "数据 3 - 数值",
+      "default": "365 Days"
+    },
+    {
+      "type": "text",
+      "id": "footer_3_label",
+      "label": "数据 3 - 标签",
+      "default": "无忧退换"
+    },
+    {
+      "type": "text",
+      "id": "footer_4_value",
+      "label": "数据 4 - 数值",
+      "default": "Secure"
+    },
+    {
+      "type": "text",
+      "id": "footer_4_label",
+      "label": "数据 4 - 标签",
+      "default": "安全支付"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "标签页",
+      "settings": [
+        {
+          "type": "header",
+          "content": "🏷️ 标签设置"
+        },
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "标签名称",
+          "default": "品牌故事"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "图标样式",
+          "options": [
+            { "value": "diamond", "label": "💎 钻石" },
+            { "value": "layers", "label": "📦 层叠" },
+            { "value": "shield", "label": "🛡️ 盾牌" },
+            { "value": "heart", "label": "❤️ 爱心" },
+            { "value": "circle", "label": "⭕ 圆形" }
+          ],
+          "default": "diamond"
+        },
+        {
+          "type": "header",
+          "content": "📄 内容设置"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "英文小标签（全大写）",
+          "default": "BRAND STORY"
+        },
+        {
+          "type": "text",
+          "id": "title_cn",
+          "label": "中文标题",
+          "default": "璀璨，属于每一个人"
+        },
+        {
+          "type": "text",
+          "id": "title_en",
+          "label": "英文标题",
+          "default": "Brilliance, Belonging to Everyone"
+        },
+        {
+          "type": "textarea",
+          "id": "desc_cn",
+          "label": "中文描述",
+          "default": "在 Solarii，我们拒绝流水线生产。每一件珠宝都由技艺精湛的工匠手工打造，使用无冲突莫桑石与环保材料，既美丽又负责任。"
+        },
+        {
+          "type": "textarea",
+          "id": "desc_en",
+          "label": "英文描述",
+          "default": "We reject mass production — every piece is meticulously handcrafted using conflict-free moissanite and recycled materials."
+        },
+        {
+          "type": "header",
+          "content": "🏅 亮点标签（最多3个）"
+        },
+        {
+          "type": "text",
+          "id": "tag_1",
+          "label": "亮点 1",
+          "default": "Handcrafted Artistry"
+        },
+        {
+          "type": "text",
+          "id": "tag_2",
+          "label": "亮点 2",
+          "default": "Conflict-Free Stones"
+        },
+        {
+          "type": "text",
+          "id": "tag_3",
+          "label": "亮点 3",
+          "default": "Eco-Friendly"
+        },
+        {
+          "type": "header",
+          "content": "✨ 右侧视觉区域"
+        },
+        {
+          "type": "image_picker",
+          "id": "visual_image",
+          "label": "视觉图片"
+        },
+        {
+          "type": "video",
+          "id": "visual_video",
+          "label": "视觉视频（直接上传，优先显示）"
+        },
+        {
+          "type": "select",
+          "id": "visual_type",
+          "label": "动画样式",
+          "options": [
+            { "value": "gradient", "label": "🌀 旋转渐变" },
+            { "value": "rings", "label": "⭕ 扩散圆环" },
+            { "value": "dashed", "label": "⚬ 虚线旋转" }
+          ],
+          "default": "gradient"
+        },
+        {
+          "type": "text",
+          "id": "visual_big_text",
+          "label": "中心大字",
+          "default": "Solarii"
+        },
+        {
+          "type": "text",
+          "id": "visual_small_text",
+          "label": "中心小字",
+          "default": "Since Day One"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Showcase Glass",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "品牌故事",
+            "icon_type": "diamond",
+            "eyebrow": "BRAND STORY",
+            "title_cn": "璀璨，属于每一个人",
+            "title_en": "Brilliance, Belonging to Everyone",
+            "desc_cn": "在 Solarii，我们拒绝流水线生产。每一件珠宝都由技艺精湛的工匠手工打造，使用无冲突莫桑石与环保材料，既美丽又负责任。",
+            "desc_en": "We reject mass production — every piece is meticulously handcrafted using conflict-free moissanite and recycled materials.",
+            "tag_1": "Handcrafted Artistry",
+            "tag_2": "Conflict-Free Stones",
+            "tag_3": "Eco-Friendly",
+            "visual_type": "gradient",
+            "visual_big_text": "Solarii",
+            "visual_small_text": "Since Day One"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "产品质量",
+            "icon_type": "layers",
+            "eyebrow": "QUALITY",
+            "title_cn": "高品质，不高价",
+            "title_en": "High Quality, Without the High Price",
+            "desc_cn": "每一枚 Solarii 戒指均采用925纯银搭配高品质莫桑石，璀璨程度媲美天然钻石。从选石到抛光，层层品质把控，让您自信佩戴。",
+            "desc_en": "Crafted in 925 sterling silver with premium moissanite — meticulous quality from stone selection to final polish.",
+            "tag_1": "925 Sterling Silver",
+            "tag_2": "Premium Moissanite",
+            "tag_3": "GRA Certified",
+            "visual_type": "rings",
+            "visual_big_text": "925",
+            "visual_small_text": "Sterling Silver"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "售后服务",
+            "icon_type": "shield",
+            "eyebrow": "AFTER-SALES",
+            "title_cn": "我们始终守护您",
+            "title_en": "We've Got You Covered",
+            "desc_cn": "您的信任是我们最大的动力。每次购买均享受终身质保、全球免运费、无忧退换货，以及每周7天的客服支持。购买只是承诺的开始。",
+            "desc_en": "Lifetime Warranty, Free Shipping, hassle-free Returns, and responsive 7-day support with every purchase.",
+            "tag_1": "Lifetime Warranty",
+            "tag_2": "Free Shipping & Returns",
+            "tag_3": "7-Day Support",
+            "visual_type": "dashed",
+            "visual_big_text": "Lifetime",
+            "visual_small_text": "Warranty"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

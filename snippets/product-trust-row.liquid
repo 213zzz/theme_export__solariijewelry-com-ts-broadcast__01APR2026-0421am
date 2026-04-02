@@ -1,0 +1,56 @@
+<!-- /snippets/product-trust-row.liquid -->
+{%- comment -%}
+  Trust badges row with separate desktop/mobile settings.
+  Usage: {% render 'product-trust-row', block: block, block_style: block_style %}
+{%- endcomment -%}
+
+{%- liquid
+  assign cols_desktop = block.settings.columns_desktop | default: '4'
+  assign cols_mobile = block.settings.columns_mobile | default: '4'
+  assign icon_desktop = block.settings.icon_size_desktop | default: 28
+  assign icon_mobile = block.settings.icon_size_mobile | default: 24
+  assign label_desktop = block.settings.label_size_desktop | default: 'body-x-small'
+  assign label_mobile = block.settings.label_size_mobile | default: 'body-x-small'
+  assign icon_color = block.settings.icon_color | default: '#545454'
+-%}
+
+<div
+  class="product__block product-trust-row block-padding"
+  {{ block.shopify_attributes }}
+  {{ block_style }}
+  style="--tr-cols-desktop: {{ cols_desktop }}; --tr-cols-mobile: {{ cols_mobile }}; --tr-icon-desktop: {{ icon_desktop }}px; --tr-icon-mobile: {{ icon_mobile }}px; --tr-icon-color: {{ icon_color }};"
+>
+  <div class="product-trust-row__list">
+    <div class="product-trust-row__item">
+      <div class="product-trust-row__icon">
+        {%- render 'icon-fast-shipment' -%}
+      </div>
+      <span class="product-trust-row__label product-trust-row__label--desktop {{ label_desktop }}">Overnight Shipping</span>
+      <span class="product-trust-row__label product-trust-row__label--mobile {{ label_mobile }}">Overnight Shipping</span>
+    </div>
+
+    <div class="product-trust-row__item">
+      <div class="product-trust-row__icon">
+        {%- render 'icon-shield' -%}
+      </div>
+      <span class="product-trust-row__label product-trust-row__label--desktop {{ label_desktop }}">Lifetime Warranty</span>
+      <span class="product-trust-row__label product-trust-row__label--mobile {{ label_mobile }}">Lifetime Warranty</span>
+    </div>
+
+    <div class="product-trust-row__item">
+      <div class="product-trust-row__icon">
+        {%- render 'icon-notes' -%}
+      </div>
+      <span class="product-trust-row__label product-trust-row__label--desktop {{ label_desktop }}">30 Days Free Return</span>
+      <span class="product-trust-row__label product-trust-row__label--mobile {{ label_mobile }}">30 Days Free Return</span>
+    </div>
+
+    <div class="product-trust-row__item">
+      <div class="product-trust-row__icon">
+        {%- render 'icon-award' -%}
+      </div>
+      <span class="product-trust-row__label product-trust-row__label--desktop {{ label_desktop }}">Certificate & Appraisal</span>
+      <span class="product-trust-row__label product-trust-row__label--mobile {{ label_mobile }}">Certificate & Appraisal</span>
+    </div>
+  </div>
+</div>

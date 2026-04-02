@@ -1,0 +1,850 @@
+{% comment %}
+  ╔══════════════════════════════════════════════════╗
+  ║  Seasons Strip                                    ║
+  ╠══════════════════════════════════════════════════╣
+  ║  Desktop ≥ 900px : CSS sticky + 水平滚动          ║
+  ║  Mobile  < 900px : 全屏轮播 + dots + 箭头 + 手势  ║
+  ╚══════════════════════════════════════════════════╝
+{% endcomment %}
+
+<section id="maya-s-{{ section.id }}" class="maya-s">
+
+  {%- comment -%}══ DESKTOP: sticky horizontal scroll ══{%- endcomment -%}
+  <div class="maya-s__scroll maya-s--desktop">
+    <div class="maya-s__sticky">
+
+      <article class="maya-s__intro">
+        {%- if section.settings.intro_image != blank -%}
+          <div class="maya-s__introBg">
+            {{ section.settings.intro_image | image_url: width: 1200 | image_tag: loading: "lazy", alt: "" }}
+          </div>
+        {%- endif -%}
+        <div class="maya-s__introInner">
+          {%- if section.settings.logo_text != blank -%}
+            <div class="maya-s__logo">{{ section.settings.logo_text }}</div>
+          {%- endif -%}
+          <h2 class="maya-s__title">
+            {%- if section.settings.outline_word != blank -%}
+              <span class="maya-s__outline">{{ section.settings.outline_word }}</span>
+            {%- endif -%}
+            {{ section.settings.title_rest | escape }}
+          </h2>
+          {%- if section.settings.description != blank -%}
+            <p class="maya-s__desc">{{ section.settings.description }}</p>
+          {%- endif -%}
+          <div class="maya-s__cta">
+            {%- if section.settings.show_circle_btn -%}
+              <a class="maya-s__circle" href="{{ section.settings.button_link | default: '#' }}" aria-label="Explore">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M7 17L17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {%- endif -%}
+            {%- if section.settings.button_text != blank -%}
+              <a class="maya-s__pill" href="{{ section.settings.button_link | default: '#' }}">{{ section.settings.button_text }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+      </article>
+
+      <div class="maya-s__viewport">
+        <div class="maya-s__track">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'card' -%}
+                <article class="maya-s__card" {{ block.shopify_attributes }}>
+                  <div class="maya-s__frame">
+                    {%- if block.settings.media_type == 'video_url' and block.settings.video_url != blank -%}
+                      <video class="maya-s__img" autoplay muted loop playsinline preload="metadata">
+                        <source src="{{ block.settings.video_url }}" type="video/mp4">
+                      </video>
+                    {%- elsif block.settings.media_type == 'video' and block.settings.video != blank -%}
+                      {{ block.settings.video | video_tag:
+                           class: "maya-s__img",
+                           autoplay: true, muted: true, loop: true,
+                           playsinline: true, controls: false }}
+                    {%- elsif block.settings.image != blank -%}
+                      {{ block.settings.image | image_url: width: 1400 | image_tag:
+                           class: "maya-s__img", loading: "lazy",
+                           alt: block.settings.title | default: "Collection" }}
+                    {%- else -%}
+                      <div class="maya-s__img" style="background:#e5e1da;"></div>
+                    {%- endif -%}
+                    {%- if block.settings.tagline != blank -%}
+                      <div class="maya-s__tag">{{ block.settings.tagline }}</div>
+                    {%- endif -%}
+                  </div>
+                  <div class="maya-s__meta">
+                    <span></span>
+                    <h3 class="maya-s__cardTitle">{{ block.settings.title }}</h3>
+                    {%- if block.settings.link_text != blank -%}
+                      <a class="maya-s__shop" href="{{ block.settings.link | default: '#' }}">{{ block.settings.link_text }}</a>
+                    {%- endif -%}
+                  </div>
+                </article>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="maya-s__rule"><span></span></div>
+    </div>
+  </div>
+
+  {%- comment -%}══ MOBILE: swipe carousel ══{%- endcomment -%}
+  <div class="maya-s__mobile maya-s--mobile">
+
+    <div class="maya-s__mIntro">
+      {%- if section.settings.logo_text != blank -%}
+        <div class="maya-s__mLogo">{{ section.settings.logo_text }}</div>
+      {%- endif -%}
+      <h2 class="maya-s__mTitle">
+        {%- if section.settings.outline_word != blank -%}
+          <span class="maya-s__mOutline">{{ section.settings.outline_word }}</span>
+        {%- endif -%}
+        {{ section.settings.title_rest | escape }}
+      </h2>
+      <div class="maya-s__mDescs">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'card' -%}
+            <div class="maya-s__mDescItem{% if forloop.first %} is-active{% endif %}" data-desc-i="{{ forloop.index0 }}">
+              {%- if block.settings.m_description != blank -%}
+                {{ block.settings.m_description }}
+              {%- elsif section.settings.description != blank -%}
+                <p>{{ section.settings.description }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <div class="maya-s__mCta">
+        {%- if section.settings.show_circle_btn -%}
+          <a class="maya-s__mCircle" href="{{ section.settings.button_link | default: '#' }}" aria-label="Explore">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 17L17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.button_text != blank -%}
+          <a class="maya-s__mPill" href="{{ section.settings.button_link | default: '#' }}">{{ section.settings.button_text }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="maya-s__mCarousel">
+      <div class="maya-s__mTrack">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'card' -%}
+              <div class="maya-s__mSlide" {{ block.shopify_attributes }}>
+                <div class="maya-s__mFrame">
+                  {%- comment -%}手机版优先用 mobile 媒体，auto 或没设置则 fallback 到桌面版{%- endcomment -%}
+                  {%- if block.settings.m_media_type != 'auto' and block.settings.m_media_type == 'video' and block.settings.m_video != blank -%}
+                    {{ block.settings.m_video | video_tag:
+                         class: "maya-s__mImg",
+                         autoplay: true, muted: true, loop: true,
+                         playsinline: true, controls: false }}
+                  {%- elsif block.settings.m_media_type != 'auto' and block.settings.m_media_type == 'video_url' and block.settings.m_video_url != blank -%}
+                    <video class="maya-s__mImg" autoplay muted loop playsinline preload="metadata">
+                      <source src="{{ block.settings.m_video_url }}" type="video/mp4">
+                    </video>
+                  {%- elsif block.settings.m_media_type != 'auto' and block.settings.m_image != blank -%}
+                    {{ block.settings.m_image | image_url: width: 800 | image_tag:
+                         class: "maya-s__mImg", loading: "lazy",
+                         alt: block.settings.title | default: "Collection" }}
+                  {%- elsif block.settings.media_type == 'video' and block.settings.video != blank -%}
+                    {{ block.settings.video | video_tag:
+                         class: "maya-s__mImg",
+                         autoplay: true, muted: true, loop: true,
+                         playsinline: true, controls: false }}
+                  {%- elsif block.settings.media_type == 'video_url' and block.settings.video_url != blank -%}
+                    <video class="maya-s__mImg" autoplay muted loop playsinline preload="metadata">
+                      <source src="{{ block.settings.video_url }}" type="video/mp4">
+                    </video>
+                  {%- elsif block.settings.image != blank -%}
+                    {{ block.settings.image | image_url: width: 800 | image_tag:
+                         class: "maya-s__mImg", loading: "lazy",
+                         alt: block.settings.title | default: "Collection" }}
+                  {%- else -%}
+                    <div class="maya-s__mImg" style="background:#e5e1da;"></div>
+                  {%- endif -%}
+                  {%- if block.settings.tagline != blank -%}
+                    <div class="maya-s__mTag">{{ block.settings.tagline }}</div>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.m_title != blank or block.settings.link_text != blank -%}
+                <div class="maya-s__mSlideMeta">
+                  {%- if block.settings.m_title != blank -%}
+                    <h3 class="maya-s__mSlideTitle">{{ block.settings.m_title }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.link_text != blank -%}
+                    <a class="maya-s__mSlideBtn" href="{{ block.settings.link | default: '#' }}">{{ block.settings.link_text }}</a>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="maya-s__mDots"></div>
+    <div class="maya-s__mArrows">
+      <button class="maya-s__mArrow" data-dir="prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="maya-s__mArrow" data-dir="next" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* ══════════════════════════════════════════
+     ROOT
+     ══════════════════════════════════════════ */
+  #maya-s-{{ section.id }} {
+    --bg: {{ section.settings.bg_color }};
+    --ink: {{ section.settings.text_color }};
+    --gutter: 72px;
+    --gap: {{ section.settings.card_gap }}px;
+    --intro-w: 560px;
+    --card-w: {{ section.settings.card_width }}vw;
+    --card-max: 1100px;
+    --frame: 12px;
+    --radius: 28px;
+    --hairline: rgba(0,0,0,.18);
+    --pt: {{ section.settings.padding_top }}px;
+    --pb: {{ section.settings.padding_bottom }}px;
+
+    position: relative;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: clip;
+    padding-top: var(--pt);
+    padding-bottom: var(--pb);
+  }
+
+  #maya-s-{{ section.id }} *,
+  #maya-s-{{ section.id }} *::before,
+  #maya-s-{{ section.id }} *::after { box-sizing: border-box; margin: 0; }
+
+  /* ── 桌面/手机互斥显示 ── */
+  #maya-s-{{ section.id }} .maya-s--mobile { display: none; }
+  #maya-s-{{ section.id }} .maya-s--desktop { display: block; }
+
+  @media (max-width: 899px) {
+    #maya-s-{{ section.id }} .maya-s--desktop { display: none !important; }
+    #maya-s-{{ section.id }} .maya-s--mobile  { display: block !important; }
+  }
+
+  /* ══════════════════════════════════════════
+     DESKTOP — Sticky Horizontal Scroll
+     ══════════════════════════════════════════ */
+  #maya-s-{{ section.id }} .maya-s__scroll { position: relative; }
+
+  #maya-s-{{ section.id }} .maya-s__sticky {
+    position: sticky; top: 0;
+    height: 100vh; overflow: hidden;
+    background: var(--bg);
+  }
+
+  #maya-s-{{ section.id }} .maya-s__intro {
+    position: absolute;
+    left: var(--gutter); top: 50%;
+    transform: translateY(-50%);
+    width: var(--intro-w);
+    z-index: 1;
+    pointer-events: none;
+    transform-origin: left center;
+    will-change: transform, opacity;
+    transition: transform .25s ease, opacity .25s ease;
+  }
+
+  #maya-s-{{ section.id }} .maya-s__intro::before {
+    content: "";
+    position: absolute;
+    inset: -80px -36px -80px -40px;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg,
+      {{ section.settings.bg_color }} 0%,
+      {{ section.settings.bg_color }}fa 70%,
+      {{ section.settings.bg_color }}99 88%,
+      transparent 100%);
+  }
+
+  #maya-s-{{ section.id }} .maya-s__introBg {
+    position: absolute;
+    left: -32px; top: -60px; right: -24px; bottom: -60px;
+    z-index: 0; opacity: .08;
+    pointer-events: none;
+    border-radius: 20px; overflow: hidden;
+  }
+  #maya-s-{{ section.id }} .maya-s__introBg img { width: 100%; height: 100%; object-fit: cover; }
+  #maya-s-{{ section.id }} .maya-s__introInner { position: relative; z-index: 3; }
+
+  #maya-s-{{ section.id }} .maya-s__logo {
+    font-size: {{ section.settings.d_logo_size }}px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    opacity: .82; margin-bottom: 14px;
+  }
+  #maya-s-{{ section.id }} .maya-s__title {
+    font-weight: 800; text-transform: uppercase;
+    letter-spacing: -.025em; line-height: .92;
+    font-size: {{ section.settings.d_title_size }}px;
+  }
+  #maya-s-{{ section.id }} .maya-s__outline {
+    display: block; color: transparent;
+    -webkit-text-stroke: 2px rgba(0,0,0,.85); margin-bottom: 2px;
+  }
+  #maya-s-{{ section.id }} .maya-s__desc {
+    margin-top: 18px; font-size: {{ section.settings.d_desc_size }}px;
+    line-height: 1.55; opacity: .68;
+    max-width: 46ch; font-weight: 400;
+  }
+  #maya-s-{{ section.id }} .maya-s__cta {
+    display: flex; align-items: center;
+    gap: 14px; margin-top: 26px; pointer-events: auto;
+  }
+  #maya-s-{{ section.id }} .maya-s__circle {
+    width: 46px; height: 46px;
+    border: 1.5px solid rgba(0,0,0,.82);
+    border-radius: 50%; background: transparent; color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; text-decoration: none; transition: all .22s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__circle:hover { background: var(--ink); color: var(--bg); transform: translateY(-2px); }
+  #maya-s-{{ section.id }} .maya-s__circle svg { width: 18px; height: 18px; }
+  #maya-s-{{ section.id }} .maya-s__pill {
+    height: 46px; padding: 0 22px;
+    border: 1.5px solid rgba(0,0,0,.82);
+    border-radius: 999px; background: transparent; color: var(--ink);
+    font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: .01em;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; transition: all .22s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__pill:hover { background: var(--ink); color: var(--bg); transform: translateY(-2px); }
+
+  #maya-s-{{ section.id }} .maya-s__viewport {
+    position: relative; z-index: 5;
+    height: 100%; width: 100%;
+    display: flex; align-items: center; overflow: hidden;
+  }
+  #maya-s-{{ section.id }} .maya-s__track {
+    display: flex; align-items: center; gap: var(--gap);
+    padding-left: calc(var(--intro-w) + var(--gutter) + var(--gap));
+    padding-right: calc(var(--gutter) + 40px);
+    padding-top: 24px; padding-bottom: 24px;
+    will-change: transform;
+  }
+  #maya-s-{{ section.id }} .maya-s__card {
+    flex: 0 0 var(--card-w); width: var(--card-w); max-width: var(--card-max);
+  }
+  #maya-s-{{ section.id }} .maya-s__frame {
+    position: relative; aspect-ratio: 16 / 9;
+    border-radius: calc(var(--radius) + var(--frame));
+    background: #fff; padding: var(--frame);
+    box-shadow: 0 22px 70px rgba(0,0,0,.10), 0 4px 14px rgba(0,0,0,.04);
+    overflow: hidden; transition: box-shadow .4s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__card:hover .maya-s__frame {
+    box-shadow: 0 28px 80px rgba(0,0,0,.14), 0 6px 20px rgba(0,0,0,.06);
+  }
+  #maya-s-{{ section.id }} .maya-s__img {
+    display: block; width: 100%; height: 100%;
+    border-radius: var(--radius); object-fit: cover; background: #e5e1da;
+    transition: transform .7s cubic-bezier(.4,0,.15,1);
+  }
+  #maya-s-{{ section.id }} .maya-s__card:hover .maya-s__img { transform: scale(1.04); }
+  #maya-s-{{ section.id }} .maya-s__frame video {
+    width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius);
+  }
+  #maya-s-{{ section.id }} .maya-s__tag {
+    position: absolute;
+    left: clamp(20px, 2.6vw, 36px); bottom: clamp(20px, 2.6vw, 36px);
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,.14); border-radius: 14px;
+    padding: 14px 18px; max-width: 80%;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    font-size: 15px; line-height: 1.28; letter-spacing: -.01em; font-weight: 500;
+  }
+  #maya-s-{{ section.id }} .maya-s__meta {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 14px; margin-top: 18px;
+  }
+  #maya-s-{{ section.id }} .maya-s__cardTitle {
+    grid-column: 2; text-align: center;
+    font-size: 22px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap;
+  }
+  #maya-s-{{ section.id }} .maya-s__shop {
+    grid-column: 3; justify-self: end;
+    height: 38px; padding: 0 18px;
+    border: 1.5px solid rgba(0,0,0,.8); border-radius: 999px;
+    background: transparent; color: var(--ink); font-family: inherit;
+    font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+    text-decoration: none; display: inline-flex; align-items: center;
+    white-space: nowrap; cursor: pointer; transition: all .22s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__shop:hover { background: var(--ink); color: var(--bg); transform: translateY(-1px); }
+
+  #maya-s-{{ section.id }} .maya-s__rule {
+    position: absolute; left: var(--gutter); right: var(--gutter);
+    bottom: clamp(14px, 2.5vh, 24px); height: 1px;
+    background: var(--hairline); overflow: hidden; z-index: 12;
+  }
+  #maya-s-{{ section.id }} .maya-s__rule span {
+    position: absolute; inset: 0; height: 2px;
+    background: rgba(0,0,0,.86); transform-origin: 0 50%;
+    transform: scaleX(0); will-change: transform;
+  }
+
+  /* ══════════════════════════════════════════
+     MOBILE — Swipe Carousel  < 900px
+     ══════════════════════════════════════════ */
+  #maya-s-{{ section.id }} .maya-s__mobile { padding: 36px 0 40px; }
+
+  /* ── Mobile Intro ── */
+  #maya-s-{{ section.id }} .maya-s__mIntro {
+    padding: 0 24px;
+    margin-bottom: {{ section.settings.m_intro_gap }}px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mLogo {
+    font-size: {{ section.settings.m_logo_size }}px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase;
+    opacity: .6; margin-bottom: 10px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mTitle {
+    font-size: {{ section.settings.m_title_size }}px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: -.02em; line-height: .94; margin-bottom: 14px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mOutline {
+    display: block; color: transparent;
+    -webkit-text-stroke: 1.5px var(--ink); margin-bottom: 3px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mDesc {
+    font-size: {{ section.settings.m_desc_size }}px; line-height: 1.55; opacity: .6;
+    max-width: 40ch; margin-bottom: 12px;
+  }
+  /* ── Per-card description switcher ── */
+  #maya-s-{{ section.id }} .maya-s__mDescs {
+    position: relative;
+    min-height: 1em;
+    margin-bottom: 12px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mDescItem {
+    display: none;
+    font-size: {{ section.settings.m_desc_size }}px;
+    line-height: 1.55;
+    opacity: .6;
+    max-width: 40ch;
+    animation: mayaDescIn .35s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__mDescItem.is-active { display: block; }
+  #maya-s-{{ section.id }} .maya-s__mDescItem p { margin: 0; }
+  @keyframes mayaDescIn { from { opacity: 0; transform: translateY(6px); } to { opacity: .6; transform: none; } }
+
+  #maya-s-{{ section.id }} .maya-s__mCta { display: flex; align-items: center; gap: 10px; }
+  #maya-s-{{ section.id }} .maya-s__mCircle {
+    width: 40px; height: 40px;
+    border: 1.5px solid rgba(0,0,0,.7); border-radius: 50%;
+    background: transparent; color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    text-decoration: none;
+  }
+  #maya-s-{{ section.id }} .maya-s__mCircle svg { width: 15px; height: 15px; }
+  #maya-s-{{ section.id }} .maya-s__mPill {
+    height: 40px; padding: 0 18px;
+    border: 1.5px solid rgba(0,0,0,.7); border-radius: 999px;
+    background: transparent; color: var(--ink); font-family: inherit;
+    font-size: 12px; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center;
+  }
+
+  /* ── Mobile Carousel ── */
+  #maya-s-{{ section.id }} .maya-s__mCarousel { position: relative; overflow: hidden; }
+  #maya-s-{{ section.id }} .maya-s__mTrack {
+    display: flex;
+    transition: transform .4s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+  #maya-s-{{ section.id }} .maya-s__mSlide { flex: 0 0 100%; width: 100%; padding: 0 24px; }
+  #maya-s-{{ section.id }} .maya-s__mFrame {
+    position: relative; aspect-ratio: 3 / 4;
+    border-radius: 20px; overflow: hidden; background: transparent;
+  }
+  #maya-s-{{ section.id }} .maya-s__mImg {
+    display: block; width: 100%; height: 100%;
+    border-radius: 20px; object-fit: cover; background: #e5e1da;
+  }
+  #maya-s-{{ section.id }} .maya-s__mFrame video {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 20px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mTag {
+    position: absolute; left: 18px; bottom: 18px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,.1); border-radius: 12px;
+    padding: 10px 14px; max-width: 75%;
+    font-size: 13px; line-height: 1.3; font-weight: 500;
+  }
+  #maya-s-{{ section.id }} .maya-s__mSlideMeta {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-top: 14px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mSlideTitle {
+    font-size: 16px; font-weight: 700; letter-spacing: -.02em;
+  }
+  #maya-s-{{ section.id }} .maya-s__mSlideBtn {
+    height: 32px; padding: 0 14px;
+    border: 1.5px solid rgba(0,0,0,.7); border-radius: 999px;
+    background: transparent; color: var(--ink); font-family: inherit;
+    font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    text-decoration: none; display: inline-flex; align-items: center; white-space: nowrap;
+  }
+
+  /* ── Dots ── */
+  #maya-s-{{ section.id }} .maya-s__mDots {
+    display: flex; justify-content: center; gap: 8px; margin-top: 20px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mDot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(0,0,0,.15); border: none; padding: 0;
+    cursor: pointer; transition: all .3s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__mDot.is-active {
+    width: 28px; border-radius: 99px; background: var(--ink);
+  }
+
+  /* ── Arrows ── */
+  #maya-s-{{ section.id }} .maya-s__mArrows {
+    display: flex; justify-content: center; gap: 12px; margin-top: 16px;
+  }
+  #maya-s-{{ section.id }} .maya-s__mArrow {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(0,0,0,.2); border-radius: 50%;
+    background: transparent; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .2s ease;
+  }
+  #maya-s-{{ section.id }} .maya-s__mArrow:active { background: var(--ink); color: var(--bg); }
+  #maya-s-{{ section.id }} .maya-s__mArrow:disabled { opacity: .25; cursor: default; }
+  #maya-s-{{ section.id }} .maya-s__mArrow svg { width: 14px; height: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #maya-s-{{ section.id }} .maya-s__img,
+    #maya-s-{{ section.id }} .maya-s__mTrack { transition: none; }
+    #maya-s-{{ section.id }} .maya-s__rule { display: none; }
+  }
+</style>
+
+<script>
+(function(){
+  var ID   = "maya-s-{{ section.id }}";
+  var root = document.getElementById(ID);
+  if (!root) return;
+  var MQ   = window.matchMedia("(min-width:900px)");
+
+  /* ══════════════════════════════════════════
+     DESKTOP — Sticky horizontal scroll
+     ══════════════════════════════════════════ */
+  var scroll = root.querySelector(".maya-s__scroll");
+  var sticky = root.querySelector(".maya-s__sticky");
+  var track  = root.querySelector(".maya-s__track");
+  var intro  = root.querySelector(".maya-s__intro");
+  var bar    = root.querySelector(".maya-s__rule span");
+  var raf    = null;
+
+  function maxX() { return Math.max(0, track.scrollWidth - sticky.offsetWidth); }
+  function p4(t) { return t * t * t * t; }
+
+  function onScroll() {
+    if (!MQ.matches) return;
+    var rect = scroll.getBoundingClientRect();
+    var travel = maxX();
+    if (travel <= 0) return;
+    var progress = Math.max(0, Math.min(1, -rect.top / travel));
+
+    track.style.transform = "translate3d(" + (-progress * travel) + "px,0,0)";
+    if (bar) bar.style.transform = "scaleX(" + progress + ")";
+
+    if (intro) {
+      var introW  = intro.offsetWidth;
+      var fadeEnd = Math.min(0.4, (introW + 56) / travel);
+      if (progress <= 0) {
+        intro.style.opacity = "1";
+        intro.style.transform = "translateY(-50%) scale(1)";
+      } else if (progress >= fadeEnd) {
+        intro.style.opacity = "0";
+        intro.style.transform = "translateY(-50%) scale(0.65)";
+      } else {
+        var sub = progress / fadeEnd;
+        var eased = p4(sub);
+        intro.style.opacity = (1 - eased) + "";
+        intro.style.transform = "translateY(-50%) scale(" + (1 - eased * 0.35) + ")";
+      }
+    }
+  }
+
+  function dtick() { onScroll(); raf = requestAnimationFrame(dtick); }
+
+  function initDesktop() {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+    if (!MQ.matches) {
+      scroll.style.height = "";
+      track.style.transform = "";
+      if (intro) { intro.style.opacity = ""; intro.style.transform = ""; }
+      if (bar) bar.style.transform = "";
+      return;
+    }
+    scroll.style.height = (window.innerHeight + maxX()) + "px";
+    raf = requestAnimationFrame(dtick);
+  }
+
+  /* ══════════════════════════════════════════
+     MOBILE — Touch Carousel
+     ══════════════════════════════════════════ */
+  var mTrack  = root.querySelector(".maya-s__mTrack");
+  var mDots   = root.querySelector(".maya-s__mDots");
+  var mArrows = root.querySelectorAll(".maya-s__mArrow");
+  var mSlides = root.querySelectorAll(".maya-s__mSlide");
+  var mTotal  = mSlides.length;
+  var mCur    = 0;
+  var mBuilt  = false;
+
+  function buildDots() {
+    if (mBuilt) return;
+    mBuilt = true;
+    for (var i = 0; i < mTotal; i++) {
+      var d = document.createElement("button");
+      d.className = "maya-s__mDot" + (i === 0 ? " is-active" : "");
+      d.setAttribute("aria-label", "Slide " + (i + 1));
+      d.dataset.i = i;
+      mDots.appendChild(d);
+    }
+  }
+
+  function mGoTo(n) {
+    mCur = Math.max(0, Math.min(mTotal - 1, n));
+    mTrack.style.transform = "translateX(" + (-mCur * 100) + "%)";
+    var dots = mDots.querySelectorAll(".maya-s__mDot");
+    dots.forEach(function(d, i) { d.classList.toggle("is-active", i === mCur); });
+    mArrows.forEach(function(a) {
+      if (a.dataset.dir === "prev") a.disabled = mCur === 0;
+      if (a.dataset.dir === "next") a.disabled = mCur === mTotal - 1;
+    });
+    /* Switch per-card descriptions */
+    var descs = root.querySelectorAll(".maya-s__mDescItem");
+    descs.forEach(function(d, i) { d.classList.toggle("is-active", i === mCur); });
+  }
+
+  /* ── Autoplay ── */
+  var mAutoplay = {{ section.settings.m_autoplay | json }};
+  var mInterval = {{ section.settings.m_autoplay_sec }} * 1000;
+  var mTimer    = null;
+
+  function mAutoNext() {
+    var next = mCur + 1;
+    if (next >= mTotal) next = 0;  /* loop back */
+    mGoTo(next);
+  }
+
+  function mStartAuto() {
+    mStopAuto();
+    if (mAutoplay && !MQ.matches && mTotal > 1) {
+      mTimer = setInterval(mAutoNext, mInterval);
+    }
+  }
+
+  function mStopAuto() {
+    if (mTimer) { clearInterval(mTimer); mTimer = null; }
+  }
+
+  /* 用户交互时重置计时器 */
+  function mResetAuto() {
+    if (mAutoplay && !MQ.matches) {
+      mStopAuto();
+      mStartAuto();
+    }
+  }
+
+  function initMobile() {
+    mStopAuto();
+    if (!MQ.matches && mTotal > 0) {
+      buildDots();
+      mGoTo(0);
+      mStartAuto();
+    }
+  }
+
+  /* Arrow clicks */
+  mArrows.forEach(function(a) {
+    a.addEventListener("click", function() {
+      mGoTo(a.dataset.dir === "prev" ? mCur - 1 : mCur + 1);
+      mResetAuto();
+    });
+  });
+
+  /* Dot clicks */
+  mDots.addEventListener("click", function(e) {
+    var btn = e.target.closest(".maya-s__mDot");
+    if (btn) { mGoTo(parseInt(btn.dataset.i)); mResetAuto(); }
+  });
+
+  /* Touch swipe */
+  var sx = 0, sy = 0, dx = 0, locked = false;
+  if (mTrack) {
+    mTrack.addEventListener("touchstart", function(e) {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+      dx = 0; locked = false;
+      mTrack.style.transition = "none";
+      mStopAuto();
+    }, { passive: true });
+
+    mTrack.addEventListener("touchmove", function(e) {
+      if (locked) return;
+      var x = e.touches[0].clientX, y = e.touches[0].clientY;
+      dx = x - sx;
+      if (Math.abs(y - sy) > Math.abs(dx) && Math.abs(dx) < 10) { locked = true; return; }
+      var base = -mCur * 100;
+      var pct = (dx / mTrack.offsetWidth) * 100;
+      mTrack.style.transform = "translateX(" + (base + pct) + "%)";
+    }, { passive: true });
+
+    mTrack.addEventListener("touchend", function() {
+      mTrack.style.transition = "";
+      if (Math.abs(dx) > 50) { mGoTo(dx > 0 ? mCur - 1 : mCur + 1); }
+      else { mGoTo(mCur); }
+      mResetAuto();
+    });
+  }
+
+  /* ══════════════════════════════════════════
+     BOOTSTRAP
+     ══════════════════════════════════════════ */
+  function init() {
+    initDesktop();
+    initMobile();
+  }
+
+  if (document.readyState === "complete") { init(); }
+  else { window.addEventListener("load", init, { once: true }); }
+
+  var rt;
+  window.addEventListener("resize", function() {
+    clearTimeout(rt); rt = setTimeout(init, 200);
+  });
+
+  document.addEventListener("shopify:section:load", function(e) {
+    if (e.detail && ID.indexOf(e.detail.sectionId) > -1) setTimeout(init, 100);
+  });
+  document.addEventListener("shopify:section:unload", function(e) {
+    if (e.detail && ID.indexOf(e.detail.sectionId) > -1) {
+      if (raf) cancelAnimationFrame(raf);
+      mStopAuto();
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "季节展示条",
+  "settings": [
+    { "type": "header", "content": "── 介绍区 ──" },
+    { "type": "text",     "id": "logo_text",    "label": "Logo 文字",    "default": "MAYA" },
+    { "type": "text",     "id": "outline_word",  "label": "描边文字（空心）", "default": "FASHION" },
+    { "type": "text",     "id": "title_rest",    "label": "标题其余部分",   "default": "THAT FLOWS WITH THE SEASONS" },
+    { "type": "textarea", "id": "description",   "label": "描述文字",  "default": "Explore our latest collection of timeless fashion. From classic styles to modern trends, find the perfect look for every season. Shop now and elevate your wardrobe!" },
+    { "type": "image_picker", "id": "intro_image", "label": "介绍区背景图（装饰用）" },
+
+    { "type": "header", "content": "── 按钮 ──" },
+    { "type": "text",     "id": "button_text",     "label": "按钮文字",  "default": "Explore More" },
+    { "type": "url",      "id": "button_link",     "label": "按钮链接" },
+    { "type": "checkbox", "id": "show_circle_btn",  "label": "显示圆形箭头按钮", "default": true },
+
+    { "type": "header", "content": "── 颜色 ──" },
+    { "type": "color", "id": "bg_color",   "label": "背景色", "default": "#f3f1ec" },
+    { "type": "color", "id": "text_color", "label": "文字色", "default": "#101010" },
+
+    { "type": "header", "content": "── 间距 ──" },
+    { "type": "range", "id": "padding_top",    "label": "上边距",    "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px" },
+    { "type": "range", "id": "padding_bottom", "label": "下边距", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "── 卡片布局 ──" },
+    { "type": "range", "id": "card_width", "label": "卡片宽度 (vw)", "min": 30, "max": 85, "step": 1, "default": 47, "unit": "vw" },
+    { "type": "range", "id": "card_gap",   "label": "卡片间距",        "min": 16, "max": 80, "step": 4, "default": 56, "unit": "px" },
+
+    { "type": "header", "content": "── 🖥 电脑版字体 ──" },
+    { "type": "range", "id": "d_logo_size",  "label": "🖥 Logo 大小",        "min": 8,  "max": 24,  "step": 1, "default": 12, "unit": "px" },
+    { "type": "range", "id": "d_title_size", "label": "🖥 标题大小",       "min": 30, "max": 100, "step": 1, "default": 66, "unit": "px" },
+    { "type": "range", "id": "d_desc_size",  "label": "🖥 描述文字大小", "min": 10, "max": 24,  "step": 1, "default": 13, "unit": "px" },
+
+    { "type": "header", "content": "── 📱 手机版字体 ──" },
+    { "type": "range", "id": "m_logo_size",  "label": "📱 Logo 大小",          "min": 8,  "max": 20, "step": 1, "default": 10, "unit": "px" },
+    { "type": "range", "id": "m_title_size", "label": "📱 标题大小",         "min": 18, "max": 48, "step": 1, "default": 28, "unit": "px" },
+    { "type": "range", "id": "m_desc_size",  "label": "📱 描述文字大小",   "min": 10, "max": 18, "step": 1, "default": 12, "unit": "px" },
+    { "type": "range", "id": "m_intro_gap",  "label": "📱 介绍区→卡片间距",  "min": 8,  "max": 60, "step": 4, "default": 16, "unit": "px" },
+
+    { "type": "header", "content": "── 📱 手机版自动播放 ──" },
+    { "type": "checkbox", "id": "m_autoplay",    "label": "📱 自动轮播", "default": true },
+    { "type": "range",    "id": "m_autoplay_sec", "label": "📱 轮播间隔（秒）", "min": 2, "max": 12, "step": 1, "default": 5, "unit": "s" }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "卡片",
+      "settings": [
+        {
+          "type": "select", "id": "media_type", "label": "媒体类型", "default": "image",
+          "options": [
+            { "value": "image",     "label": "图片" },
+            { "value": "video",     "label": "视频（上传）" },
+            { "value": "video_url", "label": "视频（外部 mp4 链接）" }
+          ]
+        },
+        { "type": "image_picker", "id": "image",     "label": "图片" },
+        { "type": "video",        "id": "video",     "label": "视频（上传）" },
+        { "type": "url",          "id": "video_url", "label": "视频链接 (.mp4)" },
+
+        { "type": "header", "content": "📱 手机版媒体（可选，留空则使用上方素材）" },
+        {
+          "type": "select", "id": "m_media_type", "label": "📱 手机版媒体类型", "default": "auto",
+          "options": [
+            { "value": "auto",      "label": "与电脑版相同" },
+            { "value": "image",     "label": "图片" },
+            { "value": "video",     "label": "视频（上传）" },
+            { "value": "video_url", "label": "视频（外部 mp4 链接）" }
+          ]
+        },
+        { "type": "image_picker", "id": "m_image",     "label": "📱 手机版图片" },
+        { "type": "video",        "id": "m_video",     "label": "📱 手机版视频（上传）" },
+        { "type": "url",          "id": "m_video_url", "label": "📱 手机版视频链接 (.mp4)" },
+
+        { "type": "header", "content": "内容" },
+        { "type": "richtext", "id": "tagline",       "label": "标签气泡",   "default": "<p>Highlighted text here</p>" },
+        { "type": "richtext", "id": "m_description", "label": "📱 手机版介绍描述", "info": "手机版轮播到此卡片时显示的描述文字。留空则使用全局默认描述。" },
+        { "type": "text",     "id": "title",         "label": "🖥 电脑版卡片标题", "default": "Collection title" },
+        { "type": "text",     "id": "m_title",       "label": "📱 手机版卡片标题", "info": "留空则不显示手机版标题。" },
+        { "type": "text",     "id": "link_text",     "label": "按钮文字（清空隐藏）", "default": "Shop Now" },
+        { "type": "url",      "id": "link",          "label": "按钮链接" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "季节展示条",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

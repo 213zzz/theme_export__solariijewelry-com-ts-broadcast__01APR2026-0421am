@@ -1,0 +1,721 @@
+{% comment %}
+  Section: Collection Carousel (single file)
+  - Desktop: 3 cards / view (bigger by default)
+  - Mobile: 1 big card with next peek
+  - Separate desktop/mobile media (image/video) using Shopify hosted video (type: video)
+  - Separate desktop/mobile title/text sizes
+  - CTA button desktop/mobile sizes separated
+  - Heading/subheading desktop/mobile sizes separated
+  - Header align: left / center
+  - Inline CSS + JS
+{% endcomment %}
+
+<section
+  id="CollectionCarousel-{{ section.id }}"
+  class="cc cc-align-{{ section.settings.header_align }}"
+  style="
+    --cc-bg: {{ section.settings.bg }};
+    --cc-text: {{ section.settings.text_color }};
+    --cc-muted: {{ section.settings.muted_color }};
+    --cc-gap: {{ section.settings.gap }}px;
+    --cc-radius: {{ section.settings.card_radius }}px;
+    --cc-pad-y: {{ section.settings.pad_y }}px;
+    --cc-pad-x: {{ section.settings.pad_x }}px;
+
+    --cc-card-h-d: {{ section.settings.card_height_desktop }}px;
+    --cc-card-h-m: {{ section.settings.card_height_mobile }}px;
+
+    --cc-title-d: {{ section.settings.card_title_size_desktop }}px;
+    --cc-title-m: {{ section.settings.card_title_size_mobile }}px;
+
+    --cc-text-d: {{ section.settings.card_text_size_desktop }}px;
+    --cc-text-m: {{ section.settings.card_text_size_mobile }}px;
+
+    --cc-overlay-color: {{ section.settings.overlay_color }};
+    --cc-overlay-op: {{ section.settings.overlay_opacity | times: 0.01 }};
+
+    --cc-head-d: {{ section.settings.heading_size_desktop }}px;
+    --cc-head-m: {{ section.settings.heading_size_mobile }}px;
+    --cc-sub-d: {{ section.settings.subheading_size_desktop }}px;
+    --cc-sub-m: {{ section.settings.subheading_size_mobile }}px;
+
+    --cc-cta-fs-d: {{ section.settings.cta_font_size_desktop }}px;
+    --cc-cta-py-d: {{ section.settings.cta_padding_y_desktop }}px;
+    --cc-cta-px-d: {{ section.settings.cta_padding_x_desktop }}px;
+    --cc-cta-radius-d: {% if section.settings.cta_radius_desktop >= 100 %}999{% else %}{{ section.settings.cta_radius_desktop }}{% endif %}px;
+    --cc-cta-minw-d: {{ section.settings.cta_min_width_desktop }}px;
+
+    --cc-cta-fs-m: {{ section.settings.cta_font_size_mobile }}px;
+    --cc-cta-py-m: {{ section.settings.cta_padding_y_mobile }}px;
+    --cc-cta-px-m: {{ section.settings.cta_padding_x_mobile }}px;
+    --cc-cta-radius-m: {% if section.settings.cta_radius_mobile >= 100 %}999{% else %}{{ section.settings.cta_radius_mobile }}{% endif %}px;
+    --cc-cta-minw-m: {{ section.settings.cta_min_width_mobile }}px;
+  "
+  data-cc-root
+>
+  <style>
+    /* Root */
+    #CollectionCarousel-{{ section.id }}{
+      background: var(--cc-bg);
+      color: var(--cc-text);
+      padding: var(--cc-pad-y) var(--cc-pad-x);
+
+      /* ✅ 关键：不裁 hover 阴影 */
+      overflow-x: hidden;
+      overflow-y: visible;
+      position: relative;
+      z-index: 0;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-inner{
+      max-width: {{ section.settings.max_width }}px;
+      margin: 0 auto;
+    }
+
+    /* Top */
+    #CollectionCarousel-{{ section.id }} .cc-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+
+      /* ✅ 给 hover 上浮留空间，避免看起来“顶到标题” */
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-headwrap{
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-heading{
+      margin: 0;
+      font-size: var(--cc-head-d);
+      line-height: 1.08;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-family: var(--font-heading-family, ui-serif, "Times New Roman", serif);
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-sub{
+      margin: 10px 0 0 0;
+      color: var(--cc-muted);
+      font-size: var(--cc-sub-d);
+      line-height: 1.5;
+      max-width: 760px;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-arrows{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      user-select:none;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-arrow{
+      appearance:none;
+      border:none;
+      background: transparent;
+      padding: 6px;
+      cursor:pointer;
+      color: var(--cc-text);
+      opacity: .85;
+      transition: opacity 160ms ease, transform 160ms ease;
+      line-height: 0;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-arrow:hover{
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+    #CollectionCarousel-{{ section.id }} .cc-arrow:disabled{
+      opacity: .35;
+      cursor:not-allowed;
+      transform:none;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-arrow svg{
+      width: 20px; height: 20px;
+      fill:none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display:block;
+    }
+
+    /* Header align: center */
+    #CollectionCarousel-{{ section.id }}.cc-align-center .cc-top{
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #CollectionCarousel-{{ section.id }}.cc-align-center .cc-headwrap{
+      text-align: center;
+    }
+    #CollectionCarousel-{{ section.id }}.cc-align-center .cc-sub{
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #CollectionCarousel-{{ section.id }}.cc-align-center .cc-arrows{
+      margin-top: 10px;
+    }
+
+    /* Track */
+    #CollectionCarousel-{{ section.id }} .cc-track{
+      display:flex;
+      gap: var(--cc-gap);
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling: touch;
+
+      /* ✅ 关键：hover 上浮/阴影完整显示 */
+      padding-top: 18px;
+      padding-bottom: 26px;
+
+      scrollbar-width: none;
+
+      /* ✅ 间隙背景 = 外面背景（白） */
+      background: var(--cc-bg);
+
+      position: relative;
+      z-index: 1;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-track::-webkit-scrollbar{ display:none; }
+
+    /* Card (唯一的一处 cc-card) */
+    #CollectionCarousel-{{ section.id }} .cc-card{
+      position: relative;
+      border-radius: var(--cc-radius);
+      overflow: hidden;
+      height: var(--cc-card-h-d);
+      flex: 0 0 calc((100% - (var(--cc-gap) * 2)) / 3);
+      scroll-snap-align: start;
+
+      /* ✅ 卡片底色白 */
+      background: #fff;
+
+      /* ✅ 阴影更接近参考站，不会把间隙压得发灰 */
+      box-shadow: 0 16px 44px rgba(0,0,0,.07);
+
+      transition: transform 220ms ease, box-shadow 220ms ease;
+      will-change: transform;
+      isolation: isolate;
+      z-index: 1;
+    }
+
+    @media (hover:hover){
+      #CollectionCarousel-{{ section.id }} .cc-card:hover{
+        transform: translateY(-8px);
+        box-shadow: 0 26px 70px rgba(0,0,0,.12);
+        z-index: 6; /* ✅ hover 永远在最上层 */
+      }
+    }
+
+    /* Media */
+    #CollectionCarousel-{{ section.id }} .cc-media{
+      position:absolute;
+      inset:0;
+      z-index: 0;
+      background: #fff;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-media img,
+    #CollectionCarousel-{{ section.id }} .cc-media video{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      transform: scale(1.01);
+    }
+
+    /* placeholder 也铺满（防止看起来像“卡片里多一层灰”） */
+    #CollectionCarousel-{{ section.id }} .cc-media .placeholder-svg,
+    #CollectionCarousel-{{ section.id }} .cc-media svg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    /* Show/hide for desktop/mobile media */
+    #CollectionCarousel-{{ section.id }} .cc-only-desktop{ display:block; }
+    #CollectionCarousel-{{ section.id }} .cc-only-mobile{ display:none; }
+
+    /* Overlay */
+    #CollectionCarousel-{{ section.id }} .cc-overlay{
+      position:absolute;
+      inset:0;
+      z-index: 1;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding: 18px 18px 16px 18px;
+      pointer-events: none;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-overlay::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 45%, var(--cc-overlay-color) 100%);
+      opacity: var(--cc-overlay-op);
+      z-index: 0;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-overlay > *{
+      position: relative;
+      z-index: 1;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-card-title{
+      margin: 0 0 10px 0;
+      color: #fff;
+      font-size: var(--cc-title-d);
+      line-height: 1.12;
+      font-weight: 650;
+      text-wrap: balance;
+      max-width: 92%;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-card-text{
+      margin: 0 0 12px 0;
+      color: rgba(255,255,255,.92);
+      font-size: var(--cc-text-d);
+      line-height: 1.45;
+      max-width: 92%;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-bottomline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      color: rgba(255,255,255,.92);
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 550;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-bottomline svg{
+      width: 18px; height: 18px;
+      fill:none;
+      stroke: rgba(255,255,255,.92);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      opacity: .92;
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-link{
+      position:absolute;
+      inset:0;
+      z-index: 2;
+      text-decoration:none;
+      color: inherit;
+    }
+
+    /* Divider + CTA */
+    #CollectionCarousel-{{ section.id }} .cc-divider{
+      position: relative;
+      margin: 18px 0 18px 0;
+      height: 1px;
+      background: rgba(0,0,0,.18);
+    }
+    #CollectionCarousel-{{ section.id }} .cc-divider::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:-1px;
+      width: 140px;
+      height: 2px;
+      background: rgba(0,0,0,.35);
+    }
+
+    #CollectionCarousel-{{ section.id }} .cc-cta{
+      display:flex;
+      justify-content:center;
+      margin-top: 6px;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: var(--cc-cta-py-d) var(--cc-cta-px-d);
+      border-radius: var(--cc-cta-radius-d);
+      background: #0b0b0b;
+      color: #fff;
+      text-decoration:none;
+      font-weight: 650;
+      font-size: var(--cc-cta-fs-d);
+      min-width: var(--cc-cta-minw-d);
+      letter-spacing: .01em;
+      transition: transform 180ms ease, opacity 180ms ease;
+      opacity: .98;
+    }
+    #CollectionCarousel-{{ section.id }} .cc-btn:hover{
+      transform: translateY(-2px);
+      opacity: 1;
+    }
+
+    /* Tablet */
+    @media (max-width: 1024px){
+      #CollectionCarousel-{{ section.id }} .cc-card{
+        flex-basis: calc((100% - var(--cc-gap)) / 2);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px){
+      #CollectionCarousel-{{ section.id }}{
+        padding: calc(var(--cc-pad-y) * .75) calc(var(--cc-pad-x) * .75);
+      }
+
+      #CollectionCarousel-{{ section.id }} .cc-heading{ font-size: var(--cc-head-m); }
+      #CollectionCarousel-{{ section.id }} .cc-sub{ font-size: var(--cc-sub-m); }
+
+      #CollectionCarousel-{{ section.id }} .cc-track{
+        padding-top: 14px;
+        padding-bottom: 18px;
+      }
+
+      #CollectionCarousel-{{ section.id }} .cc-card{
+        flex-basis: 86%;
+        height: var(--cc-card-h-m);
+      }
+      #CollectionCarousel-{{ section.id }} .cc-only-desktop{ display:none; }
+      #CollectionCarousel-{{ section.id }} .cc-only-mobile{ display:block; }
+
+      #CollectionCarousel-{{ section.id }} .cc-card-title{ font-size: var(--cc-title-m); }
+      #CollectionCarousel-{{ section.id }} .cc-card-text{ font-size: var(--cc-text-m); }
+
+      #CollectionCarousel-{{ section.id }} .cc-btn{
+        padding: var(--cc-cta-py-m) var(--cc-cta-px-m);
+        border-radius: var(--cc-cta-radius-m);
+        font-size: var(--cc-cta-fs-m);
+        min-width: var(--cc-cta-minw-m);
+      }
+    }
+  </style>
+
+  <div class="cc-inner">
+    <div class="cc-top">
+      <div class="cc-headwrap">
+        <h2 class="cc-heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="cc-sub">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+
+      <div class="cc-arrows">
+        <button type="button" class="cc-arrow" data-cc-prev aria-label="Previous">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="cc-arrow" data-cc-next aria-label="Next">
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="cc-track" data-cc-track>
+      {% for block in section.blocks %}
+        {% assign c = block.settings.collection %}
+
+        {% assign card_url = '' %}
+        {% if block.settings.custom_url != blank %}
+          {% assign card_url = block.settings.custom_url %}
+        {% elsif c != blank %}
+          {% assign card_url = c.url %}
+        {% endif %}
+
+        {% assign title_text = block.settings.title %}
+        {% if title_text == blank and c != blank %}
+          {% assign title_text = c.title %}
+        {% endif %}
+        {% if title_text == blank %}
+          {% assign title_text = 'Collection' %}
+        {% endif %}
+
+        <article class="cc-card" {{ block.shopify_attributes }}>
+          {% if card_url != blank %}
+            <a class="cc-link" href="{{ card_url }}" aria-label="{{ title_text | escape }}"></a>
+          {% endif %}
+
+          <div class="cc-media">
+            <div class="cc-only-desktop">
+              {% if block.settings.desktop_media_type == 'video' %}
+                {% if block.settings.desktop_video != blank %}
+                  {{ block.settings.desktop_video
+                    | video_tag:
+                      autoplay: block.settings.video_autoplay,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+              {% else %}
+                {% if block.settings.desktop_image != blank %}
+                  {{ block.settings.desktop_image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: title_text }}
+                {% elsif c != blank and c.featured_image %}
+                  {{ c.featured_image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: title_text }}
+                {% elsif c != blank and c.image %}
+                  {{ c.image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: title_text }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <div class="cc-only-mobile">
+              {% if block.settings.mobile_media_type == 'inherit' %}
+                {% if block.settings.desktop_media_type == 'video' %}
+                  {% if block.settings.desktop_video != blank %}
+                    {{ block.settings.desktop_video
+                      | video_tag:
+                        autoplay: block.settings.video_autoplay,
+                        loop: true,
+                        muted: true,
+                        controls: false,
+                        playsinline: true,
+                        preload: 'metadata'
+                    }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag }}
+                  {% endif %}
+                {% else %}
+                  {% if block.settings.desktop_image != blank %}
+                    {{ block.settings.desktop_image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                  {% elsif c != blank and c.featured_image %}
+                    {{ c.featured_image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                  {% elsif c != blank and c.image %}
+                    {{ c.image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag }}
+                  {% endif %}
+                {% endif %}
+              {% elsif block.settings.mobile_media_type == 'video' %}
+                {% if block.settings.mobile_video != blank %}
+                  {{ block.settings.mobile_video
+                    | video_tag:
+                      autoplay: block.settings.video_autoplay,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+              {% else %}
+                {% if block.settings.mobile_image != blank %}
+                  {{ block.settings.mobile_image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                {% elsif block.settings.desktop_image != blank %}
+                  {{ block.settings.desktop_image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                {% elsif c != blank and c.featured_image %}
+                  {{ c.featured_image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                {% elsif c != blank and c.image %}
+                  {{ c.image | image_url: width: 1400 | image_tag: loading: 'lazy', alt: title_text }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="cc-overlay" aria-hidden="true">
+            <h3 class="cc-card-title">{{ title_text }}</h3>
+
+            {% if block.settings.text != blank %}
+              <p class="cc-card-text">{{ block.settings.text }}</p>
+            {% endif %}
+
+            <div class="cc-bottomline">
+              <span>
+                {% if block.settings.link_label != blank %}
+                  {{ block.settings.link_label }}
+                {% else %}
+                  {{ section.settings.default_link_label }}
+                {% endif %}
+              </span>
+              <svg viewBox="0 0 24 24"><path d="M7 17L17 7"/><path d="M9 7h8v8"/></svg>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_divider %}
+      <div class="cc-divider"></div>
+    {% endif %}
+
+    {% if section.settings.cta_label != blank %}
+      <div class="cc-cta">
+        {% if section.settings.cta_url != blank %}
+          <a class="cc-btn" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+        {% else %}
+          <a class="cc-btn" href="/collections">{{ section.settings.cta_label }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('CollectionCarousel-{{ section.id }}');
+      if (!root) return;
+
+      const track = root.querySelector('[data-cc-track]');
+      const prevBtn = root.querySelector('[data-cc-prev]');
+      const nextBtn = root.querySelector('[data-cc-next]');
+      if (!track) return;
+
+      const getStep = () => {
+        const card = track.querySelector('.cc-card');
+        if (!card) return 320;
+        const cardW = card.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap || '0') || 0;
+        return Math.max(260, Math.round(cardW + gap));
+      };
+
+      const clamp = () => {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (prevBtn) prevBtn.disabled = track.scrollLeft <= 2;
+        if (nextBtn) nextBtn.disabled = track.scrollLeft >= (maxScroll - 2);
+      };
+
+      const go = (dir) => track.scrollBy({ left: dir * getStep(), behavior: 'smooth' });
+
+      prevBtn && prevBtn.addEventListener('click', () => go(-1));
+      nextBtn && nextBtn.addEventListener('click', () => go(1));
+      track.addEventListener('scroll', clamp, { passive: true });
+      window.addEventListener('resize', clamp, { passive: true });
+
+      clamp();
+    })();
+  </script>
+
+  {% schema %}
+  {
+    "name": "Collection Carousel",
+    "settings": [
+      {
+        "type": "select",
+        "id": "header_align",
+        "label": "标题区对齐",
+        "default": "left",
+        "options": [
+          { "value": "left", "label": "左对齐" },
+          { "value": "center", "label": "居中" }
+        ]
+      },
+
+      { "type": "text", "id": "heading", "label": "模块标题", "default": "THE COLLECTIONS" },
+      { "type": "textarea", "id": "subheading", "label": "副标题（可选）" },
+
+      { "type": "range", "id": "heading_size_desktop", "label": "标题字号 桌面", "min": 22, "max": 72, "step": 1, "default": 44 },
+      { "type": "range", "id": "heading_size_mobile", "label": "标题字号 手机", "min": 18, "max": 60, "step": 1, "default": 34 },
+
+      { "type": "range", "id": "subheading_size_desktop", "label": "副标题字号 桌面", "min": 12, "max": 22, "step": 1, "default": 15 },
+      { "type": "range", "id": "subheading_size_mobile", "label": "副标题字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 },
+
+      { "type": "text", "id": "default_link_label", "label": "卡片底部默认文案", "default": "Shop Now" },
+
+      { "type": "checkbox", "id": "show_divider", "label": "显示分割线", "default": true },
+      { "type": "text", "id": "cta_label", "label": "底部按钮文案（可选）", "default": "Visit Collections" },
+      { "type": "url", "id": "cta_url", "label": "底部按钮链接（不填默认 /collections）" },
+
+      { "type": "range", "id": "cta_font_size_desktop", "label": "按钮字号 桌面", "min": 12, "max": 22, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_y_desktop", "label": "按钮上下内边距 桌面", "min": 8, "max": 28, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_x_desktop", "label": "按钮左右内边距 桌面", "min": 12, "max": 56, "step": 1, "default": 26 },
+      { "type": "range", "id": "cta_radius_desktop", "label": "按钮圆角 桌面(100=全圆)", "min": 0, "max": 100, "step": 1, "default": 100 },
+      { "type": "range", "id": "cta_min_width_desktop", "label": "按钮最小宽度 桌面(0为自动)", "min": 0, "max": 520, "step": 10, "default": 0 },
+
+      { "type": "range", "id": "cta_font_size_mobile", "label": "按钮字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_y_mobile", "label": "按钮上下内边距 手机", "min": 8, "max": 28, "step": 1, "default": 14 },
+      { "type": "range", "id": "cta_padding_x_mobile", "label": "按钮左右内边距 手机", "min": 12, "max": 56, "step": 1, "default": 26 },
+      { "type": "range", "id": "cta_radius_mobile", "label": "按钮圆角 手机(100=全圆)", "min": 0, "max": 100, "step": 1, "default": 100 },
+      { "type": "range", "id": "cta_min_width_mobile", "label": "按钮最小宽度 手机(0为自动)", "min": 0, "max": 520, "step": 10, "default": 0 },
+
+      { "type": "color", "id": "bg", "label": "背景色", "default": "#FFFFFF" },
+      { "type": "color", "id": "text_color", "label": "文字色", "default": "#111111" },
+      { "type": "color", "id": "muted_color", "label": "弱文字色", "default": "#666666" },
+
+      { "type": "color", "id": "overlay_color", "label": "图片蒙层颜色", "default": "#000000" },
+      { "type": "range", "id": "overlay_opacity", "label": "蒙层强度（%）", "min": 25, "max": 90, "step": 1, "default": 58 },
+
+      { "type": "range", "id": "max_width", "label": "内容最大宽度", "min": 960, "max": 2000, "step": 20, "default": 1600 },
+      { "type": "range", "id": "pad_y", "label": "上下内边距", "min": 20, "max": 120, "step": 4, "default": 60 },
+      { "type": "range", "id": "pad_x", "label": "左右内边距", "min": 12, "max": 80, "step": 2, "default": 20 },
+
+      { "type": "range", "id": "gap", "label": "卡片间距", "min": 10, "max": 40, "step": 2, "default": 28 },
+      { "type": "range", "id": "card_radius", "label": "卡片圆角", "min": 12, "max": 34, "step": 1, "default": 22 },
+
+      { "type": "range", "id": "card_height_desktop", "label": "卡片高度 桌面", "min": 320, "max": 720, "step": 10, "default": 460 },
+      { "type": "range", "id": "card_height_mobile", "label": "卡片高度 手机", "min": 260, "max": 620, "step": 10, "default": 520 },
+
+      { "type": "range", "id": "card_title_size_desktop", "label": "卡片标题字号 桌面", "min": 14, "max": 34, "step": 1, "default": 18 },
+      { "type": "range", "id": "card_title_size_mobile", "label": "卡片标题字号 手机", "min": 14, "max": 40, "step": 1, "default": 20 },
+
+      { "type": "range", "id": "card_text_size_desktop", "label": "卡片正文字号 桌面", "min": 12, "max": 18, "step": 1, "default": 13 },
+      { "type": "range", "id": "card_text_size_mobile", "label": "卡片正文字号 手机", "min": 12, "max": 22, "step": 1, "default": 14 }
+    ],
+    "blocks": [
+      {
+        "type": "item",
+        "name": "系列卡片",
+        "settings": [
+          { "type": "collection", "id": "collection", "label": "选择 Collection" },
+
+          { "type": "text", "id": "title", "label": "标题覆盖（不填用 Collection 标题）" },
+          { "type": "textarea", "id": "text", "label": "描述文本（可选）" },
+
+          { "type": "text", "id": "link_label", "label": "底部文案（可选）" },
+          { "type": "url", "id": "custom_url", "label": "自定义跳转链接（可选，不填用 Collection 链接）" },
+
+          {
+            "type": "select",
+            "id": "desktop_media_type",
+            "label": "桌面媒体类型",
+            "default": "image",
+            "options": [
+              { "value": "image", "label": "图片" },
+              { "value": "video", "label": "视频 Shopify 上传" }
+            ]
+          },
+          { "type": "image_picker", "id": "desktop_image", "label": "桌面图片（不填则用 Collection 图片）" },
+          { "type": "video", "id": "desktop_video", "label": "桌面视频 Shopify 上传" },
+
+          {
+            "type": "select",
+            "id": "mobile_media_type",
+            "label": "手机媒体类型",
+            "default": "inherit",
+            "options": [
+              { "value": "inherit", "label": "继承桌面" },
+              { "value": "image", "label": "手机图片" },
+              { "value": "video", "label": "手机视频 Shopify 上传" }
+            ]
+          },
+          { "type": "image_picker", "id": "mobile_image", "label": "手机图片" },
+          { "type": "video", "id": "mobile_video", "label": "手机视频 Shopify 上传" },
+
+          { "type": "checkbox", "id": "video_autoplay", "label": "视频自动播放 静音循环", "default": true }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection Carousel",
+        "blocks": [
+          { "type": "item" },
+          { "type": "item" },
+          { "type": "item" }
+        ]
+      }
+    ]
+  }
+  {% endschema %}
+</section>

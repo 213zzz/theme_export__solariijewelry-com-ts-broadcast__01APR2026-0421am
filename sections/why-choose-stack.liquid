@@ -1,0 +1,1513 @@
+{% liquid
+  assign section_id = 'stacked-project-cards-' | append: section.id
+
+  assign section_bg_alpha = section.settings.section_bg_opacity | times: 0.01
+  assign card_bg_alpha = section.settings.card_bg_opacity | times: 0.01
+  assign tag_bg_alpha = section.settings.tag_bg_opacity | times: 0.01
+  assign hover_orb_alpha = section.settings.hover_orb_opacity | times: 0.01
+  assign hover_button_alpha = section.settings.hover_button_opacity | times: 0.01
+
+  assign section_bg_color = section.settings.section_bg | color_modify: 'alpha', section_bg_alpha
+  assign card_bg_color = section.settings.card_bg | color_modify: 'alpha', card_bg_alpha
+  assign tag_bg_color = section.settings.tag_bg | color_modify: 'alpha', tag_bg_alpha
+  assign hover_orb_color = section.settings.hover_orb_bg | color_modify: 'alpha', hover_orb_alpha
+  assign hover_button_bg_color = section.settings.hover_button_bg | color_modify: 'alpha', hover_button_alpha
+%}
+
+<section
+  id="{{ section_id }}"
+  class="stacked-project-cards"
+  style="
+    --spc-bg: {{ section_bg_color }};
+    --spc-card-bg: {{ card_bg_color }};
+    --spc-text: {{ section.settings.text_color }};
+    --spc-muted: {{ section.settings.muted_color }};
+    --spc-tag-bg: {{ tag_bg_color }};
+    --spc-tag-text: {{ section.settings.tag_text }};
+    --spc-link: {{ section.settings.link_color }};
+    --spc-hover-orb-bg: {{ hover_orb_color }};
+    --spc-hover-button-bg: {{ hover_button_bg_color }};
+    --spc-hover-button-icon: {{ section.settings.hover_button_icon }};
+    --spc-default-arrow-color: {{ section.settings.default_arrow_color }};
+    --spc-max-width: {{ section.settings.container_width }}px;
+    --spc-pt: {{ section.settings.padding_top }}px;
+    --spc-pb: {{ section.settings.padding_bottom }}px;
+    --spc-card-radius: {{ section.settings.card_radius }}px;
+    --spc-media-radius: {{ section.settings.media_radius }}px;
+
+    --spc-sticky-top-base: {{ section.settings.sticky_top }}px;
+    --spc-sticky-extra: {{ section.settings.desktop_header_extra_offset }}px;
+    --spc-header-offset: 0px;
+
+    --spc-stack-offset: {{ section.settings.stack_offset }}px;
+    --spc-card-gap: {{ section.settings.card_gap }}px;
+    --spc-card-min-height: {{ section.settings.card_min_height }}px;
+    --spc-media-width: {{ section.settings.desktop_media_width }}px;
+    --spc-heading-size: {{ section.settings.heading_size }}px;
+    --spc-subheading-size: {{ section.settings.subheading_size }}px;
+    --spc-title-size: {{ section.settings.card_title_size }}px;
+    --spc-copy-size: {{ section.settings.card_text_size }}px;
+    --spc-desktop-shrink-setting: {{ section.settings.desktop_shrink | times: 0.01 }};
+
+    --spc-mobile-card-width: {{ section.settings.mobile_card_width }}vw;
+    --spc-mobile-card-max-width: {{ section.settings.mobile_card_max_width }}px;
+    --spc-mobile-top-base: {{ section.settings.mobile_top_offset }}px;
+    --spc-mobile-extra: {{ section.settings.mobile_header_extra_offset }}px;
+    --spc-mobile-gap-setting: {{ section.settings.mobile_gap }}px;
+    --spc-mobile-bottom-buffer: {{ section.settings.mobile_bottom_buffer }}px;
+    --spc-mobile-seam-cover: {{ section.settings.mobile_seam_cover }}px;
+    --spc-mobile-shrink-setting: {{ section.settings.mobile_shrink | times: 0.01 }};
+    --spc-mobile-card-padding: {{ section.settings.mobile_card_padding }}px;
+    --spc-mobile-card-radius: {{ section.settings.mobile_card_radius }}px;
+    --spc-mobile-media-radius: {{ section.settings.mobile_media_radius }}px;
+    --spc-mobile-title-size: {{ section.settings.mobile_title_size }}px;
+    --spc-mobile-text-size: {{ section.settings.mobile_text_size }}px;
+  "
+>
+  <style>
+    #{{ section_id }} {
+      background: var(--spc-bg);
+      padding-top: var(--spc-pt);
+      padding-bottom: var(--spc-pb);
+    }
+
+    #{{ section_id }} .spc-shell {
+      width: min(calc(100% - 40px), var(--spc-max-width));
+      margin: 0 auto;
+    }
+
+    #{{ section_id }} .spc-head {
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    #{{ section_id }} .spc-eyebrow {
+      margin: 0 0 10px;
+      font-size: 12px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--spc-muted);
+    }
+
+    #{{ section_id }} .spc-heading {
+      margin: 0;
+      font-size: var(--spc-heading-size);
+      line-height: 1.05;
+      color: var(--spc-text);
+      letter-spacing: -0.03em;
+    }
+
+    #{{ section_id }} .spc-subheading {
+      margin: 12px 0 0;
+      max-width: 760px;
+      font-size: var(--spc-subheading-size);
+      line-height: 1.6;
+      color: var(--spc-muted);
+    }
+
+    #{{ section_id }} .spc-stack {
+      position: relative;
+    }
+
+    #{{ section_id }} .spc-item {
+      position: relative;
+      z-index: var(--card-z);
+      margin-top: 0;
+      margin-bottom: var(--spc-card-gap);
+    }
+
+    #{{ section_id }} .spc-card {
+      display: grid;
+      grid-template-columns: minmax(240px, var(--spc-media-width)) minmax(0, 1fr);
+      align-items: center;
+      gap: 28px;
+      min-height: var(--spc-card-min-height);
+      padding: 18px;
+      border-radius: var(--spc-card-radius);
+      background: var(--spc-card-bg);
+      color: var(--spc-text);
+      text-decoration: none;
+      box-sizing: border-box;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    #{{ section_id }} .spc-item[data-media-position="right"] .spc-card {
+      grid-template-columns: minmax(0, 1fr) minmax(240px, var(--spc-media-width));
+    }
+
+    #{{ section_id }} .spc-item[data-media-position="right"] .spc-media {
+      order: 2;
+    }
+
+    #{{ section_id }} .spc-item[data-media-position="right"] .spc-content {
+      order: 1;
+    }
+
+    #{{ section_id }} .spc-media,
+    #{{ section_id }} .spc-mobile-media {
+      width: 100%;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    #{{ section_id }} .spc-media {
+      height: 100%;
+      min-height: 240px;
+      border-radius: var(--spc-media-radius);
+    }
+
+    #{{ section_id }} .spc-media img,
+    #{{ section_id }} .spc-media svg,
+    #{{ section_id }} .spc-mobile-media img,
+    #{{ section_id }} .spc-mobile-media svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #{{ section_id }} .spc-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      padding: 6px 120px 6px 0;
+    }
+
+    #{{ section_id }} .spc-tags,
+    #{{ section_id }} .spc-mobile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    #{{ section_id }} .spc-tag,
+    #{{ section_id }} .spc-mobile-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--spc-tag-bg);
+      color: var(--spc-tag-text);
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #{{ section_id }} .spc-kicker,
+    #{{ section_id }} .spc-mobile-kicker {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--spc-muted);
+    }
+
+    #{{ section_id }} .spc-title,
+    #{{ section_id }} .spc-mobile-title {
+      margin: 0;
+      font-size: var(--spc-title-size);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--spc-text);
+      word-break: break-word;
+    }
+
+    #{{ section_id }} .spc-text,
+    #{{ section_id }} .spc-mobile-text {
+      margin: 16px 0 0;
+      max-width: 520px;
+      font-size: var(--spc-copy-size);
+      line-height: 1.65;
+      color: var(--spc-muted);
+    }
+
+    #{{ section_id }} .spc-link-wrap,
+    #{{ section_id }} .spc-mobile-link-wrap {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+    }
+
+    #{{ section_id }} .spc-link-label,
+    #{{ section_id }} .spc-mobile-link-label {
+      font-size: 14px;
+      line-height: 1.3;
+      color: var(--spc-link);
+    }
+
+    #{{ section_id }} .spc-arrow,
+    #{{ section_id }} .spc-mobile-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      color: var(--spc-link);
+      flex: 0 0 auto;
+      transition: transform 0.28s ease, opacity 0.28s ease;
+      opacity: 0.92;
+    }
+
+    #{{ section_id }} .spc-mobile-card:hover .spc-mobile-arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    #{{ section_id }} .spc-mobile-stack {
+      display: none;
+    }
+
+    #{{ section_id }} .spc-hover-default-arrow,
+    #{{ section_id }} .spc-hover-orb,
+    #{{ section_id }} .spc-hover-fab {
+      display: none;
+    }
+
+    @media screen and (min-width: 990px) {
+      #{{ section_id }} .spc-item {
+        position: sticky;
+        top: calc(var(--spc-sticky-top-base) + var(--spc-header-offset) + var(--spc-sticky-extra));
+      }
+
+      #{{ section_id }} .spc-card {
+        --spc-desktop-shrink: 0;
+        --spc-desktop-lift: 0px;
+        transform-origin: center top;
+        transform: translate3d(0, var(--spc-desktop-lift), 0) scale(calc(1 - var(--spc-desktop-shrink)));
+        will-change: transform;
+      }
+
+      #{{ section_id }} .spc-content {
+        will-change: transform;
+      }
+
+      #{{ section_id }} .spc-media img,
+      #{{ section_id }} .spc-media svg {
+        will-change: transform;
+      }
+
+      #{{ section_id }} .spc-link-wrap .spc-arrow {
+        display: none;
+      }
+
+      #{{ section_id }} .spc-hover-default-arrow {
+        display: inline-flex;
+        position: absolute;
+        right: 48px;
+        top: 50%;
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        color: var(--spc-default-arrow-color);
+        transform: translateY(-50%);
+        opacity: 1;
+        pointer-events: none;
+        z-index: 6;
+        transition:
+          opacity 0.18s ease,
+          transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      #{{ section_id }} .spc-hover-orb {
+        display: block;
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        width: 156px;
+        height: 156px;
+        border-radius: 999px;
+        background: var(--spc-hover-orb-bg);
+        transform: translate(36%, -50%) scale(0.68);
+        transform-origin: center center;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 4;
+        transition:
+          transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.22s ease;
+      }
+
+      #{{ section_id }} .spc-hover-fab {
+        display: inline-flex;
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        width: 62px;
+        height: 62px;
+        border-radius: 999px;
+        align-items: center;
+        justify-content: center;
+        background: var(--spc-hover-button-bg);
+        color: var(--spc-hover-button-icon);
+        transform: translateY(-50%) scale(0.92);
+        transform-origin: center center;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 5;
+        transition:
+          transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.18s ease;
+      }
+
+      #{{ section_id }} .spc-item[data-media-position="right"] .spc-hover-default-arrow {
+        right: calc(var(--spc-media-width) + 48px);
+      }
+
+      #{{ section_id }} .spc-item[data-media-position="right"] .spc-hover-orb {
+        right: calc(var(--spc-media-width) + 30px);
+      }
+
+      #{{ section_id }} .spc-item[data-media-position="right"] .spc-hover-fab {
+        right: calc(var(--spc-media-width) + 30px);
+      }
+
+      #{{ section_id }} .spc-card:hover .spc-hover-default-arrow {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.85);
+      }
+
+      #{{ section_id }} .spc-card:hover .spc-hover-orb {
+        opacity: 1;
+        transform: translate(36%, -50%) scale(1);
+      }
+
+      #{{ section_id }} .spc-card:hover .spc-hover-fab {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+
+      #{{ section_id }} .spc-content,
+      #{{ section_id }} .spc-media,
+      #{{ section_id }} .spc-tags,
+      #{{ section_id }} .spc-link-wrap {
+        position: relative;
+        z-index: 3;
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      #{{ section_id }} .spc-shell {
+        width: min(calc(100% - 24px), var(--spc-max-width));
+      }
+
+      #{{ section_id }} .spc-head {
+        width: min(100%, 420px);
+        margin: 0 auto 18px;
+      }
+
+      #{{ section_id }} .spc-eyebrow {
+        margin: 0 0 8px;
+        font-size: 11px;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+      }
+
+      #{{ section_id }} .spc-heading {
+        font-size: clamp(28px, 9vw, 38px);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      #{{ section_id }} .spc-subheading {
+        margin-top: 10px;
+        font-size: var(--spc-mobile-text-size);
+        line-height: 1.55;
+      }
+
+      #{{ section_id }} .spc-stack {
+        display: none;
+      }
+
+      #{{ section_id }} .spc-mobile-stack {
+        --spc-mobile-top: 0px;
+        display: block;
+        --spc-mobile-gap: var(--spc-mobile-gap-setting);
+        --spc-mobile-shrink: 0;
+        --spc-mobile-lift: 0px;
+        position: relative;
+        isolation: isolate;
+        padding-bottom: var(--spc-mobile-bottom-buffer);
+      }
+
+      #{{ section_id }} .spc-mobile-item {
+        position: sticky;
+        top: var(--spc-mobile-top);
+        z-index: var(--mobile-z);
+        overflow: visible;
+      }
+
+      #{{ section_id }} .spc-mobile-item::before {
+        content: none;
+      }
+
+      #{{ section_id }} .spc-mobile-item + .spc-mobile-item {
+        margin-top: var(--spc-mobile-gap);
+      }
+
+      #{{ section_id }} .spc-mobile-card {
+        position: relative;
+        z-index: 3;
+        display: block;
+        width: min(calc(var(--spc-mobile-card-width) * 1vw), var(--spc-mobile-card-max-width));
+        margin: 0 auto;
+        padding: var(--spc-mobile-card-padding);
+        border-radius: var(--spc-mobile-card-radius);
+        background: var(--spc-card-bg);
+        color: var(--spc-text);
+        text-decoration: none;
+        box-sizing: border-box;
+        overflow: visible;
+        transform-origin: center top;
+        transform: translate3d(0, var(--spc-mobile-lift), 0) scale(calc(1 - var(--spc-mobile-shrink)));
+        will-change: transform;
+      }
+
+      #{{ section_id }} .spc-mobile-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(var(--spc-mobile-seam-cover) * -1);
+        height: calc(var(--spc-mobile-seam-cover) + var(--spc-mobile-card-radius));
+        background: var(--spc-card-bg);
+        border-top-left-radius: var(--spc-mobile-card-radius);
+        border-top-right-radius: var(--spc-mobile-card-radius);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      #{{ section_id }} .spc-mobile-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      #{{ section_id }} .spc-mobile-media {
+        aspect-ratio: 1 / 0.82;
+        border-radius: var(--spc-mobile-media-radius);
+        overflow: hidden;
+      }
+
+      #{{ section_id }} .spc-mobile-content {
+        padding: 14px 2px 4px;
+        will-change: transform;
+      }
+
+      #{{ section_id }} .spc-mobile-title {
+        font-size: var(--spc-mobile-title-size);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        word-break: normal;
+      }
+
+      #{{ section_id }} .spc-mobile-text {
+        margin-top: 12px;
+        max-width: none;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      #{{ section_id }} .spc-mobile-link-wrap {
+        margin-top: 14px;
+        gap: 12px;
+      }
+
+      #{{ section_id }} .spc-mobile-arrow {
+        width: 30px;
+        height: 30px;
+      }
+
+      #{{ section_id }} .spc-mobile-tag {
+        min-height: 22px;
+        padding: 4px 9px;
+        font-size: 10px;
+      }
+
+      #{{ section_id }} .spc-mobile-kicker {
+        margin: 0 0 6px;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      #{{ section_id }} .spc-content {
+        padding-right: 0;
+      }
+    }
+  </style>
+
+  <div class="spc-shell">
+    {% if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank %}
+      <div class="spc-head">
+        {% if section.settings.eyebrow != blank %}
+          <p class="spc-eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="spc-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="spc-subheading rte">{{ section.settings.subheading }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="spc-stack">
+      {% for block in section.blocks %}
+        {% liquid
+          assign remainder = forloop.index0 | modulo: 2
+          assign media_position = block.settings.media_position
+
+          if media_position == 'auto'
+            if remainder == 0
+              assign media_position = 'left'
+            else
+              assign media_position = 'right'
+            endif
+          endif
+        %}
+
+        <div
+          class="spc-item"
+          data-media-position="{{ media_position }}"
+          style="--card-index: {{ forloop.index0 }}; --card-z: {{ forloop.index }};"
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.link != blank %}
+            <a class="spc-card" href="{{ block.settings.link }}">
+          {% else %}
+            <div class="spc-card">
+          {% endif %}
+
+              <div class="spc-media">
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 32vw, 100vw', alt: block.settings.title | escape }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+
+              <div class="spc-content">
+                {% if block.settings.tag_1 != blank or block.settings.tag_2 != blank or block.settings.tag_3 != blank %}
+                  <div class="spc-tags">
+                    {% if block.settings.tag_1 != blank %}
+                      <span class="spc-tag">{{ block.settings.tag_1 }}</span>
+                    {% endif %}
+                    {% if block.settings.tag_2 != blank %}
+                      <span class="spc-tag">{{ block.settings.tag_2 }}</span>
+                    {% endif %}
+                    {% if block.settings.tag_3 != blank %}
+                      <span class="spc-tag">{{ block.settings.tag_3 }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+                {% if block.settings.kicker != blank %}
+                  <p class="spc-kicker">{{ block.settings.kicker }}</p>
+                {% endif %}
+
+                {% if block.settings.title != blank %}
+                  <h3 class="spc-title">{{ block.settings.title }}</h3>
+                {% endif %}
+
+                {% if block.settings.text != blank %}
+                  <div class="spc-text rte">{{ block.settings.text }}</div>
+                {% endif %}
+
+                {% if block.settings.link_label != blank or block.settings.link != blank %}
+                  <div class="spc-link-wrap">
+                    <span class="spc-link-label">
+                      {% if block.settings.link_label != blank %}
+                        {{ block.settings.link_label }}
+                      {% else %}
+                        了解更多
+                      {% endif %}
+                    </span>
+                    <span class="spc-arrow" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" role="presentation">
+                        <path d="M4.16699 10H15.0003" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M10.833 5.83337L14.9997 10L10.833 14.1667" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="spc-hover-default-arrow" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 20 20" fill="none" role="presentation">
+                  <path d="M4.16699 10H15.0003" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M10.833 5.83337L14.9997 10L10.833 14.1667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <div class="spc-hover-orb" aria-hidden="true"></div>
+              <div class="spc-hover-fab" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 20 20" fill="none" role="presentation">
+                  <path d="M4.16699 10H15.0003" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M10.833 5.83337L14.9997 10L10.833 14.1667" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+          {% if block.settings.link != blank %}
+            </a>
+          {% else %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="spc-mobile-stack" data-mobile-stack>
+      {% for block in section.blocks %}
+        <div
+          class="spc-mobile-item"
+          style="--mobile-z: {{ forloop.index }};"
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.link != blank %}
+            <a class="spc-mobile-card" href="{{ block.settings.link }}">
+          {% else %}
+            <div class="spc-mobile-card">
+          {% endif %}
+
+              <div class="spc-mobile-media">
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000, 1200', sizes: '86vw', alt: block.settings.title | escape }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+
+              <div class="spc-mobile-content">
+                {% if block.settings.tag_1 != blank or block.settings.tag_2 != blank or block.settings.tag_3 != blank %}
+                  <div class="spc-mobile-tags">
+                    {% if block.settings.tag_1 != blank %}
+                      <span class="spc-mobile-tag">{{ block.settings.tag_1 }}</span>
+                    {% endif %}
+                    {% if block.settings.tag_2 != blank %}
+                      <span class="spc-mobile-tag">{{ block.settings.tag_2 }}</span>
+                    {% endif %}
+                    {% if block.settings.tag_3 != blank %}
+                      <span class="spc-mobile-tag">{{ block.settings.tag_3 }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+                {% if block.settings.kicker != blank %}
+                  <p class="spc-mobile-kicker">{{ block.settings.kicker }}</p>
+                {% endif %}
+
+                {% if block.settings.title != blank %}
+                  <h3 class="spc-mobile-title">{{ block.settings.title }}</h3>
+                {% endif %}
+
+                {% if block.settings.text != blank %}
+                  <div class="spc-mobile-text rte">{{ block.settings.text }}</div>
+                {% endif %}
+
+                {% if block.settings.link_label != blank or block.settings.link != blank %}
+                  <div class="spc-mobile-link-wrap">
+                    <span class="spc-mobile-link-label">
+                      {% if block.settings.link_label != blank %}
+                        {{ block.settings.link_label }}
+                      {% else %}
+                        查看更多
+                      {% endif %}
+                    </span>
+                    <span class="spc-mobile-arrow" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" role="presentation">
+                        <path d="M4.16699 10H15.0003" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M10.833 5.83337L14.9997 10L10.833 14.1667" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
+                {% endif %}
+              </div>
+
+          {% if block.settings.link != blank %}
+            </a>
+          {% else %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var section = document.getElementById('{{ section_id }}');
+      if (!section) return;
+
+      var desktopItems = Array.prototype.slice.call(section.querySelectorAll('.spc-stack .spc-item'));
+      var mobileRoot = section.querySelector('[data-mobile-stack]');
+      var mobileItems = mobileRoot ? Array.prototype.slice.call(mobileRoot.querySelectorAll('.spc-mobile-item')) : [];
+
+      var desktopMQ = window.matchMedia('(min-width: 990px)');
+      var mobileMQ = window.matchMedia('(max-width: 989px)');
+      var ticking = false;
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function ease(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function getHeaderOffset() {
+        var selectors = [
+          'sticky-header',
+          '#shopify-section-header',
+          '.shopify-section-group-header-group',
+          '.shopify-section-header-sticky',
+          '[data-sticky-header]',
+          '.header-wrapper',
+          'header.header',
+          'header'
+        ];
+
+        var maxBottom = 0;
+
+        selectors.forEach(function(selector) {
+          document.querySelectorAll(selector).forEach(function(el) {
+            if (!el || !el.getBoundingClientRect) return;
+
+            var rect = el.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+
+            var style = window.getComputedStyle(el);
+            var pos = style.position;
+            var stickyLike = pos === 'sticky' || pos === 'fixed';
+            var nearTop = rect.top <= 5 && rect.bottom > 0;
+
+            if ((stickyLike || nearTop) && rect.bottom > maxBottom) {
+              maxBottom = rect.bottom;
+            }
+          });
+        });
+
+        return Math.max(0, Math.round(maxBottom));
+      }
+
+      function updateHeaderOffset() {
+        var headerOffset = getHeaderOffset();
+        section.style.setProperty('--spc-header-offset', headerOffset + 'px');
+      }
+
+      function resetDesktop() {
+        desktopItems.forEach(function(item) {
+          var card = item.querySelector('.spc-card');
+          var content = item.querySelector('.spc-content');
+          var media = item.querySelector('.spc-media img, .spc-media svg');
+
+          if (card) {
+            card.style.setProperty('--spc-desktop-shrink', '0');
+            card.style.setProperty('--spc-desktop-lift', '0px');
+          }
+          if (content) {
+            content.style.transform = '';
+          }
+          if (media) {
+            media.style.transform = '';
+          }
+        });
+      }
+
+      function updateDesktop() {
+        if (!desktopMQ.matches) {
+          resetDesktop();
+          return;
+        }
+
+        var style = getComputedStyle(section);
+        var stickyBase = parseFloat(style.getPropertyValue('--spc-sticky-top-base')) || 24;
+        var stickyExtra = parseFloat(style.getPropertyValue('--spc-sticky-extra')) || 0;
+        var headerOffset = parseFloat(style.getPropertyValue('--spc-header-offset')) || 0;
+        var stickyTop = stickyBase + stickyExtra + headerOffset;
+
+        var gap = parseFloat(style.getPropertyValue('--spc-card-gap')) || 24;
+        var maxShrink = clamp(parseFloat(style.getPropertyValue('--spc-desktop-shrink-setting')) || 0.10, 0.05, 0.25);
+        var liftBase = Math.min(parseFloat(style.getPropertyValue('--spc-stack-offset')) || 26, 28);
+
+        desktopItems.forEach(function(item, index) {
+          var card = item.querySelector('.spc-card');
+          var content = item.querySelector('.spc-content');
+          var media = item.querySelector('.spc-media img, .spc-media svg');
+
+          if (!card) return;
+
+          var shrink = 0;
+          var lift = 0;
+          var contentShift = 0;
+          var mediaScale = 1;
+
+          if (index < desktopItems.length - 1) {
+            var nextRect = desktopItems[index + 1].getBoundingClientRect();
+            var cardRect = card.getBoundingClientRect();
+            var triggerStart = stickyTop + cardRect.height + (gap * 0.9);
+            var triggerEnd = stickyTop + 16;
+            var denom = Math.max(1, triggerStart - triggerEnd);
+            var pushProgress = clamp((triggerStart - nextRect.top) / denom, 0, 1);
+            var pushEase = ease(pushProgress);
+
+            shrink = maxShrink * pushEase;
+            lift = -(liftBase * 0.45) * pushEase;
+            contentShift = 10 * pushEase;
+            mediaScale = 1 - (0.035 * pushEase);
+          }
+
+          card.style.setProperty('--spc-desktop-shrink', shrink.toFixed(4));
+          card.style.setProperty('--spc-desktop-lift', lift.toFixed(2) + 'px');
+
+          if (content) {
+            content.style.transform = 'translate3d(0,' + contentShift.toFixed(2) + 'px,0)';
+          }
+          if (media) {
+            media.style.transform = 'scale(' + mediaScale.toFixed(4) + ')';
+          }
+        });
+      }
+
+      function resetMobile() {
+        mobileItems.forEach(function(item) {
+          var card = item.querySelector('.spc-mobile-card');
+          var content = item.querySelector('.spc-mobile-content');
+          if (!card) return;
+          card.style.setProperty('--spc-mobile-shrink', '0');
+          card.style.setProperty('--spc-mobile-lift', '0px');
+          if (content) {
+            content.style.transform = '';
+          }
+        });
+      }
+
+      function setMobileLayoutVars() {
+        if (!mobileMQ.matches || !mobileRoot) {
+          resetMobile();
+          return;
+        }
+
+        var style = getComputedStyle(section);
+        var mobileBase = parseFloat(style.getPropertyValue('--spc-mobile-top-base')) || 104;
+        var mobileExtra = parseFloat(style.getPropertyValue('--spc-mobile-extra')) || 0;
+        var headerOffset = parseFloat(style.getPropertyValue('--spc-header-offset')) || 0;
+        var stickyTop = mobileBase + mobileExtra + headerOffset;
+
+        var gap = parseFloat(style.getPropertyValue('--spc-mobile-gap-setting')) || 96;
+
+        mobileRoot.style.setProperty('--spc-mobile-top', stickyTop + 'px');
+        mobileRoot.style.setProperty('--spc-mobile-gap', gap + 'px');
+      }
+
+      function updateMobile() {
+        if (!mobileMQ.matches || !mobileRoot) return;
+
+        var rootStyle = getComputedStyle(mobileRoot);
+        var stickyTop = parseFloat(rootStyle.getPropertyValue('--spc-mobile-top')) || 78;
+        var gap = parseFloat(rootStyle.getPropertyValue('--spc-mobile-gap')) || 96;
+        var maxShrink = clamp(parseFloat(getComputedStyle(section).getPropertyValue('--spc-mobile-shrink-setting')) || 0.18, 0.05, 0.35);
+
+        mobileItems.forEach(function(item, index) {
+          var card = item.querySelector('.spc-mobile-card');
+          var content = item.querySelector('.spc-mobile-content');
+          if (!card) return;
+
+          var lift = 0;
+          var shrink = 0;
+          var contentShift = 0;
+
+          if (index < mobileItems.length - 1) {
+            var nextRect = mobileItems[index + 1].getBoundingClientRect();
+            var cardRect = card.getBoundingClientRect();
+            var triggerStart = stickyTop + cardRect.height + (gap * 0.72);
+            var triggerEnd = stickyTop + 12;
+            var denom = Math.max(1, triggerStart - triggerEnd);
+            var pushProgress = clamp((triggerStart - nextRect.top) / denom, 0, 1);
+            var pushEase = ease(pushProgress);
+
+            shrink = maxShrink * pushEase;
+            lift = -10 * pushEase;
+            contentShift = 8 * pushEase;
+          }
+
+          card.style.setProperty('--spc-mobile-shrink', shrink.toFixed(4));
+          card.style.setProperty('--spc-mobile-lift', lift.toFixed(2) + 'px');
+
+          if (content) {
+            content.style.transform = 'translate3d(0,' + contentShift.toFixed(2) + 'px,0)';
+          }
+        });
+      }
+
+      function updateAll() {
+        ticking = false;
+        updateHeaderOffset();
+        setMobileLayoutVars();
+        updateDesktop();
+        updateMobile();
+      }
+
+      function requestTick() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(updateAll);
+      }
+
+      function onResize() {
+        updateAll();
+      }
+
+      if (desktopMQ.addEventListener) {
+        desktopMQ.addEventListener('change', onResize);
+        mobileMQ.addEventListener('change', onResize);
+      } else if (desktopMQ.addListener) {
+        desktopMQ.addListener(onResize);
+        mobileMQ.addListener(onResize);
+      }
+
+      window.addEventListener('resize', onResize);
+      window.addEventListener('orientationchange', onResize);
+      window.addEventListener('scroll', requestTick, { passive: true });
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          updateAll();
+        }, { once: true });
+      } else {
+        updateAll();
+      }
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "为什么选择我们堆叠卡片",
+  "tag": "section",
+  "class": "section section-stacked-project-cards",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "小标题",
+      "default": "为什么选择我们"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "主标题",
+      "default": "为什么选择 Solarii"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "副标题",
+      "default": "<p>这个模块可用于品牌故事、系列展示、定制项目或为什么选择我们的内容。</p>"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "容器宽度",
+      "min": 960,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "顶部留白",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "底部留白",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "sticky_top",
+      "label": "桌面端基础顶部偏移",
+      "min": 0,
+      "max": 180,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_header_extra_offset",
+      "label": "桌面端头部补偿微调",
+      "min": -40,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "stack_offset",
+      "label": "桌面端上推力度",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "卡片间距",
+      "min": 12,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_min_height",
+      "label": "桌面端卡片最小高度",
+      "min": 260,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 310
+    },
+    {
+      "type": "range",
+      "id": "desktop_media_width",
+      "label": "桌面端图片宽度",
+      "min": 240,
+      "max": 520,
+      "step": 10,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "desktop_shrink",
+      "label": "桌面端缩小幅度",
+      "min": 5,
+      "max": 25,
+      "step": 1,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "卡片圆角",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "media_radius",
+      "label": "图片圆角",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "主标题字号",
+      "min": 20,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "副标题字号",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "label": "卡片标题字号",
+      "min": 20,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_text_size",
+      "label": "卡片正文字号",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_top_offset",
+      "label": "手机端基础吸顶位置",
+      "min": 56,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 104
+    },
+    {
+      "type": "range",
+      "id": "mobile_header_extra_offset",
+      "label": "手机端头部补偿微调",
+      "min": -40,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "手机端卡片间距",
+      "min": 40,
+      "max": 180,
+      "step": 2,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "mobile_bottom_buffer",
+      "label": "手机端底部缓冲",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_seam_cover",
+      "label": "手机端顶部防漏高度",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_shrink",
+      "label": "手机端缩小幅度",
+      "min": 5,
+      "max": 35,
+      "step": 1,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "手机端卡片宽度",
+      "min": 70,
+      "max": 100,
+      "step": 1,
+      "unit": "vw",
+      "default": 84
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_max_width",
+      "label": "手机端卡片最大宽度",
+      "min": 280,
+      "max": 520,
+      "step": 4,
+      "unit": "px",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding",
+      "label": "手机端卡片内边距",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_radius",
+      "label": "手机端卡片圆角",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_media_radius",
+      "label": "手机端图片圆角",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "手机端标题字号",
+      "min": 18,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_size",
+      "label": "手机端正文字号",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "模块背景色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_bg_opacity",
+      "label": "模块背景透明度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "卡片背景色",
+      "default": "#f3eeea"
+    },
+    {
+      "type": "range",
+      "id": "card_bg_opacity",
+      "label": "卡片背景透明度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "主文字颜色",
+      "default": "#5b3527"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "次级文字颜色",
+      "default": "#6f665f"
+    },
+    {
+      "type": "color",
+      "id": "tag_bg",
+      "label": "标签背景色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "tag_bg_opacity",
+      "label": "标签背景透明度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "tag_text",
+      "label": "标签文字颜色",
+      "default": "#7a7068"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "链接颜色",
+      "default": "#7a4d3a"
+    },
+    {
+      "type": "color",
+      "id": "default_arrow_color",
+      "label": "默认箭头颜色",
+      "default": "#7A4D3A"
+    },
+    {
+      "type": "color",
+      "id": "hover_orb_bg",
+      "label": "悬停圆形蒙版颜色",
+      "default": "#E9DFD8"
+    },
+    {
+      "type": "range",
+      "id": "hover_orb_opacity",
+      "label": "悬停圆形蒙版透明度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "hover_button_bg",
+      "label": "悬停圆按钮背景色",
+      "default": "#6E351F"
+    },
+    {
+      "type": "range",
+      "id": "hover_button_opacity",
+      "label": "悬停圆按钮透明度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "hover_button_icon",
+      "label": "悬停圆按钮箭头颜色",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "卡片",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "图片"
+        },
+        {
+          "type": "select",
+          "id": "media_position",
+          "label": "图片位置",
+          "default": "auto",
+          "options": [
+            {
+              "value": "auto",
+              "label": "自动左右交替"
+            },
+            {
+              "value": "left",
+              "label": "左侧"
+            },
+            {
+              "value": "right",
+              "label": "右侧"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "tag_1",
+          "label": "标签 1",
+          "default": "订婚"
+        },
+        {
+          "type": "text",
+          "id": "tag_2",
+          "label": "标签 2",
+          "default": "来图定制"
+        },
+        {
+          "type": "text",
+          "id": "tag_3",
+          "label": "标签 3"
+        },
+        {
+          "type": "text",
+          "id": "kicker",
+          "label": "小抬头",
+          "default": "Solarii Jewelry"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题",
+          "default": "一张精致的故事卡片"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "正文",
+          "default": "<p>在这里添加一段简短介绍。这个布局很适合系列亮点、工艺故事或为什么选择我们的内容。</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "链接文字",
+          "default": "了解更多"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "链接"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "为什么选择我们堆叠卡片",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

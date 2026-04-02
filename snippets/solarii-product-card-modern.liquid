@@ -1,0 +1,82 @@
+{% assign v = product.selected_or_first_available_variant %}
+{% assign price = v.price %}
+{% assign compare = v.compare_at_price %}
+
+{% assign discount_percent = 0 %}
+{% if compare and compare > price and compare > 0 %}
+  {% assign discount_percent = compare | minus: price | times: 100 | divided_by: compare | round %}
+{% endif %}
+
+{%- assign rating_obj = product.metafields.reviews.rating.value -%}
+{%- assign rating_count = product.metafields.reviews.rating_count.value | default: 0 -%}
+{%- assign rating_value = 0 -%}
+{%- assign rating_max = 5 -%}
+{% if rating_obj != blank %}
+  {%- assign rating_value = rating_obj.rating | default: rating_obj -%}
+  {%- assign rating_max = rating_obj.scale_max | default: 5 -%}
+{% endif %}
+
+{%- assign plating_option_index = -1 -%}
+{%- for opt in product.options_with_values -%}
+  {%- assign name_down = opt.name | downcase -%}
+  {%- if name_down contains 'plating' or name_down contains 'metal' or name_down contains 'finish' or name_down contains 'color' -%}
+    {%- assign plating_option_index = forloop.index0 -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<article class="sg-card">
+  <a class="sg-card__link" href="{{ product.url }}">
+    <div class="sg-card__media">
+      {% if discount_percent > 0 %}
+        <span class="sg-badge">Save {{ discount_percent }}%</span>
+      {% endif %}
+
+      {% if product.featured_media %}
+        {{ product.featured_media | image_url: width: 900 | image_tag: loading: 'lazy', class: 'sg-card__img', alt: product.title }}
+      {% endif %}
+    </div>
+
+    {% if plating_option_index != -1 %}
+      {%- assign opt = product.options_with_values[plating_option_index] -%}
+      <div class="sg-swatches" aria-label="Options">
+        {% for val in opt.values limit: 3 %}
+          {%- assign col = '#D9D9D9' -%}
+          {%- assign vdown = val | downcase -%}
+          {% if vdown contains 'silver' %}
+            {%- assign col = '#C9CDD3' -%}
+          {% elsif vdown contains 'rose' and vdown contains 'gold' %}
+            {%- assign col = '#B76E79' -%}
+          {% elsif vdown contains 'gold' %}
+            {%- assign col = '#D4B06A' -%}
+          {% elsif vdown contains 'platinum' %}
+            {%- assign col = '#D7DCE2' -%}
+          {% endif %}
+          <span class="sg-swatch" style="--sw: {{ col }}" title="{{ val | escape }}"></span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <h3 class="sg-title">
+      {{ product.title }}
+      {% if plating_option_index != -1 %}
+        {%- assign opt = product.options_with_values[plating_option_index] -%}
+        <span class="sg-title__meta">- {{ opt.values.first }}</span>
+      {% endif %}
+    </h3>
+
+    {% if rating_value and rating_value > 0 %}
+      <div class="sg-rating" aria-label="Rating">
+        <span class="sg-stars" style="--pct: {{ rating_value | times: 100 | divided_by: rating_max }}%"></span>
+        <span class="sg-count">({{ rating_count }})</span>
+      </div>
+    {% endif %}
+
+    <div class="sg-price">
+      <span class="sg-price__now">{{ price | money }}</span>
+      {% if compare and compare > price %}
+        <span class="sg-price__compare">{{ compare | money }}</span>
+      {% endif %}
+    </div>
+  </a>
+</article>

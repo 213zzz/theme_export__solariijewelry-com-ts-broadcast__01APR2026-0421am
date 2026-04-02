@@ -1,0 +1,424 @@
+{%- liquid
+  assign highlight_item = highlight_item | downcase | strip_html | escape
+  assign link_title_lowercase = link.title | downcase | strip_html | escape
+  assign parent = false
+  assign grandparent = false
+  if link.levels == 1
+    assign parent = true
+  endif
+  if link.levels == 2
+    assign grandparent = true
+  endif
+
+  assign child_count = 0
+  if grandparent
+    assign child_count = link.links.size
+    if child_count > 10
+      assign child_count = 10
+    endif
+  endif
+
+  assign index = index | append: ''
+  assign image_count = 0
+  assign image_wide_count = 0
+  assign images_space = 0
+  for block in section.blocks
+    if block.type == 'image' and block.settings.position == index
+      assign grandparent = true
+      assign image_count = image_count | plus: 1
+      assign image_space = 1
+
+      if block.settings.wide_image
+        assign image_space = 3
+        assign image_wide_count = image_wide_count | plus: 1
+      endif
+
+      assign images_space = images_space | plus: image_space
+    endif
+  endfor
+
+  if parent or grandparent
+    assign expands = true
+    assign key = link.url | append: link.title | append: link.levels | md5
+  endif
+
+  if parent and link.levels == 1
+    assign child_count = child_count | plus: 1
+  endif
+
+  if image_count and child_count == 0
+    assign only_images = ' grandparent--all-images'
+  endif
+
+  assign item_tag = 'div'
+  if expands
+    assign item_tag = 'hover-disclosure'
+  endif
+
+  comment
+    ============================================================
+    Mega menu display mode detection:
+    - Add [mega-icons] in the TOP-LEVEL menu item title to enable icon-style mega menu
+    - Add [mega-cards] in the TOP-LEVEL menu item title to enable card-style mega menu
+    - No tag = default theme dropdown behavior
+
+    Custom images:
+    - Add "Menu Icon" blocks in Theme Editor > Header section
+    - Set "Menu item title" to match the exact link title (e.g. "Round Cut")
+    - Upload your custom image
+    - The custom image overrides the auto-detected collection/product image
+    ============================================================
+  endcomment
+
+  assign mega_mode = 'default'
+  assign clean_title = link.title | strip_html | escape
+
+  if link.title contains '[mega-icons]'
+    assign mega_mode = 'icons'
+    assign clean_title = link.title | remove: '[mega-icons]' | strip_html | strip | escape
+  elsif link.title contains '[mega-cards]'
+    assign mega_mode = 'cards'
+    assign clean_title = link.title | remove: '[mega-cards]' | strip_html | strip | escape
+  endif
+-%}
+
+{% capture classes %}{% if grandparent %} grandparent kids-{{ child_count }}{% if image_count > 0 %} images-{{ image_count }}{% endif %} {{ only_images }} {% elsif parent %} parent{% else %} child{% endif %}{% if mega_mode != 'default' %} mega-menu--{{ mega_mode }}{% endif %}{% endcapture %}
+
+<{{ item_tag }}
+  class="menu__item {{ classes }}"
+  {% if expands %}
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="dropdown-{{ key }}"
+    role="button"
+  {% endif %}
+>
+  <a
+    href="{{ link.url }}"
+    data-top-link
+    class="navlink navlink--toplevel{% if highlight_item == link_title_lowercase %} navlink--highlight{% endif %}"
+  >
+    <span class="navtext">{{ clean_title }}</span>
+  </a>
+  {% if expands %}
+    <div
+      class="header__dropdown{% if mega_mode != 'default' %} header__dropdown--mega header__dropdown--{{ mega_mode }}{% endif %}"
+      id="dropdown-{{ key }}"
+    >
+      <div class="header__dropdown__wrapper">
+        <div class="header__dropdown__inner{% if mega_mode != 'default' %} mega-inner mega-inner--{{ mega_mode }}{% endif %}">
+
+          {%- comment -%}
+            ═══════════════════════════════════════════════
+            MODE: mega-icons
+            Each child = a column with title
+            Each grandchild = a link with small image icon
+            ═══════════════════════════════════════════════
+          {%- endcomment -%}
+          {%- if mega_mode == 'icons' -%}
+            <div class="mega-columns">
+              {%- if link.levels == 2 -%}
+                {%- for child_link in link.links -%}
+                  <div class="mega-column">
+                    <div class="mega-column__title">
+                      <a href="{{ child_link.url }}" class="mega-column__title-link">
+                        {{ child_link.title | strip_html | escape }}
+                      </a>
+                    </div>
+                    <div class="mega-column__links">
+                      {%- for grandchild_link in child_link.links -%}
+                        <a href="{{ grandchild_link.url }}" class="mega-icon-link">
+                          {%- liquid
+                            comment
+                              Step 1: Check for custom uploaded image via Menu Icon block
+                              Match by menu item title (case-insensitive)
+                            endcomment
+                            assign custom_icon = nil
+                            assign gc_title_lower = grandchild_link.title | strip_html | downcase | strip
+                            for block in section.blocks
+                              if block.type == 'mega_icon'
+                                assign block_title_lower = block.settings.menu_item_title | downcase | strip
+                                if block_title_lower == gc_title_lower and block.settings.custom_image != blank
+                                  assign custom_icon = block.settings.custom_image
+                                  break
+                                endif
+                              endif
+                            endfor
+
+                            comment
+                              Step 2: Fallback to collection/product image
+                            endcomment
+                            assign gc_image = custom_icon
+                            if gc_image == nil
+                              if grandchild_link.object.featured_image
+                                assign gc_image = grandchild_link.object.featured_image
+                              elsif grandchild_link.object.image
+                                assign gc_image = grandchild_link.object.image
+                              endif
+                            endif
+                          -%}
+                          <span class="mega-icon-link__img">
+                            {%- if gc_image -%}
+                              <img
+                                src="{{ gc_image | image_url: width: 300 }}"
+                                srcset="{{ gc_image | image_url: width: 300 }} 1x, {{ gc_image | image_url: width: 600 }} 2x"
+                                alt="{{ grandchild_link.title | strip_html | escape }}"
+                                width="40"
+                                height="40"
+                                loading="lazy"
+                              >
+                            {%- else -%}
+                              <span class="mega-icon-link__placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                                  <path d="M12 2L2 9l10 13L22 9z"/>
+                                  <path d="M2 9h20"/>
+                                </svg>
+                              </span>
+                            {%- endif -%}
+                          </span>
+                          <span class="mega-icon-link__text">
+                            {{ grandchild_link.title | strip_html | escape }}
+                          </span>
+                        </a>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              {%- elsif link.levels == 1 -%}
+                <div class="mega-column">
+                  <div class="mega-column__links">
+                    {%- for child_link in link.links -%}
+                      <a href="{{ child_link.url }}" class="mega-icon-link">
+                        {%- liquid
+                          assign custom_icon = nil
+                          assign c_title_lower = child_link.title | strip_html | downcase | strip
+                          for block in section.blocks
+                            if block.type == 'mega_icon'
+                              assign block_title_lower = block.settings.menu_item_title | downcase | strip
+                              if block_title_lower == c_title_lower and block.settings.custom_image != blank
+                                assign custom_icon = block.settings.custom_image
+                                break
+                              endif
+                            endif
+                          endfor
+
+                          assign c_image = custom_icon
+                          if c_image == nil
+                            if child_link.object.featured_image
+                              assign c_image = child_link.object.featured_image
+                            elsif child_link.object.image
+                              assign c_image = child_link.object.image
+                            endif
+                          endif
+                        -%}
+                        <span class="mega-icon-link__img">
+                          {%- if c_image -%}
+                            <img
+                              src="{{ c_image | image_url: width: 300 }}"
+                              srcset="{{ c_image | image_url: width: 300 }} 1x, {{ c_image | image_url: width: 600 }} 2x"
+                              alt="{{ child_link.title | strip_html | escape }}"
+                              width="40"
+                              height="40"
+                              loading="lazy"
+                            >
+                          {%- else -%}
+                            <span class="mega-icon-link__placeholder">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                                <path d="M12 2L2 9l10 13L22 9z"/>
+                                <path d="M2 9h20"/>
+                              </svg>
+                            </span>
+                          {%- endif -%}
+                        </span>
+                        <span class="mega-icon-link__text">
+                          {{ child_link.title | strip_html | escape }}
+                        </span>
+                      </a>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Image blocks (right side promo image) {%- endcomment -%}
+            {%- if image_count > 0 -%}
+              {%- liquid
+                if image_count == 2 and image_wide_count == 1
+                  assign images_space = images_space | minus: 1
+                elsif image_count == 2 and image_wide_count == 2
+                  assign images_space = images_space | minus: 2
+                endif
+              -%}
+              <div class="menu__blocks mega-side-image" style="--images-space: {{ images_space }};">
+                {%- liquid
+                  for block in section.blocks
+                    if block.type == 'image' and block.settings.position == index
+                      render 'header-block', block: block, image_count: image_count, only_images: only_images, link_columns: link.links.size
+                    endif
+                  endfor
+                -%}
+              </div>
+            {%- endif -%}
+
+          {%- comment -%}
+            ═══════════════════════════════════════════════
+            MODE: mega-cards
+            Each child = a large image card with title below
+            ═══════════════════════════════════════════════
+          {%- endcomment -%}
+          {%- elsif mega_mode == 'cards' -%}
+            <div class="mega-cards" style="--card-count: {{ link.links.size }};">
+              {%- for child_link in link.links -%}
+                {%- liquid
+                  comment
+                    Check for custom card image via Menu Icon block
+                  endcomment
+                  assign custom_card = nil
+                  assign card_title_lower = child_link.title | strip_html | downcase | strip
+                  for block in section.blocks
+                    if block.type == 'mega_icon'
+                      assign block_title_lower = block.settings.menu_item_title | downcase | strip
+                      if block_title_lower == card_title_lower and block.settings.custom_image != blank
+                        assign custom_card = block.settings.custom_image
+                        break
+                      endif
+                    endif
+                  endfor
+
+                  assign card_image = custom_card
+                  if card_image == nil
+                    if child_link.object.featured_image
+                      assign card_image = child_link.object.featured_image
+                    elsif child_link.object.image
+                      assign card_image = child_link.object.image
+                    endif
+                  endif
+                -%}
+                <a href="{{ child_link.url }}" class="mega-card">
+                  <div class="mega-card__image">
+                    {%- if card_image -%}
+                      <img
+                        src="{{ card_image | image_url: width: 600 }}"
+                        srcset="{{ card_image | image_url: width: 400 }} 400w, {{ card_image | image_url: width: 600 }} 600w, {{ card_image | image_url: width: 800 }} 800w"
+                        sizes="(min-width: 750px) 33vw, 50vw"
+                        alt="{{ child_link.title | strip_html | escape }}"
+                        loading="lazy"
+                        width="400"
+                        height="400"
+                      >
+                    {%- else -%}
+                      <div class="mega-card__placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <path d="m21 15-5-5L5 21"/>
+                        </svg>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  <div class="mega-card__title">
+                    {{ child_link.title | strip_html | escape }}
+                  </div>
+                </a>
+              {%- endfor -%}
+            </div>
+
+          {%- comment -%}
+            ═══════════════════════════════════════════════
+            MODE: default (original theme behavior)
+            ═══════════════════════════════════════════════
+          {%- endcomment -%}
+          {%- else -%}
+            {%- if grandparent -%}
+              {%- unless only_images -%}
+                <div class="header__grandparent__links">
+                  {% if link.levels == 2 %}
+                    {% for link in link.links %}
+                      {%- assign link_title_lowercase = link.title | downcase | strip_html | escape -%}
+                      <div class="dropdown__family">
+                        <a
+                          href="{{ link.url }}"
+                          data-stagger-first
+                          class="navlink navlink--child{% if highlight_item == link_title_lowercase %} navlink--highlight{% endif %}"
+                        >
+                          <span class="navtext">
+                            {{ link.title | strip_html | escape }}
+                            {%- render 'superscript', link_collection: link -%}
+                          </span>
+                        </a>
+                        {% for link in link.links %}
+                          {%- assign link_title_lowercase = link.title | downcase | strip_html | escape -%}
+                          <a
+                            href="{{ link.url }}"
+                            data-stagger-second
+                            class="navlink navlink--grandchild{% if highlight_item == link_title_lowercase %} navlink--highlight{% endif %}"
+                          >
+                            <span class="navtext">
+                              {{ link.title | strip_html | escape }}
+                              {%- render 'superscript', link_collection: link -%}
+                            </span>
+                          </a>
+                        {% endfor %}
+                      </div>
+                    {% endfor %}
+                  {% elsif link.levels == 1 %}
+                    <div class="dropdown__family">
+                      {% for link in link.links %}
+                        {%- assign link_title_lowercase = link.title | downcase | strip_html | escape -%}
+                        <a
+                          href="{{ link.url }}"
+                          data-stagger
+                          class="navlink navlink--grandchild{% if highlight_item == link_title_lowercase %} navlink--highlight{% endif %}"
+                        >
+                          <span class="navtext">
+                            {{ link.title | strip_html | escape }}
+                            {%- render 'superscript', link_collection: link -%}
+                          </span>
+                        </a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              {%- endunless -%}
+
+              {%- if image_count > 0 -%}
+                {%- liquid
+                  if image_count == 2 and image_wide_count == 1
+                    assign images_space = images_space | minus: 1
+                  elsif image_count == 2 and image_wide_count == 2
+                    assign images_space = images_space | minus: 2
+                  endif
+                -%}
+                <div class="menu__blocks" style="--images-space: {{ images_space }};">
+                  {%- liquid
+                    for block in section.blocks
+                      if block.type == 'image' and block.settings.position == index
+                        render 'header-block', block: block, image_count: image_count, only_images: only_images, link_columns: link.links.size
+                      endif
+                    endfor
+                  -%}
+                </div>
+              {%- endif -%}
+
+            {%- else -%}
+              {% for link in link.links %}
+                {%- assign link_title_lowercase = link.title | downcase | strip_html | escape -%}
+                <a
+                  href="{{ link.url }}"
+                  data-stagger
+                  class="navlink navlink--child{% if highlight_item == link_title_lowercase %} navlink--highlight{% endif %}"
+                >
+                  <span class="navtext">
+                    {{ link.title | strip_html | escape }}
+                    {%- render 'superscript', link_collection: link -%}
+                  </span>
+                </a>
+              {% endfor %}
+            {%- endif -%}
+          {%- endif -%}
+
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</{{ item_tag }}>

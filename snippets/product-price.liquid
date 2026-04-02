@@ -1,0 +1,88 @@
+{%- liquid
+  assign section_id = unique | default: section.id
+  assign mobile_head = mobile_head | default: false
+  assign loox_rating_value = product.metafields.loox.avg_rating | default: 0
+  assign loox_rating_count = product.metafields.loox.num_reviews | default: 0
+  assign fallback_rating = product.metafields.reviews.rating.value
+  assign fallback_rating_count = product.metafields.reviews.rating_count.value | default: 0
+  assign rating_max = 5
+
+  if loox_rating_value == blank or loox_rating_value == 0
+    if fallback_rating != blank
+      assign loox_rating_value = fallback_rating.rating | default: fallback_rating
+      assign rating_max = fallback_rating.scale_max | default: 5
+    endif
+    if loox_rating_count == 0 and fallback_rating_count > 0
+      assign loox_rating_count = fallback_rating_count
+    endif
+  endif
+
+  assign rating_pct = loox_rating_value | times: 100.0 | divided_by: rating_max
+-%}
+
+<div
+  class="product__block block-padding{% if mobile_head %} sg-mobile-price-block{% endif %}"
+  {{ block_style }}
+  {% if animation_name %}
+    data-animation="{{ animation_name }}"
+    data-animation-duration="{{ animation_duration }}"
+    data-animation-delay="{{ animation_delay }}"
+  {% endif %}
+>
+  <div class="product__price__wrap">
+    {% if mobile_head == false and loox_rating_value != blank and loox_rating_value > 0 and loox_rating_count > 0 %}
+      <div class="sg-rating sg-desktop-rating" aria-label="Rating {{ loox_rating_value }}">
+        <span class="sg-stars" style="--pct: {{ rating_pct }}%"></span>
+        <span class="sg-count">({{ loox_rating_count }})</span>
+      </div>
+    {% endif %}
+
+    <div id="Price-{{ section_id }}" role="status" {{ block.shopify_attributes }}>
+      {%- render 'price',
+        product: product,
+        onboarding_product: onboarding_product,
+        use_variant: true,
+        show_badges: true,
+        price_font_size: block.settings.text_font_size,
+        price_class: 'price--large'
+      -%}
+    </div>
+
+    {% if mobile_head and loox_rating_value != blank and loox_rating_value > 0 and loox_rating_count > 0 %}
+      <div class="sg-rating sg-mobile-rating" aria-label="Rating {{ loox_rating_value }}">
+        <span class="sg-stars" style="--pct: {{ rating_pct }}%"></span>
+        <span class="sg-count">({{ loox_rating_count }})</span>
+      </div>
+    {% endif %}
+
+    {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+      <div class="product__tax caption rte">
+        {%- if cart.duties_included and cart.taxes_included -%}
+          {{ 'products.product.duties_and_taxes_included' | t }}
+        {%- elsif cart.taxes_included -%}
+          {{ 'products.product.taxes_included' | t }}
+        {%- elsif cart.duties_included -%}
+          {{ 'products.product.duties_included' | t }}
+        {%- endif -%}
+        {%- if shop.shipping_policy.body != blank -%}
+          {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {% if product != blank %}
+      <div class="shop-pay-terms" {{ block.shopify_attributes }}>
+        {%- assign product_form_installment_id = 'product-form-installment-' | append: section_id -%}
+        {%- form 'product',
+          product,
+          id: product_form_installment_id,
+          class: 'installment',
+          data-product-form-installment: ''
+        -%}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          {{ form | payment_terms }}
+        {%- endform -%}
+      </div>
+    {% endif %}
+  </div>
+</div>

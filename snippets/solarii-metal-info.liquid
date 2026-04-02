@@ -1,0 +1,73 @@
+{%- comment -%}
+  snippets/solarii-metal-info.liquid
+  Metal & plating info card block for product pages.
+  Called from product.liquid:
+    {%- when 'metal_info' -%}
+      {%- render 'solarii-metal-info', block: block, block_style: block_style -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign card_title       = block.settings.card_title       | default: 'Metal'
+  assign row1_title       = block.settings.row1_title       | default: 'Metal'
+  assign row1_items_raw   = block.settings.row1_items       | default: 'S925, 10K Gold, 14K Gold, 18K Gold, Platinum'
+  assign row2_title       = block.settings.row2_title       | default: 'Plating'
+  assign row2_items_raw   = block.settings.row2_items       | default: '镀层, 不含镍, 镀铑'
+
+  assign title_size_d     = block.settings.title_size_desktop | default: 18
+  assign title_size_m     = block.settings.title_size_mobile  | default: 16
+  assign text_size_d      = block.settings.text_size_desktop  | default: 14
+  assign text_size_m      = block.settings.text_size_mobile   | default: 12
+  assign padding_bottom   = block.settings.padding_bottom     | default: 0
+
+  assign row1_items = row1_items_raw | split: ','
+  assign row2_items = row2_items_raw | split: ','
+-%}
+
+<div
+  class="product__block block-padding"
+  {{ block.shopify_attributes }}
+  {{ block_style }}
+  style="
+    --mib-title-size-d: {{ title_size_d }}px;
+    --mib-title-size-m: {{ title_size_m }}px;
+    --mib-text-size-d: {{ text_size_d }}px;
+    --mib-text-size-m: {{ text_size_m }}px;
+    --mib-pad-bottom: {{ padding_bottom }}px;
+  "
+>
+  <div class="mib">
+    {%- if card_title != blank -%}
+      <div class="mib-header">{{ card_title }}</div>
+    {%- endif -%}
+
+    {%- comment -%} Row 1 — Metal types {%- endcomment -%}
+    {%- if row1_items_raw != blank -%}
+      <div class="mib-section">
+        <div class="mib-row-title">{{ row1_title }}</div>
+        <div class="mib-grid">
+          {%- for item in row1_items -%}
+            {%- assign trimmed = item | strip -%}
+            {%- if trimmed != blank -%}
+              <div class="mib-cell">{{ trimmed }}</div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Row 2 — Plating / coating {%- endcomment -%}
+    {%- if row2_items_raw != blank -%}
+      <div class="mib-section">
+        <div class="mib-row-title">{{ row2_title }}</div>
+        <div class="mib-grid">
+          {%- for item in row2_items -%}
+            {%- assign trimmed = item | strip -%}
+            {%- if trimmed != blank -%}
+              <div class="mib-cell">{{ trimmed }}</div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>

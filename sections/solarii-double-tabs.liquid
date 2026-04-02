@@ -1,0 +1,1781 @@
+{% liquid
+  assign design_blocks = section.blocks | where: 'type', 'design_series'
+  assign hotspot_blocks = section.blocks | where: 'type', 'hotspot'
+%}
+
+<section id="solarii-double-tabs-{{ section.id }}" class="solarii-double-tabs">
+  <div class="sdt__inner page-width">
+    <div class="sdt__outer-tabs" role="tablist" aria-label="外层标签">
+      <button class="sdt__outer-tab is-active" type="button" data-outer-tab="design">
+        {{ section.settings.outer_label_1 }}
+      </button>
+      <button class="sdt__outer-tab" type="button" data-outer-tab="custom">
+        {{ section.settings.outer_label_2 }}
+      </button>
+    </div>
+
+    <div class="sdt__shell">
+      <div class="sdt__panel sdt__panel--design is-active" data-panel="design">
+        {% if design_blocks.size > 0 %}
+          <div class="sdt__inner-tabs sdt__inner-tabs--design" role="tablist" aria-label="系列标签">
+            {% for block in design_blocks %}
+              <button
+                class="sdt__inner-tab sdt__inner-tab--design {% if forloop.first %}is-active{% endif %}"
+                type="button"
+                data-inner-tab="{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.tab_label }}
+              </button>
+            {% endfor %}
+          </div>
+
+          <div class="sdt__inner-panels">
+            {% for block in design_blocks %}
+              <div class="sdt__inner-panel {% if forloop.first %}is-active{% endif %}" data-inner-panel="{{ block.id }}">
+                <div class="sdt__media-card">
+                  {% if block.settings.media_type == 'video' and block.settings.video != blank %}
+                    {{
+                      block.settings.video
+                      | video_tag:
+                        controls: true,
+                        autoplay: false,
+                        loop: false,
+                        muted: true,
+                        playsinline: true,
+                        class: 'sdt__media-video'
+                    }}
+                  {% elsif block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 1800
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'sdt__media-image',
+                        widths: '600, 900, 1200, 1500, 1800'
+                    }}
+                  {% else %}
+                    <div class="sdt__media-placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="sdt__copy-card">
+                  {% if block.settings.kicker != blank %}
+                    <div class="sdt__copy-kicker">{{ block.settings.kicker }}</div>
+                  {% endif %}
+
+                  {% if block.settings.title != blank %}
+                    <h3 class="sdt__copy-title">{{ block.settings.title }}</h3>
+                  {% endif %}
+
+                  {% if block.settings.desc != blank %}
+                    <div class="sdt__copy-body">{{ block.settings.desc }}</div>
+                  {% endif %}
+
+                  <div class="sdt__meta-grid">
+                    {% if block.settings.sub_1_title != blank or block.settings.sub_1_text != blank %}
+                      <div class="sdt__meta-item">
+                        {% if block.settings.sub_1_title != blank %}
+                          <div class="sdt__meta-label">{{ block.settings.sub_1_title }}</div>
+                        {% endif %}
+                        {% if block.settings.sub_1_text != blank %}
+                          <div class="sdt__meta-value">{{ block.settings.sub_1_text }}</div>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+
+                    {% if block.settings.sub_2_title != blank or block.settings.sub_2_text != blank %}
+                      <div class="sdt__meta-item">
+                        {% if block.settings.sub_2_title != blank %}
+                          <div class="sdt__meta-label">{{ block.settings.sub_2_title }}</div>
+                        {% endif %}
+                        {% if block.settings.sub_2_text != blank %}
+                          <div class="sdt__meta-value">{{ block.settings.sub_2_text }}</div>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  {% if block.settings.button_text != blank %}
+                    <div class="sdt__actions">
+                      <a
+                        class="sdt__btn sdt__btn--primary"
+                        {% if block.settings.button_link != blank %}
+                          href="{{ block.settings.button_link }}"
+                        {% else %}
+                          role="link" aria-disabled="true"
+                        {% endif %}
+                      >
+                        {{ block.settings.button_text }}
+                      </a>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="sdt__empty">请在主题编辑器中添加系列区块</div>
+        {% endif %}
+      </div>
+
+      <div class="sdt__panel sdt__panel--custom" data-panel="custom">
+        {% liquid
+          assign hero_img = section.settings.custom_image
+          assign hero_img_m = section.settings.custom_image_mobile
+          assign hero_vid_d = section.settings.custom_video
+          assign hero_vid_m = section.settings.custom_video_mobile
+        %}
+
+        <div class="sdtcsh" data-csh-root>
+          <div class="sdtcsh__hero" data-csh-hero>
+            {% if section.settings.custom_media_type == 'video' and hero_vid_d != blank %}
+              <div class="sdtcsh__media sdtcsh__media--video">
+                {{
+                  hero_vid_d
+                  | video_tag:
+                    class: 'sdtcsh__img sdtcsh__heroVideo sdtcsh__heroVideo--desktop',
+                    autoplay: section.settings.custom_video_autoplay,
+                    loop: true,
+                    muted: true,
+                    controls: false,
+                    playsinline: true,
+                    preload: 'metadata'
+                }}
+
+                {% if hero_vid_m != blank %}
+                  {{
+                    hero_vid_m
+                    | video_tag:
+                      class: 'sdtcsh__img sdtcsh__heroVideo sdtcsh__heroVideo--mobile',
+                      autoplay: section.settings.custom_video_autoplay,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {% else %}
+                  {{
+                    hero_vid_d
+                    | video_tag:
+                      class: 'sdtcsh__img sdtcsh__heroVideo sdtcsh__heroVideo--mobile',
+                      autoplay: section.settings.custom_video_autoplay,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {% endif %}
+              </div>
+            {% elsif hero_img != blank %}
+              <picture class="sdtcsh__media">
+                {% if hero_img_m != blank %}
+                  <source media="(max-width: 749px)" srcset="{{ hero_img_m | image_url: width: 1200 }}">
+                {% endif %}
+                <img
+                  src="{{ hero_img | image_url: width: 2400 }}"
+                  alt="{{ section.settings.custom_image_alt | escape }}"
+                  loading="lazy"
+                  class="sdtcsh__img"
+                >
+              </picture>
+            {% else %}
+              <div class="sdtcsh__fallback" aria-hidden="true"></div>
+            {% endif %}
+
+            <div class="sdtcsh__overlay" aria-hidden="true"></div>
+            <canvas class="sdtcsh__sparkle" data-csh-sparkle aria-hidden="true"></canvas>
+
+            {% if section.settings.custom_bg_word != blank %}
+              <div class="sdtcsh__bgword" aria-hidden="true">{{ section.settings.custom_bg_word }}</div>
+            {% endif %}
+
+            <div class="sdtcsh__content">
+              <div class="sdtcsh__copy">
+                {% if section.settings.custom_eyebrow != blank %}
+                  <div class="sdtcsh__eyebrow">{{ section.settings.custom_eyebrow }}</div>
+                {% endif %}
+
+                {% if section.settings.custom_title != blank %}
+                  <h2 class="sdtcsh__heading">{{ section.settings.custom_title }}</h2>
+                {% endif %}
+
+                {% if section.settings.custom_desc != blank %}
+                  <div class="sdtcsh__subheading">{{ section.settings.custom_desc | newline_to_br }}</div>
+                {% endif %}
+              </div>
+
+              {% if section.settings.custom_button_text != blank %}
+                {% assign cta_href = section.settings.custom_button_link %}
+                <a
+                  class="sdtcsh__cta sdtcsh__cta--{{ section.settings.custom_button_style }}{% if cta_href == blank %} is-disabled{% endif %}"
+                  href="{% if cta_href != blank %}{{ cta_href }}{% else %}#{% endif %}"
+                  {% if cta_href == blank %}aria-disabled="true"{% endif %}
+                >
+                  {{ section.settings.custom_button_text }}
+                </a>
+              {% endif %}
+            </div>
+
+            {% for block in hotspot_blocks %}
+              {% liquid
+                assign label_side = block.settings.label_side
+                assign show_on_mobile = block.settings.show_on_mobile
+                assign modal_title = block.settings.modal_title
+                if modal_title == blank
+                  assign modal_title = block.settings.label
+                endif
+              %}
+
+              <div
+                class="sdtcsh__hotspot {% unless show_on_mobile %}sdtcsh__hotspot--hide-mobile{% endunless %}"
+                style="--x: {{ block.settings.pos_x }}%; --y: {{ block.settings.pos_y }}%; --xm: {{ block.settings.pos_x_m }}%; --ym: {{ block.settings.pos_y_m }}%;"
+                data-csh-hotspot
+                data-modal-id="{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                {% if label_side == 'left' %}
+                  <span class="sdtcsh__label">{{ block.settings.label }}</span>
+                {% endif %}
+
+                <button
+                  type="button"
+                  class="sdtcsh__dot"
+                  aria-label="{{ block.settings.label | default: 'Open hotspot' | escape }}"
+                  data-csh-open
+                >
+                  <span class="sdtcsh__plus" aria-hidden="true"></span>
+                </button>
+
+                {% if label_side == 'right' %}
+                  <span class="sdtcsh__label">{{ block.settings.label }}</span>
+                {% endif %}
+              </div>
+
+              <div class="sdtcsh__backdrop" data-csh-backdrop data-modal="{{ block.id }}" aria-hidden="true">
+                <div class="sdtcsh__modal" role="dialog" aria-modal="true" aria-label="{{ modal_title | escape }}">
+                  <div class="sdtcsh__modalGrid">
+                    <div class="sdtcsh__modalText">
+                      <div class="sdtcsh__modalTitle">{{ modal_title }}</div>
+
+                      {% if block.settings.modal_text != blank %}
+                        <div class="sdtcsh__modalBody">{{ block.settings.modal_text }}</div>
+                      {% endif %}
+
+                      {% if block.settings.link_label != blank and block.settings.link_url != blank %}
+                        <a class="sdtcsh__learn" href="{{ block.settings.link_url }}">{{ block.settings.link_label }}</a>
+                      {% endif %}
+                    </div>
+
+                    <div class="sdtcsh__modalMedia">
+                      <button type="button" class="sdtcsh__close" aria-label="Close" data-csh-close>×</button>
+
+                      {% if block.settings.media_type == 'video' and block.settings.video != blank %}
+                        <div class="sdtcsh__videoWrap">
+                          {{
+                            block.settings.video
+                            | video_tag:
+                              class: 'sdtcsh__video',
+                              autoplay: block.settings.video_autoplay,
+                              loop: true,
+                              muted: true,
+                              controls: false,
+                              playsinline: true,
+                              preload: 'metadata'
+                          }}
+                        </div>
+                      {% elsif block.settings.media_type == 'image' and block.settings.media_image != blank %}
+                        <img
+                          class="sdtcsh__mediaImg"
+                          src="{{ block.settings.media_image | image_url: width: 1400 }}"
+                          alt=""
+                          loading="lazy"
+                        >
+                      {% else %}
+                        <div class="sdtcsh__mediaEmpty" aria-hidden="true"></div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    #solarii-double-tabs-{{ section.id }} {
+      --sdt-bg: {{ section.settings.section_bg }};
+      --sdt-card: {{ section.settings.card_bg }};
+      --sdt-text: {{ section.settings.text_color }};
+      --sdt-sub: {{ section.settings.subtext_color }};
+      --sdt-border: {{ section.settings.border_color }};
+      --sdt-pill: {{ section.settings.pill_bg }};
+      --sdt-pill-active: {{ section.settings.pill_active_bg }};
+      --sdt-pill-active-text: {{ section.settings.pill_active_text }};
+      --sdt-btn: {{ section.settings.button_bg }};
+      --sdt-btn-text: {{ section.settings.button_text_color }};
+      background: var(--sdt-bg);
+      color: var(--sdt-text);
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+      position: relative;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__inner {
+      max-width: {{ section.settings.max_width }}px;
+      margin: 0 auto;
+    }
+
+    #solarii-double-tabs-{{ section.id }} * {
+      box-sizing: border-box;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__outer-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      max-width: 560px;
+      margin: 0 auto 24px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--sdt-border);
+      border-radius: 22px;
+      box-shadow: 0 10px 28px rgba(31, 27, 24, 0.04);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__outer-tab,
+    #solarii-double-tabs-{{ section.id }} .sdt__inner-tab,
+    #solarii-double-tabs-{{ section.id }} .sdt__btn {
+      appearance: none;
+      border: 1px solid var(--sdt-border);
+      background: var(--sdt-pill);
+      color: var(--sdt-text);
+      cursor: pointer;
+      transition: all .25s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__outer-tab {
+      min-height: 54px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+      white-space: normal;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__outer-tab:hover {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__outer-tab.is-active {
+      background: var(--sdt-pill-active);
+      color: var(--sdt-pill-active-text);
+      border-color: var(--sdt-pill-active);
+      box-shadow: 0 10px 20px rgba(31, 27, 24, 0.12);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__panel {
+      display: none;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__panel.is-active {
+      display: block;
+      animation: sdtFade .28s ease;
+    }
+
+    @keyframes sdtFade {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__shell {
+      background: var(--sdt-card);
+      border: 1px solid var(--sdt-border);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 18px 60px rgba(30, 24, 18, 0.06);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__panel-head {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__eyebrow,
+    #solarii-double-tabs-{{ section.id }} .sdt__copy-kicker,
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-label {
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--sdt-sub);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 54px);
+      line-height: 1.05;
+      letter-spacing: -.03em;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__desc,
+    #solarii-double-tabs-{{ section.id }} .sdt__copy-body {
+      color: var(--sdt-sub);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__panel--design .sdt__inner-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__inner-tab--design {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: center;
+      white-space: normal;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      border-color: var(--sdt-border);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__inner-tab--design.is-active {
+      background: var(--sdt-pill-active);
+      color: var(--sdt-pill-active-text);
+      border-color: var(--sdt-pill-active);
+      box-shadow: 0 10px 20px rgba(31, 27, 24, 0.12);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__inner-panel,
+    #solarii-double-tabs-{{ section.id }} .sdt__single-layout {
+      display: none;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__inner-panel.is-active,
+    #solarii-double-tabs-{{ section.id }} .sdt__single-layout {
+      display: grid;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__media-card,
+    #solarii-double-tabs-{{ section.id }} .sdt__copy-card {
+      background: rgba(255,255,255,.66);
+      border: 1px solid var(--sdt-border);
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__media-card {
+      min-height: 420px;
+      position: relative;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__media-image,
+    #solarii-double-tabs-{{ section.id }} .sdt__media-video,
+    #solarii-double-tabs-{{ section.id }} .sdt__media-card video,
+    #solarii-double-tabs-{{ section.id }} .sdt__media-card iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      object-fit: cover;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__media-placeholder {
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ece6de;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__copy-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-self: start;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__copy-title {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.08;
+      letter-spacing: -.03em;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-item {
+      position: relative;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-item + .sdt__meta-item {
+      margin-left: 28px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-item + .sdt__meta-item::before {
+      content: "|";
+      position: absolute;
+      left: -15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--sdt-sub);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-item .sdt__meta-label {
+      display: none;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__meta-value {
+      margin-top: 0;
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--sdt-text);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__btn {
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1;
+      border-radius: 999px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__btn--primary {
+      background: var(--sdt-btn);
+      color: var(--sdt-btn-text);
+      border-color: var(--sdt-btn);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdt__empty {
+      padding: 30px;
+      border: 1px dashed var(--sdt-border);
+      border-radius: 20px;
+      color: var(--sdt-sub);
+    }
+
+    /* Custom Hotspot Hero */
+    #solarii-double-tabs-{{ section.id }} .sdtcsh{
+      --hDesk: {{ section.settings.custom_height_desktop }}px;
+      --hMob: {{ section.settings.custom_height_mobile }}px;
+      --overlay: {{ section.settings.custom_overlay_opacity | divided_by: 100.0 }};
+
+      --text: {{ section.settings.custom_text_color }};
+      --label: {{ section.settings.custom_label_color }};
+      --dotBg: {{ section.settings.custom_dot_bg }};
+      --dotBd: {{ section.settings.custom_dot_border }};
+      --plus: {{ section.settings.custom_plus_color }};
+
+      --ctaBg: {{ section.settings.custom_cta_bg }};
+      --ctaText: {{ section.settings.custom_cta_text }};
+      --ctaBd: {{ section.settings.custom_cta_border }};
+
+      --modalTextBg: {{ section.settings.custom_modal_text_bg }};
+      --modalBg: rgba(0,0,0,.35);
+
+      --titleD: {{ section.settings.custom_heading_size_desktop }}px;
+      --titleM: {{ section.settings.custom_heading_size_mobile }}px;
+      --subD: {{ section.settings.custom_subheading_size_desktop }}px;
+      --subM: {{ section.settings.custom_subheading_size_mobile }}px;
+      --ctaD: {{ section.settings.custom_cta_size_desktop }}px;
+      --ctaM: {{ section.settings.custom_cta_size_mobile }}px;
+
+      --mTitleD: {{ section.settings.custom_modal_title_size_desktop }}px;
+      --mTitleM: {{ section.settings.custom_modal_title_size_mobile }}px;
+      --mBodyD: {{ section.settings.custom_modal_body_size_desktop }}px;
+      --mBodyM: {{ section.settings.custom_modal_body_size_mobile }}px;
+
+      position: relative;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__hero{
+      position: relative;
+      min-height: var(--hDesk);
+      width: 100%;
+      overflow: hidden;
+      background: #f4f2ee;
+      border-radius: 22px;
+    }
+
+    @media (max-width: 749px){
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__hero{
+        min-height: var(--hMob);
+        border-radius: 16px;
+      }
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__media,
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__heroVideo{
+      width:100% !important;
+      height:100% !important;
+      object-fit: cover;
+      display:block;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__heroVideo--mobile{ display:none; }
+
+    @media (max-width: 749px){
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__heroVideo--desktop{ display:none; }
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__heroVideo--mobile{ display:block; }
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__fallback{
+      position:absolute;
+      inset:0;
+      background: radial-gradient(1200px 500px at 60% 40%, #efe9dd, #d9cfbf);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__overlay{
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0, calc(var(--overlay) * .55)), rgba(0,0,0, calc(var(--overlay) * .2)) 55%, rgba(0,0,0, calc(var(--overlay) * .55))),
+        radial-gradient(900px 380px at 50% 50%, rgba(0,0,0, calc(var(--overlay) * .22)), transparent 70%);
+      pointer-events:none;
+      z-index: 1;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__sparkle{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index: 2;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__bgword{
+      position:absolute;
+      left:50%;
+      top:18%;
+      transform: translateX(-50%);
+      font-size: clamp(48px, 10vw, 140px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.08);
+      white-space: nowrap;
+      pointer-events:none;
+      user-select:none;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__content{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items:center;
+      text-align:center;
+      padding: 52px 22px 52px;
+      color: var(--text);
+      z-index: 5;
+      pointer-events:none;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__copy{
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 10px;
+      max-width: 92%;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__eyebrow{
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      opacity: .92;
+      text-shadow: 0 10px 28px rgba(0,0,0,.16);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__heading{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: var(--titleD);
+      font-weight: 500;
+      letter-spacing: .01em;
+      line-height: 1.08;
+      text-shadow: 0 12px 32px rgba(0,0,0,.16);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__subheading{
+      font-size: var(--subD);
+      opacity: .92;
+      line-height: 1.55;
+      max-width: 62ch;
+      text-shadow: 0 10px 28px rgba(0,0,0,.14);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__subheading p{
+      margin: 0;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__cta{
+      pointer-events:auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 260px;
+      padding: 12px 18px;
+      font-size: var(--ctaD);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: 0;
+      text-decoration:none;
+      transition: transform .15s ease, filter .15s ease;
+      box-shadow: 0 18px 50px rgba(0,0,0,.16);
+      z-index: 7;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__cta:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__cta.is-disabled{
+      pointer-events:none;
+      opacity:.75;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__cta--solid{
+      background: var(--ctaBg);
+      color: var(--ctaText);
+      border: 1px solid var(--ctaBd);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__cta--outline{
+      background: rgba(255,255,255,.88);
+      color: #111;
+      border: 1px solid rgba(0,0,0,.20);
+      box-shadow: 0 18px 50px rgba(0,0,0,.10);
+    }
+
+    @media (max-width: 749px){
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__content{ padding: 34px 16px 26px; }
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__heading{ font-size: var(--titleM); }
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__subheading{ font-size: var(--subM); }
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__cta{
+        font-size: var(--ctaM);
+        min-width: 240px;
+        padding: 12px 16px;
+      }
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__hotspot{
+      position:absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      color: var(--label);
+      z-index: 6;
+      user-select:none;
+      max-width: 260px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__label{
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .95;
+      text-shadow: 0 10px 26px rgba(0,0,0,.22);
+      white-space: nowrap;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__dot{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--dotBd);
+      background: var(--dotBg);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      position:relative;
+      padding:0;
+      transition: transform .15s ease, box-shadow .15s ease;
+      flex: 0 0 auto;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__dot:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.16);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__plus{
+      width: 12px;
+      height: 12px;
+      position:relative;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__plus:before,
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__plus:after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width: 12px;
+      height: 2px;
+      background: var(--plus);
+      transform: translate(-50%,-50%);
+      border-radius: 2px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__plus:after{
+      transform: translate(-50%,-50%) rotate(90deg);
+    }
+
+    {% if section.settings.custom_dot_pulse %}
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__dot:after{
+      content:"";
+      position:absolute;
+      inset:-8px;
+      border-radius:999px;
+      border: 1px solid rgba(255,255,255,.45);
+      opacity:0;
+      animation: sdtcshPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes sdtcshPulse{
+      0%{ transform: scale(.82); opacity:0; }
+      30%{ opacity:.35; }
+      70%{ transform: scale(1.12); opacity:0; }
+      100%{ opacity:0; }
+    }
+    {% endif %}
+
+    @media (max-width: 749px){
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__hotspot{
+        left: var(--xm, var(--x));
+        top: var(--ym, var(--y));
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        max-width: 200px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__label{
+        order: 2;
+        font-size: 11px;
+        letter-spacing: .10em;
+        text-align:center;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__dot{ order: 1; }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__hotspot--hide-mobile{
+        display:none;
+      }
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__backdrop{
+      position: fixed;
+      inset: 0;
+      background: var(--modalBg);
+      backdrop-filter: blur(6px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 18px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__backdrop.is-open{
+      display:flex;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modal{
+      width: min(980px, 92vw);
+      background: transparent;
+      box-shadow: 0 24px 80px rgba(0,0,0,.28);
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalGrid{
+      display:grid;
+      grid-template-columns: 1fr 1.2fr;
+      background: #fff;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalText{
+      background: var(--modalTextBg);
+      padding: 44px 38px;
+      display:flex;
+      flex-direction: column;
+      justify-content:center;
+      gap: 14px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalTitle{
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: var(--mTitleD);
+      font-weight: 500;
+      letter-spacing: .02em;
+      line-height: 1.05;
+      color: #111;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalBody{
+      font-size: var(--mBodyD);
+      line-height: 1.7;
+      color: rgba(0,0,0,.72);
+      max-width: 44ch;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalBody p{
+      margin: 0 0 10px;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalBody p:last-child{
+      margin-bottom: 0;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__learn{
+      margin-top: 4px;
+      font-size: 13px;
+      color: #111;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      width: fit-content;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__modalMedia{
+      position:relative;
+      background: #111;
+      min-height: 360px;
+      overflow:hidden;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__close{
+      position:absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      z-index: 2;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__videoWrap{
+      position:absolute;
+      inset:0;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__video{
+      position:absolute;
+      inset:0;
+      width:100% !important;
+      height:100% !important;
+      object-fit: cover;
+      display:block;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__mediaImg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    #solarii-double-tabs-{{ section.id }} .sdtcsh__mediaEmpty{
+      position:absolute;
+      inset:0;
+      background: linear-gradient(135deg, #2a2a2a, #111);
+    }
+
+    @media (max-width: 749px){
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__backdrop{
+        position:absolute;
+        inset:0;
+        padding:0;
+        background: rgba(0,0,0,.10);
+        backdrop-filter: blur(10px);
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modal{
+        width:100%;
+        height:100%;
+        box-shadow:none;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modalGrid{
+        height:100%;
+        display:flex;
+        flex-direction: column;
+        background: transparent;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modalText{
+        background: transparent;
+        padding: 26px 18px 10px;
+        text-align:center;
+        gap: 10px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modalTitle{
+        font-size: var(--mTitleM);
+        color: #fff;
+        text-shadow: 0 14px 40px rgba(0,0,0,.22);
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modalBody{
+        font-size: var(--mBodyM);
+        margin: 2px auto 0;
+        line-height: 1.65;
+        color: rgba(255,255,255,.92);
+        max-width: 36ch;
+        text-shadow: 0 12px 36px rgba(0,0,0,.18);
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__learn{
+        color:#fff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        margin: 0 auto;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__modalMedia{
+        flex: 1;
+        background: transparent;
+        min-height: 1px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding: 8px 0 60px;
+        overflow: visible;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__videoWrap{
+        position: relative;
+        inset:auto;
+        width: min(70vw, 290px);
+        aspect-ratio: 1 / 1;
+        border-radius: 999px;
+        overflow: hidden;
+        background:#111;
+        border: 10px solid rgba(255,255,255,.28);
+        box-shadow: 0 18px 70px rgba(0,0,0,.22);
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__mediaImg,
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__mediaEmpty{
+        position: relative;
+        inset:auto;
+        width: min(70vw, 290px);
+        height: min(70vw, 290px);
+        border-radius: 999px;
+        overflow:hidden;
+        border: 10px solid rgba(255,255,255,.28);
+        box-shadow: 0 18px 70px rgba(0,0,0,.22);
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdtcsh__close{
+        top:auto;
+        right:auto;
+        left:50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        width: 46px;
+        height: 46px;
+        border: 0;
+        background: rgba(255,255,255,.86);
+        color:#111;
+        font-size: 26px;
+        box-shadow: 0 12px 34px rgba(0,0,0,.22);
+      }
+    }
+
+    @media screen and (max-width: 1200px) {
+      #solarii-double-tabs-{{ section.id }} .sdt__panel--design .sdt__inner-tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      #solarii-double-tabs-{{ section.id }} .sdt__inner-panel,
+      #solarii-double-tabs-{{ section.id }} .sdt__single-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      #solarii-double-tabs-{{ section.id }} .sdt__shell {
+        padding: 14px;
+        border-radius: 20px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__outer-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 14px;
+        padding: 6px;
+        border-radius: 18px;
+        max-width: 100%;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__outer-tab {
+        min-height: 46px;
+        padding: 8px 8px;
+        font-size: 11px;
+        line-height: 1.15;
+        border-radius: 14px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__panel-head {
+        margin-bottom: 16px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__title {
+        font-size: 30px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__copy-title {
+        font-size: 24px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__desc,
+      #solarii-double-tabs-{{ section.id }} .sdt__copy-body {
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__panel--design .sdt__inner-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__inner-tab--design {
+        min-height: 44px;
+        padding: 10px 8px;
+        border-radius: 14px;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__media-card,
+      #solarii-double-tabs-{{ section.id }} .sdt__media-image,
+      #solarii-double-tabs-{{ section.id }} .sdt__media-video,
+      #solarii-double-tabs-{{ section.id }} .sdt__media-card video,
+      #solarii-double-tabs-{{ section.id }} .sdt__media-card iframe,
+      #solarii-double-tabs-{{ section.id }} .sdt__media-placeholder {
+        min-height: 250px;
+        height: 250px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__copy-card {
+        padding: 16px;
+        gap: 12px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__meta-grid {
+        gap: 0;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__meta-value {
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__meta-item + .sdt__meta-item {
+        margin-left: 22px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__meta-item + .sdt__meta-item::before {
+        left: -12px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      #solarii-double-tabs-{{ section.id }} .sdt__btn {
+        width: 100%;
+        padding: 11px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+
+  <script>
+    (() => {
+      const section = document.getElementById('solarii-double-tabs-{{ section.id }}');
+      if (!section) return;
+
+      const outerTabs = section.querySelectorAll('[data-outer-tab]');
+      const panels = section.querySelectorAll('[data-panel]');
+      const innerTabs = section.querySelectorAll('[data-inner-tab]');
+      const innerPanels = section.querySelectorAll('[data-inner-panel]');
+
+      const cshRoot = section.querySelector('[data-csh-root]');
+      const customPanel = section.querySelector('[data-panel="custom"]');
+      const body = document.body;
+
+      let backdrops = [];
+      let openBtns = [];
+
+      function isMobile() {
+        return window.matchMedia && window.matchMedia('(max-width: 749px)').matches;
+      }
+
+      function getBackdropNodes() {
+        if (!cshRoot) return [];
+        return Array.from(cshRoot.querySelectorAll('[data-csh-backdrop]'));
+      }
+
+      function anyModalOpen() {
+        return getBackdropNodes().some((bd) => bd.classList.contains('is-open'));
+      }
+
+      function pauseVideos(scope) {
+        if (!scope) return;
+        scope.querySelectorAll('video').forEach((video) => {
+          try { video.pause(); } catch (e) {}
+        });
+      }
+
+      function syncCustomHeroVideos() {
+        if (!cshRoot || !customPanel) return;
+
+        const vd = cshRoot.querySelector('.sdtcsh__heroVideo--desktop');
+        const vm = cshRoot.querySelector('.sdtcsh__heroVideo--mobile');
+        const panelActive = customPanel.classList.contains('is-active');
+        const modalOpened = anyModalOpen();
+
+        if (!panelActive || modalOpened) {
+          if (vd) { try { vd.pause(); } catch (e) {} }
+          if (vm) { try { vm.pause(); } catch (e) {} }
+          return;
+        }
+
+        if (isMobile()) {
+          if (vd) { try { vd.pause(); } catch (e) {} }
+          if (vm && vm.hasAttribute('autoplay')) {
+            try { vm.play(); } catch (e) {}
+          }
+        } else {
+          if (vm) { try { vm.pause(); } catch (e) {} }
+          if (vd && vd.hasAttribute('autoplay')) {
+            try { vd.play(); } catch (e) {}
+          }
+        }
+      }
+
+      function closeAllCustomModals() {
+        if (!cshRoot) return;
+        backdrops.forEach((bd) => {
+          bd.classList.remove('is-open');
+          pauseVideos(bd);
+        });
+        body.style.overflow = '';
+        syncCustomHeroVideos();
+      }
+
+      function openModal(id) {
+        if (!cshRoot) return;
+        closeAllCustomModals();
+
+        const bd = cshRoot.querySelector('[data-csh-backdrop][data-modal="' + id + '"]');
+        if (!bd) return;
+
+        bd.classList.add('is-open');
+
+        if (!isMobile()) {
+          body.style.overflow = 'hidden';
+        }
+
+        syncCustomHeroVideos();
+
+        const video = bd.querySelector('video');
+        if (video && video.hasAttribute('autoplay')) {
+          try { video.play(); } catch (e) {}
+        }
+      }
+
+      outerTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-outer-tab');
+
+          outerTabs.forEach((item) => item.classList.remove('is-active'));
+          panels.forEach((panel) => panel.classList.remove('is-active'));
+
+          tab.classList.add('is-active');
+          const activePanel = section.querySelector('[data-panel="' + target + '"]');
+          if (activePanel) activePanel.classList.add('is-active');
+
+          if (target !== 'custom') {
+            closeAllCustomModals();
+            if (cshRoot) pauseVideos(cshRoot);
+          } else {
+            syncCustomHeroVideos();
+          }
+        });
+      });
+
+      innerTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-inner-tab');
+
+          innerTabs.forEach((item) => item.classList.remove('is-active'));
+          innerPanels.forEach((panel) => panel.classList.remove('is-active'));
+
+          tab.classList.add('is-active');
+          const activePanel = section.querySelector('[data-inner-panel="' + target + '"]');
+          if (activePanel) activePanel.classList.add('is-active');
+        });
+      });
+
+      if (cshRoot) {
+        backdrops = Array.from(cshRoot.querySelectorAll('[data-csh-backdrop]'));
+        openBtns = Array.from(cshRoot.querySelectorAll('[data-csh-open]'));
+
+        openBtns.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const hot = btn.closest('[data-csh-hotspot]');
+            const id = hot ? hot.getAttribute('data-modal-id') : null;
+            if (id) openModal(id);
+          });
+        });
+
+        backdrops.forEach((bd) => {
+          bd.addEventListener('click', (e) => {
+            if (e.target === bd) closeAllCustomModals();
+          });
+
+          const closeBtn = bd.querySelector('[data-csh-close]');
+          if (closeBtn) {
+            closeBtn.addEventListener('click', closeAllCustomModals);
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeAllCustomModals();
+        });
+
+        syncCustomHeroVideos();
+        window.addEventListener('resize', syncCustomHeroVideos, { passive: true });
+
+        if (window.Shopify && Shopify.designMode) {
+          document.addEventListener('shopify:section:load', syncCustomHeroVideos);
+          document.addEventListener('shopify:section:reorder', syncCustomHeroVideos);
+          document.addEventListener('shopify:section:select', syncCustomHeroVideos);
+        }
+
+        {% if section.settings.custom_coord_helper %}
+        try {
+          if (window.Shopify && Shopify.designMode) {
+            const hero = cshRoot.querySelector('[data-csh-hero]');
+            if (hero) {
+              hero.addEventListener('click', (e) => {
+                const rect = hero.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                const msg = 'X: ' + x.toFixed(1) + '% , Y: ' + y.toFixed(1) + '%';
+                console.log('[Hotspot coords]', msg);
+                if (navigator.clipboard) navigator.clipboard.writeText(msg).catch(() => {});
+              });
+            }
+          }
+        } catch (err) {}
+        {% endif %}
+
+        const enableSparkle = {{ section.settings.custom_sparkle_trail | json }};
+        const strength = Number({{ section.settings.custom_sparkle_strength | default: 5 }});
+
+        if (enableSparkle && window.matchMedia && window.matchMedia('(pointer:fine)').matches) {
+          const hero = cshRoot.querySelector('[data-csh-hero]');
+          const canvas = cshRoot.querySelector('[data-csh-sparkle]');
+
+          if (hero && canvas) {
+            const ctx = canvas.getContext('2d', { alpha: true });
+            let dpr = Math.max(1, window.devicePixelRatio || 1);
+            let w = 0;
+            let h = 0;
+
+            function resizeCanvas() {
+              const rect = hero.getBoundingClientRect();
+              w = Math.max(1, Math.floor(rect.width));
+              h = Math.max(1, Math.floor(rect.height));
+              dpr = Math.max(1, window.devicePixelRatio || 1);
+              canvas.width = Math.floor(w * dpr);
+              canvas.height = Math.floor(h * dpr);
+              canvas.style.width = w + 'px';
+              canvas.style.height = h + 'px';
+              ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            const particles = [];
+            const MAX = 220;
+            let raf = 0;
+            let lastT = 0;
+            let lastEmit = 0;
+
+            function rand(a, b) {
+              return a + Math.random() * (b - a);
+            }
+
+            function drawStar(x, y, r, rot, alpha) {
+              const spikes = 5;
+              const inner = r * 0.45;
+
+              ctx.save();
+              ctx.translate(x, y);
+              ctx.rotate(rot);
+              ctx.globalAlpha = alpha;
+              ctx.beginPath();
+
+              for (let i = 0; i < spikes; i++) {
+                ctx.lineTo(Math.cos((i * 2 * Math.PI) / spikes) * r, Math.sin((i * 2 * Math.PI) / spikes) * r);
+                ctx.lineTo(Math.cos(((i * 2 + 1) * Math.PI) / spikes) * inner, Math.sin(((i * 2 + 1) * Math.PI) / spikes) * inner);
+              }
+
+              ctx.closePath();
+              ctx.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,1)' : 'rgba(255,246,226,1)';
+              ctx.fill();
+              ctx.restore();
+            }
+
+            function tick(t) {
+              raf = requestAnimationFrame(tick);
+              const dt = Math.min(0.033, (t - lastT) / 1000 || 0.016);
+              lastT = t;
+
+              ctx.clearRect(0, 0, w, h);
+
+              for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.life -= dt;
+
+                if (p.life <= 0) {
+                  particles.splice(i, 1);
+                  continue;
+                }
+
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vy += p.g * dt;
+                p.rot += p.vr * dt;
+
+                const a = Math.max(0, Math.min(1, p.life / p.maxLife));
+                drawStar(p.x, p.y, p.r, p.rot, a);
+              }
+
+              if (particles.length === 0) {
+                cancelAnimationFrame(raf);
+                raf = 0;
+              }
+            }
+
+            function emitAt(clientX, clientY) {
+              const now = performance.now();
+              if (now - lastEmit < 14) return;
+              lastEmit = now;
+
+              const rect = hero.getBoundingClientRect();
+              const x = clientX - rect.left;
+              const y = clientY - rect.top;
+
+              const count = Math.max(1, Math.round(strength / 2));
+
+              for (let i = 0; i < count; i++) {
+                if (particles.length >= MAX) particles.shift();
+
+                const life = rand(0.45, 0.85);
+                particles.push({
+                  x: x + rand(-2, 2),
+                  y: y + rand(-2, 2),
+                  vx: rand(-40, 40),
+                  vy: rand(-60, -10),
+                  g: rand(120, 220),
+                  r: rand(2.2, 4.4),
+                  rot: rand(0, Math.PI * 2),
+                  vr: rand(-6, 6),
+                  life: life,
+                  maxLife: life
+                });
+              }
+
+              if (!raf) {
+                lastT = performance.now();
+                raf = requestAnimationFrame(tick);
+              }
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas, { passive: true });
+            hero.addEventListener('pointermove', (e) => emitAt(e.clientX, e.clientY), { passive: true });
+
+            if (window.Shopify && Shopify.designMode) {
+              document.addEventListener('shopify:section:load', resizeCanvas);
+              document.addEventListener('shopify:section:reorder', resizeCanvas);
+            }
+          }
+        }
+      }
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Solarii 双层 Tabs",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 20,
+  "settings": [
+    { "type": "text", "id": "outer_label_1", "label": "外层标签1", "default": "Choose My Design" },
+    { "type": "text", "id": "outer_label_2", "label": "外层标签2", "default": "Custom From Image" },
+
+    { "type": "text", "id": "design_eyebrow", "label": "设计区眉标", "default": "CATEGORY 01" },
+    { "type": "text", "id": "design_title", "label": "设计区标题", "default": "Choose Your Favorite Jewelry Style" },
+    { "type": "textarea", "id": "design_desc", "label": "设计区描述", "default": "Select a category, then explore a short introduction and related styles for each ring series." },
+
+    { "type": "text", "id": "custom_eyebrow", "label": "定制区眉标", "default": "CATEGORY 02" },
+    { "type": "text", "id": "custom_title", "label": "定制区标题", "default": "Turn Your Reference Into A Custom Piece" },
+    { "type": "textarea", "id": "custom_desc", "label": "定制区描述", "default": "Bring your image, sketch, or inspiration and turn it into a one of a kind piece made just for you." },
+    { "type": "text", "id": "custom_kicker", "label": "旧定制卡片眉标（当前未使用）", "default": "CUSTOM DESIGN" },
+    { "type": "text", "id": "custom_card_title", "label": "旧定制卡片标题（当前未使用）", "default": "A More Personal Jewelry Experience" },
+    { "type": "textarea", "id": "custom_card_desc", "label": "旧定制卡片描述（当前未使用）", "default": "Use this section to introduce your custom design service." },
+    { "type": "text", "id": "custom_sub_1_title", "label": "旧定制小卡1标题（当前未使用）", "default": "Process" },
+    { "type": "textarea", "id": "custom_sub_1_text", "label": "旧定制小卡1内容（当前未使用）", "default": "From inspiration to finished jewelry." },
+    { "type": "text", "id": "custom_sub_2_title", "label": "旧定制小卡2标题（当前未使用）", "default": "Best For" },
+    { "type": "textarea", "id": "custom_sub_2_text", "label": "旧定制小卡2内容（当前未使用）", "default": "Customers who want something unique." },
+    { "type": "text", "id": "custom_button_text", "label": "定制按钮文案", "default": "Start Your Custom Design" },
+    { "type": "url", "id": "custom_button_link", "label": "定制按钮链接" },
+    {
+      "type": "select",
+      "id": "custom_button_style",
+      "label": "定制按钮样式",
+      "default": "outline",
+      "options": [
+        { "value": "outline", "label": "白底描边" },
+        { "value": "solid", "label": "实心按钮" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "custom_media_type",
+      "label": "定制媒体类型",
+      "default": "image",
+      "options": [
+        { "value": "image", "label": "图片" },
+        { "value": "video", "label": "视频" }
+      ]
+    },
+    { "type": "image_picker", "id": "custom_image", "label": "定制主图 桌面端" },
+    { "type": "image_picker", "id": "custom_image_mobile", "label": "定制主图 手机端（可选）" },
+    { "type": "text", "id": "custom_image_alt", "label": "定制图片ALT（可选）" },
+    { "type": "video", "id": "custom_video", "label": "定制主视频 桌面端" },
+    { "type": "video", "id": "custom_video_mobile", "label": "定制主视频 手机端（可选）" },
+    { "type": "checkbox", "id": "custom_video_autoplay", "label": "定制主视频自动播放（静音循环）", "default": true },
+
+    { "type": "checkbox", "id": "custom_sparkle_trail", "label": "鼠标星星拖尾（仅桌面）", "default": true },
+    { "type": "range", "id": "custom_sparkle_strength", "label": "拖尾强度", "min": 1, "max": 10, "step": 1, "default": 5 },
+    { "type": "checkbox", "id": "custom_dot_pulse", "label": "热点呼吸波纹", "default": true },
+    { "type": "checkbox", "id": "custom_coord_helper", "label": "编辑器点击输出坐标", "default": true },
+
+    { "type": "range", "id": "custom_height_desktop", "label": "定制高度 桌面(px)", "min": 420, "max": 820, "step": 10, "default": 560 },
+    { "type": "range", "id": "custom_height_mobile", "label": "定制高度 手机(px)", "min": 360, "max": 700, "step": 10, "default": 460 },
+    { "type": "range", "id": "custom_overlay_opacity", "label": "定制暗化遮罩强度", "min": 0, "max": 60, "step": 1, "default": 18 },
+
+    { "type": "text", "id": "custom_bg_word", "label": "定制背景大字（可选）" },
+
+    { "type": "range", "id": "custom_heading_size_desktop", "label": "定制标题字号 桌面(px)", "min": 22, "max": 72, "step": 1, "default": 48 },
+    { "type": "range", "id": "custom_heading_size_mobile", "label": "定制标题字号 手机(px)", "min": 18, "max": 56, "step": 1, "default": 34 },
+    { "type": "range", "id": "custom_subheading_size_desktop", "label": "定制副标题字号 桌面(px)", "min": 12, "max": 24, "step": 1, "default": 16 },
+    { "type": "range", "id": "custom_subheading_size_mobile", "label": "定制副标题字号 手机(px)", "min": 12, "max": 22, "step": 1, "default": 14 },
+    { "type": "range", "id": "custom_cta_size_desktop", "label": "定制按钮字号 桌面(px)", "min": 10, "max": 18, "step": 1, "default": 12 },
+    { "type": "range", "id": "custom_cta_size_mobile", "label": "定制按钮字号 手机(px)", "min": 10, "max": 18, "step": 1, "default": 12 },
+
+    { "type": "color", "id": "custom_text_color", "label": "定制标题文字色", "default": "#FFFFFF" },
+    { "type": "color", "id": "custom_label_color", "label": "定制热点标签文字色", "default": "#FFFFFF" },
+    { "type": "color", "id": "custom_dot_bg", "label": "定制热点圆点背景", "default": "#FFFFFF" },
+    { "type": "color", "id": "custom_dot_border", "label": "定制热点圆点边框", "default": "#D7D0CA" },
+    { "type": "color", "id": "custom_plus_color", "label": "定制加号颜色", "default": "#6B1F1F" },
+    { "type": "color", "id": "custom_cta_bg", "label": "定制按钮背景（实心用）", "default": "#FFFFFF" },
+    { "type": "color", "id": "custom_cta_text", "label": "定制按钮文字（实心用）", "default": "#111111" },
+    { "type": "color", "id": "custom_cta_border", "label": "定制按钮边框（实心用）", "default": "#D7D0CA" },
+
+    { "type": "range", "id": "custom_modal_title_size_desktop", "label": "定制弹窗标题字号 桌面(px)", "min": 22, "max": 64, "step": 1, "default": 44 },
+    { "type": "range", "id": "custom_modal_title_size_mobile", "label": "定制弹窗标题字号 手机(px)", "min": 20, "max": 54, "step": 1, "default": 38 },
+    { "type": "range", "id": "custom_modal_body_size_desktop", "label": "定制弹窗正文字号 桌面(px)", "min": 12, "max": 22, "step": 1, "default": 14 },
+    { "type": "range", "id": "custom_modal_body_size_mobile", "label": "定制弹窗正文字号 手机(px)", "min": 12, "max": 20, "step": 1, "default": 13 },
+    { "type": "color", "id": "custom_modal_text_bg", "label": "定制弹窗左侧底色", "default": "#F5F2F2" },
+
+    { "type": "range", "id": "max_width", "label": "最大宽度", "min": 900, "max": 1600, "step": 20, "default": 1240 },
+    { "type": "range", "id": "padding_top", "label": "上内边距", "min": 0, "max": 120, "step": 4, "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "下内边距", "min": 0, "max": 120, "step": 4, "default": 48 },
+
+    { "type": "color", "id": "section_bg", "label": "模块背景色", "default": "#F8F5F0" },
+    { "type": "color", "id": "card_bg", "label": "卡片背景色", "default": "#FCFAF7" },
+    { "type": "color", "id": "text_color", "label": "文字颜色", "default": "#1F1B18" },
+    { "type": "color", "id": "subtext_color", "label": "辅助文字颜色", "default": "#7A6F66" },
+    { "type": "color", "id": "border_color", "label": "边框颜色", "default": "#E6DDD3" },
+    { "type": "color", "id": "pill_bg", "label": "标签背景色", "default": "#F3EEE7" },
+    { "type": "color", "id": "pill_active_bg", "label": "激活标签背景色", "default": "#1F1B18" },
+    { "type": "color", "id": "pill_active_text", "label": "激活标签文字色", "default": "#FFFFFF" },
+    { "type": "color", "id": "button_bg", "label": "按钮背景色", "default": "#1F1B18" },
+    { "type": "color", "id": "button_text_color", "label": "按钮文字色", "default": "#FFFFFF" }
+  ],
+  "blocks": [
+    {
+      "type": "design_series",
+      "name": "设计系列",
+      "settings": [
+        { "type": "text", "id": "tab_label", "label": "标签名称", "default": "ENGAGEMENT RING" },
+        { "type": "text", "id": "kicker", "label": "眉标", "default": "Classic Choice" },
+        { "type": "text", "id": "title", "label": "标题", "default": "Engagement Ring" },
+        { "type": "textarea", "id": "desc", "label": "描述", "default": "Designed to celebrate your once in a lifetime moment, our engagement rings focus on elegant proportions, refined settings, and lasting sparkle for everyday wear." },
+        { "type": "text", "id": "sub_1_title", "label": "小卡1标题", "default": "Solitaire" },
+        { "type": "textarea", "id": "sub_1_text", "label": "小卡1内容", "default": "Clean, timeless, center stone focus." },
+        { "type": "text", "id": "sub_2_title", "label": "小卡2标题", "default": "Halo" },
+        { "type": "textarea", "id": "sub_2_text", "label": "小卡2内容", "default": "Extra brilliance with a fuller look." },
+        { "type": "text", "id": "button_text", "label": "按钮文案", "default": "Shop Now" },
+        { "type": "url", "id": "button_link", "label": "按钮链接" },
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "媒体类型",
+          "default": "image",
+          "options": [
+            { "value": "image", "label": "图片" },
+            { "value": "video", "label": "视频" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "图片" },
+        { "type": "video", "id": "video", "label": "视频" }
+      ]
+    },
+    {
+      "type": "hotspot",
+      "name": "定制热点 + 弹窗",
+      "settings": [
+        { "type": "text", "id": "label", "label": "热点标签（主图上显示）", "default": "READY WHEN YOU ARE" },
+        {
+          "type": "select",
+          "id": "label_side",
+          "label": "标签在圆点哪侧（桌面）",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "标签在左，圆点在右" },
+            { "value": "right", "label": "圆点在左，标签在右" }
+          ]
+        },
+        { "type": "range", "id": "pos_x", "label": "位置 X 桌面(0-100)", "min": 0, "max": 100, "step": 1, "default": 20 },
+        { "type": "range", "id": "pos_y", "label": "位置 Y 桌面(0-100)", "min": 0, "max": 100, "step": 1, "default": 55 },
+        { "type": "range", "id": "pos_x_m", "label": "位置 X 手机(0-100)", "min": 0, "max": 100, "step": 1, "default": 20 },
+        { "type": "range", "id": "pos_y_m", "label": "位置 Y 手机(0-100)", "min": 0, "max": 100, "step": 1, "default": 55 },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "手机端也显示这个热点", "default": true },
+
+        { "type": "text", "id": "modal_title", "label": "弹窗标题（可不填）" },
+        { "type": "richtext", "id": "modal_text", "label": "弹窗内容" },
+
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "右侧媒体类型",
+          "default": "video",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "image", "label": "图片" },
+            { "value": "video", "label": "视频" }
+          ]
+        },
+        { "type": "image_picker", "id": "media_image", "label": "弹窗右侧图片" },
+        { "type": "video", "id": "video", "label": "弹窗右侧视频" },
+        { "type": "checkbox", "id": "video_autoplay", "label": "视频自动播放（静音循环）", "default": true },
+
+        { "type": "text", "id": "link_label", "label": "Learn more 文字（可选）" },
+        { "type": "url", "id": "link_url", "label": "Learn more 链接（可选）" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Solarii 双层 Tabs",
+      "blocks": [
+        { "type": "design_series" },
+        { "type": "design_series" },
+        { "type": "design_series" },
+        { "type": "hotspot" },
+        { "type": "hotspot" }
+      ]
+    }
+  ]
+}
+{% endschema %}

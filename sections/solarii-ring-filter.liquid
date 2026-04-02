@@ -1,0 +1,1917 @@
+{%- comment -%}
+  ============================================================
+  Section: Solarii Ring Filter (Desktop + Mobile)
+  File:    sections/solarii-ring-filter.liquid
+
+  桌面版：金属横栏 + Shape/Carat/Stone Color 筛选行
+  手机版：Hero + Sticky Filter Bar + 底部抽屉
+  两者共用同一套 AJAX 筛选逻辑
+  ============================================================
+{%- endcomment -%}
+
+<style>
+/* ============================================================
+   Solarii Ring Filter — assets/solarii-ring-filter.css
+   ============================================================ */
+
+.srf-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 24px 28px 80px;
+  font-family: var(--font-body-family, 'DM Sans', sans-serif);
+  color: #161616;
+}
+
+/* ── Metal Bar ── */
+.srf-metal-bar {
+  display: flex;
+  border: 1px solid #e6e6e0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(20,20,20,.06);
+}
+.srf-metal-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 12px;
+  cursor: pointer;
+  border: none;
+  border-right: 1px solid #e6e6e0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: .02em;
+  color: #161616;
+  transition: background .18s;
+}
+.srf-metal-item:last-child { border-right: none; }
+.srf-metal-item:hover { background: #fafaf8; }
+.srf-metal-item.active { box-shadow: inset 0 -3px 0 #111; background: #fff; }
+.srf-metal-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid #ddd;
+  display: inline-block;
+}
+.srf-wg   { background: radial-gradient(circle at 35% 35%,#fff 0%,#d8d8d8 55%,#aaa 100%); }
+.srf-yellow { background: radial-gradient(circle at 35% 35%,#fff5a0 0%,#d4a820 55%,#a07010 100%); border-color: transparent; }
+.srf-rose  { background: radial-gradient(circle at 35% 35%,#ffd8c8 0%,#d07860 55%,#a04030 100%); border-color: transparent; }
+.srf-two   { background: linear-gradient(135deg,#d4a820 50%,#d8d8d8 50%); border-color: transparent; }
+.srf-black { background: radial-gradient(circle at 35% 35%,#555 0%,#222 55%,#000 100%); border-color: transparent; }
+
+/* ── Hero ── */
+.srf-hero {
+  text-align: center;
+  padding: 36px 0 8px;
+}
+.srf-hero-title {
+  font-family: var(--font-heading-family, 'Playfair Display', serif);
+  font-size: 36px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  letter-spacing: .01em;
+}
+.srf-hero-sub {
+  font-size: 14px;
+  color: #7a7a78;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Filter Rows ── */
+.srf-filters { padding: 8px 0 24px; }
+.srf-filter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid #e6e6e0;
+}
+.srf-row-label {
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-weight: 500;
+  width: 80px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-top: 10px;
+}
+.srf-row-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* Shape tabs */
+.srf-shape-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color .18s, background .18s;
+}
+.srf-shape-tab:hover { background: #f2f2ee; }
+.srf-shape-tab.active { border-color: #161616; background: #fff; }
+.srf-shape-tab svg { display: block; }
+.srf-shape-img { width: 34px; height: 34px; object-fit: contain; display: block; }
+.srf-shape-tab svg path,
+.srf-shape-tab svg polygon,
+.srf-shape-tab svg rect,
+.srf-shape-tab svg circle { fill: none !important; stroke: #111 !important; stroke-width: 1px !important; }
+.srf-shape-tab span { font-size: 10.5px; color: #161616; white-space: nowrap; }
+
+/* Carat tabs */
+.srf-carat-tab {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: #444;
+  cursor: pointer;
+  transition: border-color .18s, background .18s;
+  white-space: nowrap;
+}
+.srf-carat-tab:hover { background: #f2f2ee; }
+.srf-carat-tab.active { border-color: #161616; background: #fff; color: #161616; font-weight: 500; }
+
+/* Color tabs */
+.srf-color-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color .18s, background .18s;
+}
+.srf-color-tab:hover { background: #f2f2ee; }
+.srf-color-tab.active { border-color: #161616; background: #fff; }
+.srf-color-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  display: block;
+}
+.srf-color-tab span { font-size: 10.5px; color: #161616; white-space: nowrap; }
+
+/* Result + Sort bar */
+.srf-result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-top: 1px solid #e6e6e0;
+  margin-top: 4px;
+}
+.srf-result-left { display: flex; align-items: center; gap: 16px; }
+.srf-count { font-size: 13px; color: #7a7a78; }
+.srf-count strong { color: #161616; }
+.srf-reset {
+  font-size: 12px;
+  color: #7a7a78;
+  cursor: pointer;
+  text-decoration: underline;
+  letter-spacing: .04em;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.srf-reset:hover { color: #161616; }
+
+/* Sort dropdown (desktop) */
+.srf-sort-wrap { position: relative; }
+.srf-sort-btn {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 16px;
+  border: 1px solid #e0e0e0; border-radius: 8px;
+  background: #fff; font-family: inherit;
+  font-size: 13px; color: #161616; cursor: pointer;
+  white-space: nowrap; transition: border-color .18s;
+}
+.srf-sort-btn:hover { border-color: #aaa; }
+.srf-sort-btn svg { transition: transform .2s; }
+.srf-sort-btn.open svg { transform: rotate(180deg); }
+.srf-sort-by-label { color: #aaa; font-size: 12px; margin-right: 2px; }
+.srf-sort-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: #fff; border: 1px solid #e6e6e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.10);
+  min-width: 200px; z-index: 30;
+  opacity: 0; pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity .18s, transform .18s;
+}
+.srf-sort-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+.srf-sort-opt {
+  display: block; width: 100%; text-align: left;
+  padding: 12px 18px; background: none; border: none;
+  border-bottom: 1px solid #f5f5f3;
+  font-family: inherit; font-size: 13px; color: #333;
+  cursor: pointer; transition: background .15s;
+}
+.srf-sort-opt:first-child { border-radius: 12px 12px 0 0; }
+.srf-sort-opt:last-child { border-radius: 0 0 12px 12px; border-bottom: none; }
+.srf-sort-opt:hover { background: #fafaf8; }
+.srf-sort-opt.active { font-weight: 600; color: #111; background: #f5f5f3; }
+
+/* ── Product Grid ── */
+.srf-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1100px) { .srf-grid { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 768px)  { .srf-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 480px)  { .srf-grid { grid-template-columns: 1fr; } }
+
+.srf-card { border-radius: 18px; overflow: hidden; position: relative; }
+.srf-card-link { text-decoration: none; color: inherit; display: block; }
+.srf-card-img {
+  aspect-ratio: 1 / 1.1;
+  background: linear-gradient(160deg, #fff 0%, #f4f4f0 100%);
+  border-radius: 18px;
+  border: 1px solid #ececea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.srf-card-img img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  transition: transform .38s cubic-bezier(.23,1,.32,1);
+}
+.srf-card:hover .srf-card-img img { transform: scale(1.04) translateY(-3px); }
+.srf-card-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.srf-wishlist {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid #ebebea;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.srf-wishlist:hover { background: #fff; }
+.srf-card-info { padding: 14px 2px 8px; }
+.srf-card-badge { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #aaa; margin-bottom: 4px; }
+.srf-card-name { font-size: 17px; font-weight: 400; margin-bottom: 5px; letter-spacing: .01em; }
+.srf-card-meta { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+.srf-price-row { display: flex; align-items: baseline; gap: 7px; font-size: 14px; margin-bottom: 12px; }
+.srf-price { font-weight: 500; }
+.srf-compare { color: #aaa; text-decoration: line-through; font-size: 12px; }
+.srf-off { font-size: 11px; color: #888; }
+.srf-card-actions { display: flex; gap: 7px; }
+.srf-btn-dark {
+  height: 36px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  padding: 0 16px;
+  font-size: 12px;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background .2s;
+}
+.srf-btn-dark:hover { background: #333; }
+.srf-btn-light {
+  height: 36px;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  border: 1px solid #d8d8d2;
+  padding: 0 16px;
+  font-size: 12px;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: border-color .2s;
+}
+.srf-btn-light:hover { border-color: #999; }
+.srf-no-results, .srf-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+/* Metal bar responsive */
+@media (max-width: 768px) {
+  .srf-metal-bar { border-radius: 12px; }
+  .srf-metal-item { padding: 12px 8px; font-size: 11px; gap: 6px; }
+  .srf-metal-dot { width: 18px; height: 18px; }
+  .srf-hero-title { font-size: 26px; }
+  .srf-row-label { display: none; }
+}
+
+/* ============================================================
+   MOBILE: Floating button + Bottom Sheet
+   Only shown on screens < 768px
+   Desktop filter rows hidden on mobile
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Hide desktop filters on mobile */
+  .srf-filters { display: none; }
+  .srf-metal-bar { display: none; }
+  .srf-hero { padding: 24px 16px 8px; }
+  .srf-wrapper { padding: 0 0 80px; }
+}
+
+@media (min-width: 768px) {
+  /* Hide mobile elements on desktop */
+  .srf-float-wrap,
+  .srf-overlay,
+  .srf-sheet { display: none !important; }
+}
+
+/* ── Floating Button ── */
+.srf-float-wrap {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .32s cubic-bezier(.32,1,.24,1), opacity .28s ease;
+}
+.srf-float-wrap.srf-float-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+.srf-float-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 26px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-body-family, inherit);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0,0,0,.28);
+  transition: background .18s;
+}
+.srf-float-btn:hover { background: #333; }
+.srf-float-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  color: #111;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Overlay ── */
+.srf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.srf-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ── Bottom Sheet ── */
+.srf-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  z-index: 101;
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.32,1,.24,1);
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+}
+.srf-sheet.open { transform: translateY(0); }
+
+.srf-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+.srf-sheet-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+.srf-sheet-reset {
+  font-size: 12px;
+  color: #888;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.srf-sheet-title {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+.srf-sheet-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+}
+
+.srf-sheet-body {
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+.srf-sheet-section { padding: 16px 16px 12px; }
+.srf-sheet-section-label {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 12px;
+}
+.srf-sheet-section-label strong { color: #161616; font-weight: 500; }
+.srf-sheet-divider { height: 1px; background: #f0f0f0; }
+
+/* Metal scroll row */
+.srf-metal-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 2px 4px;
+  scroll-snap-type: x mandatory;
+}
+.srf-metal-scroll::-webkit-scrollbar { display: none; }
+.srf-sheet-metal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #eee;
+  cursor: pointer;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  transition: border-color .15s;
+  min-width: 76px;
+}
+.srf-sheet-metal-card.active { border-color: #111; background: #fafaf8; }
+.srf-sheet-metal-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid #ddd;
+}
+.srf-sheet-metal-card span { font-size: 11px; color: #333; white-space: nowrap; text-align: center; }
+
+/* Shape scroll row */
+.srf-shape-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 2px 4px;
+  scroll-snap-type: x mandatory;
+}
+.srf-shape-scroll::-webkit-scrollbar { display: none; }
+.srf-sheet-shape-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1.5px solid #eee;
+  cursor: pointer;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  transition: border-color .15s;
+  min-width: 66px;
+}
+.srf-sheet-shape-card.active { border-color: #111; background: #fafaf8; }
+.srf-sheet-shape-card svg path,
+.srf-sheet-shape-card svg polygon { fill: none !important; stroke: #111 !important; stroke-width: 1px !important; }
+.srf-sheet-shape-card span { font-size: 10.5px; color: #333; white-space: nowrap; }
+
+/* Carat pills */
+.srf-carat-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.srf-sheet-carat {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid #eee;
+  background: #fff;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: #444;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  white-space: nowrap;
+}
+.srf-sheet-carat.active { border-color: #111; background: #111; color: #fff; font-weight: 500; }
+
+/* Stone color */
+.srf-color-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.srf-sheet-color-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 44px;
+}
+.srf-sheet-color-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color .15s;
+}
+.srf-sheet-color-item.active .srf-sheet-color-dot {
+  border-color: #111;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #111;
+}
+.srf-sheet-color-item span { font-size: 9.5px; color: #555; text-align: center; }
+
+/* Sheet footer */
+.srf-sheet-footer {
+  padding: 12px 16px 28px;
+  flex-shrink: 0;
+  border-top: 1px solid #f0f0f0;
+}
+.srf-sheet-view-btn {
+  width: 100%;
+  height: 50px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: background .2s;
+}
+.srf-sheet-view-btn:hover { background: #333; }
+
+
+/* ── DESKTOP: hide mobile elements ── */
+@media (min-width: 768px) {
+  .smf-hero, .smf-filter-bar, .smf-chips,
+  .smf-float, .smf-overlay, .smf-sheet { display: none !important; }
+}
+
+/* ── MOBILE: hide desktop elements ── */
+@media (max-width: 767px) {
+  .srf-wrapper, .srf-metal-bar, .srf-filters,
+  .srf-result-bar, .srf-loading { display: none !important; }
+}
+</style>
+
+<!-- ════════════════════════════════════
+     DESKTOP SECTION
+════════════════════════════════════ -->
+{% comment %}
+  ============================================================
+  Section: Solarii Ring Filter
+  File:    sections/solarii-ring-filter.liquid
+
+  原理：点击筛选 → fetch 带 filter 参数的 URL → 提取返回
+  HTML 里的产品网格 → 替换页面上的 Collection products 区域
+  全程无页面跳转，和 Shopify 原生 AJAX 筛选一样
+
+  把本 section 放在 Collection products section 上方即可
+  ============================================================
+{% endcomment %}
+
+{{ 'solarii-ring-filter.css' | asset_url | stylesheet_tag }}
+
+<div class="srf-wrapper" style="max-width:{{ section.settings.max_width }}px;padding-top:{{ section.settings.padding_top }}px;padding-bottom:{{ section.settings.padding_bottom }}px;padding-left:{{ section.settings.padding_horizontal }}px;padding-right:{{ section.settings.padding_horizontal }}px;zoom:{{ section.settings.font_scale | divided_by: 100.0 }}">
+
+  <!-- ── METAL / PLATING BAR ── -->
+  <div class="srf-metal-bar">
+    <button class="srf-metal-item active" data-filter-key="filter.p.m.custom.plating_color" data-filter-val="" type="button">
+      <span class="srf-metal-dot srf-wg"></span>
+      <span>All Metals</span>
+    </button>
+    {%- assign plating_list = section.settings.plating_values | split: ',' -%}
+    {%- for metal in plating_list -%}
+      {%- assign metal_clean = metal | strip -%}
+      {%- assign metal_slug  = metal_clean | downcase | replace: ' ', '-' | replace: '-gold','' -%}
+      <button class="srf-metal-item" data-filter-key="filter.p.m.custom.plating_color" data-filter-val="{{ metal_clean }}" type="button">
+        <span class="srf-metal-dot srf-{{ metal_slug }}"></span>
+        <span>{{ metal_clean }}</span>
+      </button>
+    {%- endfor -%}
+  </div>
+
+  <!-- ── HERO ── -->
+  <div class="srf-hero">
+    <h2 class="srf-hero-title">{{ section.settings.title | default: 'Engagement Rings' }}</h2>
+    <p class="srf-hero-sub">{{ section.settings.subtitle | default: 'Discover our collection of made to order engagement rings and customize it to your preference' }}</p>
+  </div>
+
+  <!-- ── FILTERS ── -->
+  <div class="srf-filters">
+
+    <!-- Stone Shape -->
+    <div class="srf-filter-row">
+      <span class="srf-row-label">{{ section.settings.label_shape | default: 'Stone Shape' }}</span>
+      <div class="srf-row-tabs">
+
+        <!-- All -->
+        <button class="srf-shape-tab active" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="" type="button">
+          <svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg>
+          <span>All</span>
+        </button>
+
+        <!-- Round Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Round Cut" type="button">
+          {%- if section.settings.img_shape_round -%}<img src="{{ section.settings.img_shape_round | image_url: width: 160 }}" alt="Round Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg>{%- endif -%}
+          <span>Round Cut</span>
+        </button>
+
+        <!-- Oval Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Oval Cut" type="button">
+          {%- if section.settings.img_shape_oval -%}<img src="{{ section.settings.img_shape_oval | image_url: width: 160 }}" alt="Oval Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M30.5 20C30.5 27.732 25.799 34 20 34C14.201 34 9.5 27.732 9.5 20C9.5 12.268 14.201 6 20 6C25.799 6 30.5 12.268 30.5 20ZM23.981 25.761L25.689 20L23.981 14.24L20 11.934L16.019 14.24L14.312 20L16.019 25.761L20 28.067L23.981 25.761Z" fill="black"/></svg>{%- endif -%}
+          <span>Oval Cut</span>
+        </button>
+
+        <!-- Pear Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Pear Cut" type="button">
+          {%- if section.settings.img_shape_pear -%}<img src="{{ section.settings.img_shape_pear | image_url: width: 160 }}" alt="Pear Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5C10 11 10 21 10 21C10 28 14.5 33 20 33C25.5 33 30 28 30 21C30 21 30 11 20 5Z"/><path fill="black" d="M24.6 22L22.5 15.1L20 12.3L17.5 15.1L15.4 22L16.9 26L20 27.3L23.1 26Z"/></svg>{%- endif -%}
+          <span>Pear Cut</span>
+        </button>
+
+        <!-- Emerald Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Emerald Cut" type="button">
+          {%- if section.settings.img_shape_emerald -%}<img src="{{ section.settings.img_shape_emerald | image_url: width: 160 }}" alt="Emerald Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M28.5 10.578V29.551L24.658 33.565H15.342L11.5 29.551V10.578L15.342 6.565H24.658L28.5 10.578ZM23.625 27.845V12.155L22.845 11.375H17.155L16.375 12.155V27.845L17.155 28.625H22.845L23.625 27.845Z" fill="black"/></svg>{%- endif -%}
+          <span>Emerald Cut</span>
+        </button>
+
+        <!-- Marquise Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Marquise Cut" type="button">
+          {%- if section.settings.img_shape_marquise -%}<img src="{{ section.settings.img_shape_marquise | image_url: width: 160 }}" alt="Marquise Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5.5C12.5 9 12.5 20 12.5 20C12.5 31 20 34.5 20 34.5C20 34.5 27.5 31 27.5 20C27.5 20 27.5 9 20 5.5Z"/><path fill="black" d="M22.13 14.53L20 12.52L17.87 14.53L16.88 20L17.87 25.47L20 27.48L22.13 25.47L23.12 20Z"/></svg>{%- endif -%}
+          <span>Marquise Cut</span>
+        </button>
+
+        <!-- Cushion Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Cushion Cut" type="button">
+          {%- if section.settings.img_shape_cushion -%}<img src="{{ section.settings.img_shape_cushion | image_url: width: 160 }}" alt="Cushion Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M31.5 20C31.5 30.134 25.687 31.5 20 31.5C14.313 31.5 8.5 30.134 8.5 20C8.5 9.866 14.313 8.5 20 8.5C25.687 8.5 31.5 9.866 31.5 20ZM24.95 24.04L25.62 20L24.95 15.96L20 14.393L15.05 15.96L14.38 20L15.052 24.041L20 25.606Z" fill="black"/></svg>{%- endif -%}
+          <span>Cushion Cut</span>
+        </button>
+
+        <!-- Radiant Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Radiant Cut" type="button">
+          {%- if section.settings.img_shape_radiant -%}<img src="{{ section.settings.img_shape_radiant | image_url: width: 160 }}" alt="Radiant Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M29.5 10.793V29.207L25.207 33.5H14.793L10.5 29.207V10.793L14.793 6.5H25.207L29.5 10.793ZM22.869 27.88L24.616 20L22.869 12.12L19.997 11.387L17.131 12.12L15.384 20L17.131 27.88L19.997 28.613Z" fill="black"/></svg>{%- endif -%}
+          <span>Radiant Cut</span>
+        </button>
+
+        <!-- Princess Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Princess Cut" type="button">
+          {%- if section.settings.img_shape_princess -%}<img src="{{ section.settings.img_shape_princess | image_url: width: 160 }}" alt="Princess Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path fill-rule="evenodd" d="M8.5 8.5V31.5H31.5V8.5H8.5ZM20 26.621L15.107 25.852L13.391 20L15.107 14.147L20 13.379L24.893 14.147L26.609 20L24.893 25.852Z" fill="black"/></svg>{%- endif -%}
+          <span>Princess Cut</span>
+        </button>
+
+        <!-- Asscher Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Asscher Cut" type="button">
+          {%- if section.settings.img_shape_asscher -%}<img src="{{ section.settings.img_shape_asscher | image_url: width: 160 }}" alt="Asscher Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 45 44" width="34" height="34"><path fill-rule="evenodd" d="M30.428 9.35H14.572L9.85 14.072V29.928L14.572 34.65H30.428L35.15 29.928V14.072L30.428 9.35ZM26.729 28.187H18.271L16.313 26.229V17.771L18.271 15.812H26.729L28.688 17.771V26.229Z" fill="black"/></svg>{%- endif -%}
+          <span>Asscher Cut</span>
+        </button>
+
+        <!-- Heart Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Heart Cut" type="button">
+          {%- if section.settings.img_shape_heart -%}<img src="{{ section.settings.img_shape_heart | image_url: width: 160 }}" alt="Heart Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path d="M20 33C20 33 7 24 7 15C7 10.5 10.5 7 15 7C17.5 7 19.5 8.2 20 9C20.5 8.2 22.5 7 25 7C29.5 7 33 10.5 33 15C33 24 20 33 20 33Z" fill="black" opacity=".85"/></svg>{%- endif -%}
+          <span>Heart Cut</span>
+        </button>
+
+        <!-- Coffin Cut -->
+        <button class="srf-shape-tab" data-filter-key="filter.p.m.custom.stone_shape" data-filter-val="Coffin Cut" type="button">
+          {%- if section.settings.img_shape_coffin -%}<img src="{{ section.settings.img_shape_coffin | image_url: width: 160 }}" alt="Coffin Cut" class="srf-shape-img" loading="lazy">{%- else -%}<svg viewBox="0 0 40 40" width="34" height="34"><path d="M20 6L30 13V31L20 35L10 31V13Z" fill="black" opacity=".85"/></svg>{%- endif -%}
+          <span>Coffin Cut</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Carat -->
+    <div class="srf-filter-row">
+      <span class="srf-row-label">{{ section.settings.label_carat | default: 'Carat' }}</span>
+      <div class="srf-row-tabs">
+        <button class="srf-carat-tab active" data-filter-key="filter.p.m.custom.carat" data-filter-val="" type="button">All</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="Below 1.0 Ct" type="button">Below 1.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="1.0Ct-2.0Ct" type="button">1.0 – 2.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="2.0Ct-3.0Ct" type="button">2.0 – 3.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="3.0Ct-4.0Ct" type="button">3.0 – 4.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="4.0Ct-5.0Ct" type="button">4.0 – 5.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="5.0Ct-6.0Ct" type="button">5.0 – 6.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="6.0Ct-7.0Ct" type="button">6.0 – 7.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="7.0Ct-8.0Ct" type="button">7.0 – 8.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="8.0Ct-9.0Ct" type="button">8.0 – 9.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="9.0Ct-10.0Ct" type="button">9.0 – 10.0 Ct</button>
+        <button class="srf-carat-tab" data-filter-key="filter.p.m.custom.carat" data-filter-val="10.0 Ct and above" type="button">10.0 Ct+</button>
+      </div>
+    </div>
+
+    <!-- Stone Color -->
+    <div class="srf-filter-row">
+      <span class="srf-row-label">{{ section.settings.label_color | default: 'Stone Color' }}</span>
+      <div class="srf-row-tabs">
+        <button class="srf-color-tab active" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="" type="button">
+          <span class="srf-color-dot" style="background:linear-gradient(135deg,#fff 0%,#f4a0c0 33%,#a0c4f4 66%,#a0f4a0 100%)"></span><span>All</span>
+        </button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="White Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e0e0e0)"></span><span>White</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Yellow Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fffacc,#f0d020)"></span><span>Yellow</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Pink Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffd8e8,#e060a0)"></span><span>Pink</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Morganite Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fce0d8,#e8a090)"></span><span>Morganite</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Blue Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#c8dcff,#2060d0)"></span><span>Blue</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Emerald Green" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#a8f0b8,#1a8040)"></span><span>Emerald</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Aquamarine Blue" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#c0f0f8,#40b8d8)"></span><span>Aquamarine</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Black Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#666,#111)"></span><span>Black</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Champagne Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff8e0,#d4a840)"></span><span>Champagne</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Purple Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#e0c8f8,#8030c0)"></span><span>Purple</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Ruby Stone" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffc8c8,#c01020)"></span><span>Ruby</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Pearl" type="button"><span class="srf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e8e0f0)"></span><span>Pearl</span></button>
+        <button class="srf-color-tab" data-filter-key="filter.p.m.custom.stone_color" data-filter-val="Colored Stone" type="button"><span class="srf-color-dot" style="background:conic-gradient(#f08,#0cf,#0f8,#ff0,#f08)"></span><span>Colored</span></button>
+      </div>
+    </div>
+
+    <!-- Result + Sort bar -->
+    <div class="srf-result-bar" id="srfResetBar">
+      <div class="srf-result-left">
+        <span class="srf-count">Showing <strong id="srfCount">—</strong> results</span>
+        <button class="srf-reset" id="srfResetBtn" type="button" style="display:none">Reset all filters</button>
+      </div>
+
+      <div class="srf-sort-wrap">
+        <button class="srf-sort-btn" id="srfSortBtn" type="button" onclick="srfToggleDesktopSort(event)">
+          <span class="srf-sort-by-label">SORT BY</span>
+          <span id="srfDesktopSortLabel">Featured</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="srf-sort-dropdown" id="srfSortDropdown">
+          <button class="srf-sort-opt active" data-sort="" type="button">Featured</button>
+          <button class="srf-sort-opt" data-sort="best-selling" type="button">Best selling</button>
+          <button class="srf-sort-opt" data-sort="title-ascending" type="button">Alphabetically, A-Z</button>
+          <button class="srf-sort-opt" data-sort="title-descending" type="button">Alphabetically, Z-A</button>
+          <button class="srf-sort-opt" data-sort="price-ascending" type="button">Price, low to high</button>
+          <button class="srf-sort-opt" data-sort="price-descending" type="button">Price, high to low</button>
+          <button class="srf-sort-opt" data-sort="created-ascending" type="button">Date, old to new</button>
+          <button class="srf-sort-opt" data-sort="created-descending" type="button">Date, new to old</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="srf-loading" id="srfLoading" style="display:none">
+    <div class="srf-spinner"></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  // ── 当前激活的筛选值
+  var activeFilters = {
+    'filter.p.m.custom.stone_shape':   '',
+    'filter.p.m.custom.carat':         '',
+    'filter.p.m.custom.stone_color':   '',
+    'filter.p.m.custom.plating_color': ''
+  };
+
+  // ── 找到 Collection products 的产品容器
+  // TS Broadcast 主题一般用 #CollectionProductGrid 或 .collection-product-grid 或 product-grid
+  function getProductGrid() {
+    return document.querySelector('#CollectionProductGrid')
+      || document.querySelector('.collection__products')
+      || document.querySelector('.product-grid')
+      || document.querySelector('[data-id][class*="collection"]')
+      || null;
+  }
+
+  // ── 构建带筛选参数的 URL
+  function buildFilterUrl() {
+    var params = [];
+    Object.keys(activeFilters).forEach(function (key) {
+      if (activeFilters[key] !== '') {
+        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(activeFilters[key]));
+      }
+    });
+    if (desktopSortBy) {
+      params.push('sort_by=' + encodeURIComponent(desktopSortBy));
+    }
+    var base = window.location.pathname;
+    return params.length > 0 ? base + '?' + params.join('&') : base;
+  }
+
+  // ── fetch 并替换产品网格
+  var srfFetchController = null;
+
+  function applyFilters() {
+    var url = buildFilterUrl();
+    var grid = getProductGrid();
+    var loading = document.getElementById('srfLoading');
+
+    history.pushState({}, '', url);
+
+    // 取消上一个未完成的请求
+    if (srfFetchController) srfFetchController.abort();
+    srfFetchController = new AbortController();
+
+    if (loading) loading.style.display = 'flex';
+    if (grid) grid.style.opacity = '0.4';
+
+    fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      signal: srfFetchController.signal
+    })
+      .then(function (res) { return res.text(); })
+      .then(function (html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+
+        var selectors = [
+          '#CollectionProductGrid',
+          '.collection__products',
+          '.product-grid',
+          '[data-id][class*="collection"]',
+          '.collection-product-grid'
+        ];
+        var newGrid = null;
+        for (var i = 0; i < selectors.length; i++) {
+          newGrid = doc.querySelector(selectors[i]);
+          if (newGrid) break;
+        }
+
+        if (newGrid && grid) {
+          grid.innerHTML = newGrid.innerHTML;
+          grid.style.opacity = '1';
+          if (window.Shopify && window.Shopify.loadFeatures) {
+            document.querySelectorAll('img[data-src]').forEach(function(img) { img.src = img.dataset.src; });
+          }
+        } else if (grid) {
+          grid.style.opacity = '1';
+        }
+
+        var countEl = doc.querySelector('.collection__product-count, [data-product-count], .product-count');
+        var srfCount = document.getElementById('srfCount');
+        if (countEl && srfCount) srfCount.textContent = countEl.textContent.trim();
+
+        if (loading) loading.style.display = 'none';
+        updateResetBar();
+        srfFetchController = null;
+      })
+      .catch(function (err) {
+        if (err.name !== 'AbortError') {
+          if (grid) grid.style.opacity = '1';
+          if (loading) loading.style.display = 'none';
+        }
+        srfFetchController = null;
+      });
+  }
+
+  // ── 检查是否有激活的筛选
+  function hasActiveFilters() {
+    return Object.values(activeFilters).some(function (v) { return v !== ''; });
+  }
+
+  function updateResetBar() {
+    var resetBtn = document.getElementById('srfResetBtn');
+    if (resetBtn) resetBtn.style.display = hasActiveFilters() ? 'inline-block' : 'none';
+  }
+
+  // ── Desktop Sort ──
+  var desktopSortBy = '';
+  window.srfToggleDesktopSort = function(e) {
+    e.stopPropagation();
+    var dd = document.getElementById('srfSortDropdown');
+    var btn = document.getElementById('srfSortBtn');
+    dd.classList.toggle('open');
+    btn.classList.toggle('open');
+  };
+  document.querySelectorAll('.srf-sort-opt').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      desktopSortBy = btn.dataset.sort;
+      document.getElementById('srfDesktopSortLabel').textContent = btn.textContent.trim();
+      document.querySelectorAll('.srf-sort-opt').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('srfSortDropdown').classList.remove('open');
+      document.getElementById('srfSortBtn').classList.remove('open');
+      applyFilters();
+    });
+  });
+  document.addEventListener('click', function() {
+    var dd = document.getElementById('srfSortDropdown');
+    var btn = document.getElementById('srfSortBtn');
+    if (dd) dd.classList.remove('open');
+    if (btn) btn.classList.remove('open');
+  });
+
+  // ── 绑定所有筛选按钮
+  document.querySelectorAll('[data-filter-key]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.dataset.filterKey;
+      var val = btn.dataset.filterVal;
+      var group = btn.closest('.srf-row-tabs, .srf-metal-bar');
+      if (group) {
+        group.querySelectorAll('[data-filter-key="' + key + '"]').forEach(function (b) {
+          b.classList.remove('active');
+        });
+      }
+      btn.classList.add('active');
+      activeFilters[key] = val;
+      applyFilters();
+    });
+  });
+
+  // ── Reset 按钮
+  document.getElementById('srfResetBtn') && document.getElementById('srfResetBtn').addEventListener('click', function () {
+    Object.keys(activeFilters).forEach(function (k) { activeFilters[k] = ''; });
+    document.querySelectorAll('[data-filter-key]').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.filterVal === '');
+    });
+    applyFilters();
+  });
+
+  // ── Mobile sheet open/close ──
+  window.srfOpenSheet = function() {
+    document.getElementById('srfOverlay').classList.add('open');
+    document.getElementById('srfSheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.srfCloseSheet = function() {
+    document.getElementById('srfOverlay').classList.remove('open');
+    document.getElementById('srfSheet').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // ── Mobile: show/hide floating button on scroll ──
+  var srfFloatWrap = document.getElementById('srfFloatWrap');
+  if (srfFloatWrap) {
+    function srfCheckScroll() {
+      var scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+      srfFloatWrap.classList.toggle('srf-float-visible', scrollY > 80);
+    }
+    window.addEventListener('scroll', srfCheckScroll, { passive: true });
+    srfCheckScroll();
+  }
+
+  // ── Mobile: sync sheet selections with activeFilters ──
+  document.querySelectorAll('[data-sheet-filter-key]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var key = btn.dataset.sheetFilterKey;
+      var val = btn.dataset.sheetFilterVal;
+      var label = btn.dataset.sheetLabel || val || 'All';
+
+      btn.closest('.srf-sheet-row-tabs').querySelectorAll('[data-sheet-filter-key="' + key + '"]').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      activeFilters[key] = val;
+
+      // update label
+      var labelEl = document.getElementById('srfSheetLabel_' + key.split('.').pop());
+      if (labelEl) labelEl.textContent = label;
+
+      // sync desktop tabs
+      document.querySelectorAll('[data-filter-key="' + key + '"]').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.filterVal === val);
+      });
+
+      srfUpdateMobileBadge();
+    });
+  });
+
+  function srfUpdateMobileBadge() {
+    var count = Object.values(activeFilters).filter(function(v){ return v !== ''; }).length;
+    var badge = document.getElementById('srfFloatBadge');
+    var sheetBadge = document.getElementById('srfSheetBadge');
+    if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+    if (sheetBadge) sheetBadge.textContent = count;
+  }
+
+  // Reset from sheet
+  document.getElementById('srfSheetReset') && document.getElementById('srfSheetReset').addEventListener('click', function() {
+    Object.keys(activeFilters).forEach(function(k) { activeFilters[k] = ''; });
+    document.querySelectorAll('[data-filter-key],[data-sheet-filter-key]').forEach(function(btn) {
+      var val = btn.dataset.filterVal || btn.dataset.sheetFilterVal;
+      btn.classList.toggle('active', val === '');
+    });
+    ['stone_shape','carat','stone_color','plating_color'].forEach(function(k) {
+      var el = document.getElementById('srfSheetLabel_' + k);
+      if (el) el.textContent = 'All';
+    });
+    srfUpdateMobileBadge();
+    applyFilters();
+  });
+
+  srfUpdateMobileBadge();
+
+})();
+</script>
+
+<!-- ═══ MOBILE: FLOATING BUTTON ═══ -->
+<div class="srf-float-wrap" id="srfFloatWrap">
+  <button class="srf-float-btn" type="button" onclick="srfOpenSheet()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Filters
+    <span class="srf-float-badge" id="srfFloatBadge" style="display:none">0</span>
+  </button>
+</div>
+
+<!-- ═══ MOBILE: BOTTOM SHEET ═══ -->
+<div class="srf-overlay" id="srfOverlay" onclick="srfCloseSheet()"></div>
+<div class="srf-sheet" id="srfSheet">
+  <div class="srf-sheet-handle"></div>
+  <div class="srf-sheet-header">
+    <button class="srf-sheet-reset" id="srfSheetReset" type="button">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+      Reset
+    </button>
+    <span class="srf-sheet-title">Filters <span id="srfSheetBadge">0</span></span>
+    <button class="srf-sheet-close" type="button" onclick="srfCloseSheet()">×</button>
+  </div>
+
+  <div class="srf-sheet-body">
+
+    <!-- Metal -->
+    <div class="srf-sheet-section">
+      <div class="srf-sheet-section-label">Metal : <strong id="srfSheetLabel_plating_color">All</strong></div>
+      <div class="srf-sheet-row-tabs srf-metal-scroll">
+        <div class="srf-sheet-metal-card active" data-sheet-filter-key="filter.p.m.custom.plating_color" data-sheet-filter-val="" data-sheet-label="All">
+          <div class="srf-sheet-metal-dot" style="background:linear-gradient(135deg,#d8d8d8 50%,#d4a820 50%)"></div><span>All</span>
+        </div>
+        {%- assign plating_list = section.settings.plating_values | split: ',' -%}
+        {%- assign metal_dot_styles = 'radial-gradient(circle at 35% 35%,#fff 0%,#d8d8d8 55%,#aaa 100%)|radial-gradient(circle at 35% 35%,#fff5a0 0%,#d4a820 55%,#a07010 100%)|radial-gradient(circle at 35% 35%,#ffd8c8 0%,#d07860 55%,#a04030 100%)|linear-gradient(135deg,#d4a820 50%,#d8d8d8 50%)|radial-gradient(circle at 35% 35%,#555 0%,#222 55%,#000 100%)' | split: '|' -%}
+        {%- for metal in plating_list -%}
+          {%- assign metal_clean = metal | strip -%}
+          {%- assign dot_style = metal_dot_styles[forloop.index0] -%}
+          <div class="srf-sheet-metal-card" data-sheet-filter-key="filter.p.m.custom.plating_color" data-sheet-filter-val="{{ metal_clean }}" data-sheet-label="{{ metal_clean }}">
+            <div class="srf-sheet-metal-dot" style="background:{{ dot_style }}"></div>
+            <span>{{ metal_clean }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="srf-sheet-divider"></div>
+
+    <!-- Shape -->
+    <div class="srf-sheet-section">
+      <div class="srf-sheet-section-label">Shape : <strong id="srfSheetLabel_stone_shape">All</strong></div>
+      <div class="srf-sheet-row-tabs srf-shape-scroll">
+        <div class="srf-sheet-shape-card active" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="" data-sheet-label="All">
+          <svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg>
+          <span>All</span>
+        </div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Round Cut" data-sheet-label="Round Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg><span>Round</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Oval Cut" data-sheet-label="Oval Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M30.5 20C30.5 27.732 25.799 34 20 34C14.201 34 9.5 27.732 9.5 20C9.5 12.268 14.201 6 20 6C25.799 6 30.5 12.268 30.5 20ZM23.981 25.761L25.689 20L23.981 14.24L20 11.934L16.019 14.24L14.312 20L16.019 25.761L20 28.067Z" fill="black"/></svg><span>Oval</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Pear Cut" data-sheet-label="Pear Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5C10 11 10 21 10 21C10 28 14.5 33 20 33C25.5 33 30 28 30 21C30 21 30 11 20 5Z"/><path fill="black" d="M24.6 22L22.5 15.1L20 12.3L17.5 15.1L15.4 22L16.9 26L20 27.3L23.1 26Z"/></svg><span>Pear</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Emerald Cut" data-sheet-label="Emerald Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M28.5 10.578V29.551L24.658 33.565H15.342L11.5 29.551V10.578L15.342 6.565H24.658L28.5 10.578ZM23.625 27.845V12.155L22.845 11.375H17.155L16.375 12.155V27.845L17.155 28.625H22.845Z" fill="black"/></svg><span>Emerald</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Marquise Cut" data-sheet-label="Marquise Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5.5C12.5 9 12.5 20 12.5 20C12.5 31 20 34.5 20 34.5C20 34.5 27.5 31 27.5 20C27.5 20 27.5 9 20 5.5Z"/><path fill="black" d="M22.13 14.53L20 12.52L17.87 14.53L16.88 20L17.87 25.47L20 27.48L22.13 25.47L23.12 20Z"/></svg><span>Marquise</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Cushion Cut" data-sheet-label="Cushion Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.5 20C31.5 30.134 25.687 31.5 20 31.5C14.313 31.5 8.5 30.134 8.5 20C8.5 9.866 14.313 8.5 20 8.5C25.687 8.5 31.5 9.866 31.5 20ZM24.95 24.04L25.62 20L24.95 15.96L20 14.393L15.05 15.96L14.38 20L15.052 24.041L20 25.606Z" fill="black"/></svg><span>Cushion</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Radiant Cut" data-sheet-label="Radiant Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M29.5 10.793V29.207L25.207 33.5H14.793L10.5 29.207V10.793L14.793 6.5H25.207L29.5 10.793ZM22.869 27.88L24.616 20L22.869 12.12L19.997 11.387L17.131 12.12L15.384 20L17.131 27.88L19.997 28.613Z" fill="black"/></svg><span>Radiant</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Princess Cut" data-sheet-label="Princess Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M8.5 8.5V31.5H31.5V8.5H8.5ZM20 26.621L15.107 25.852L13.391 20L15.107 14.147L20 13.379L24.893 14.147L26.609 20L24.893 25.852Z" fill="black"/></svg><span>Princess</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Asscher Cut" data-sheet-label="Asscher Cut"><svg viewBox="0 0 45 44" width="36" height="36"><path fill-rule="evenodd" d="M30.428 9.35H14.572L9.85 14.072V29.928L14.572 34.65H30.428L35.15 29.928V14.072L30.428 9.35ZM26.729 28.187H18.271L16.313 26.229V17.771L18.271 15.812H26.729L28.688 17.771V26.229Z" fill="black"/></svg><span>Asscher</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Heart Cut" data-sheet-label="Heart Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path d="M20 33C20 33 7 24 7 15C7 10.5 10.5 7 15 7C17.5 7 19.5 8.2 20 9C20.5 8.2 22.5 7 25 7C29.5 7 33 10.5 33 15C33 24 20 33 20 33Z" fill="black" opacity=".85"/></svg><span>Heart</span></div>
+        <div class="srf-sheet-shape-card" data-sheet-filter-key="filter.p.m.custom.stone_shape" data-sheet-filter-val="Coffin Cut" data-sheet-label="Coffin Cut"><svg viewBox="0 0 40 40" width="36" height="36"><path d="M20 6L30 13V31L20 35L10 31V13Z" fill="black" opacity=".85"/></svg><span>Coffin</span></div>
+      </div>
+    </div>
+    <div class="srf-sheet-divider"></div>
+
+    <!-- Carat -->
+    <div class="srf-sheet-section">
+      <div class="srf-sheet-section-label">Carat : <strong id="srfSheetLabel_carat">All</strong></div>
+      <div class="srf-sheet-row-tabs srf-carat-wrap">
+        <button class="srf-sheet-carat active" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="" data-sheet-label="All" type="button">All</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="Below 1.0 Ct" data-sheet-label="Below 1.0" type="button">Below 1.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="1.0Ct-2.0Ct" data-sheet-label="1.0–2.0" type="button">1.0 – 2.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="2.0Ct-3.0Ct" data-sheet-label="2.0–3.0" type="button">2.0 – 3.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="3.0Ct-4.0Ct" data-sheet-label="3.0–4.0" type="button">3.0 – 4.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="4.0Ct-5.0Ct" data-sheet-label="4.0–5.0" type="button">4.0 – 5.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="5.0Ct-6.0Ct" data-sheet-label="5.0–6.0" type="button">5.0 – 6.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="6.0Ct-7.0Ct" data-sheet-label="6.0–7.0" type="button">6.0 – 7.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="7.0Ct-8.0Ct" data-sheet-label="7.0–8.0" type="button">7.0 – 8.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="8.0Ct-9.0Ct" data-sheet-label="8.0–9.0" type="button">8.0 – 9.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="9.0Ct-10.0Ct" data-sheet-label="9.0–10.0" type="button">9.0 – 10.0</button>
+        <button class="srf-sheet-carat" data-sheet-filter-key="filter.p.m.custom.carat" data-sheet-filter-val="10.0 Ct and above" data-sheet-label="10.0+" type="button">10.0+</button>
+      </div>
+    </div>
+    <div class="srf-sheet-divider"></div>
+
+    <!-- Stone Color -->
+    <div class="srf-sheet-section">
+      <div class="srf-sheet-section-label">Stone Color : <strong id="srfSheetLabel_stone_color">All</strong></div>
+      <div class="srf-sheet-row-tabs srf-color-wrap">
+        <div class="srf-sheet-color-item active" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="" data-sheet-label="All"><div class="srf-sheet-color-dot" style="background:linear-gradient(135deg,#fff 0%,#f4a0c0 33%,#a0c4f4 66%,#a0f4a0 100%);border-color:#ddd"></div><span>All</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="White Stone" data-sheet-label="White"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e0e0e0);border-color:#ddd"></div><span>White</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Yellow Stone" data-sheet-label="Yellow"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#fffacc,#f0d020)"></div><span>Yellow</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Pink Stone" data-sheet-label="Pink"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffd8e8,#e060a0)"></div><span>Pink</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Morganite Stone" data-sheet-label="Morganite"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#fce0d8,#e8a090)"></div><span>Morganite</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Blue Stone" data-sheet-label="Blue"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#c8dcff,#2060d0)"></div><span>Blue</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Emerald Green" data-sheet-label="Emerald"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#a8f0b8,#1a8040)"></div><span>Emerald</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Aquamarine Blue" data-sheet-label="Aqua"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#c0f0f8,#40b8d8)"></div><span>Aqua</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Black Stone" data-sheet-label="Black"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#666,#111)"></div><span>Black</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Champagne Stone" data-sheet-label="Champagne"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff8e0,#d4a840)"></div><span>Champagne</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Purple Stone" data-sheet-label="Purple"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#e0c8f8,#8030c0)"></div><span>Purple</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Ruby Stone" data-sheet-label="Ruby"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffc8c8,#c01020)"></div><span>Ruby</span></div>
+        <div class="srf-sheet-color-item" data-sheet-filter-key="filter.p.m.custom.stone_color" data-sheet-filter-val="Pearl" data-sheet-label="Pearl"><div class="srf-sheet-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e8e0f0);border-color:#ddd"></div><span>Pearl</span></div>
+      </div>
+    </div>
+
+  </div><!-- /sheet-body -->
+
+  <div class="srf-sheet-footer">
+    <button class="srf-sheet-view-btn" type="button" onclick="srfCloseSheet(); applyFilters();">View Results</button>
+  </div>
+</div>
+
+
+
+<!-- ════════════════════════════════════
+     MOBILE SECTION
+════════════════════════════════════ -->
+{% comment %}
+  ============================================================
+  Section: Solarii Mobile Filter
+  File:    sections/solarii-mobile-filter.liquid
+
+  手机端筛选模块：
+  - Hero 标题区
+  - 顶部 sticky Filter Bar（Filters按钮 + Sort）
+  - 激活筛选 chips 行
+  - 浮动 Filters 按钮（滚动后出现）
+  - 底部上滑抽屉（Metal / Shape / Carat / Stone Color）
+
+  点击 View Results → 触发原生 Shopify AJAX 筛选
+  把此 section 放在 Collection products section 上方
+  ============================================================
+{% endcomment %}
+
+<style>
+/* ── HERO ── */
+.smf-hero{text-align:center;padding:28px 16px 16px;background:#fafaf8}
+.smf-hero-title{font-family:var(--font-heading-family,'Playfair Display',serif);font-size:26px;font-weight:400;margin-bottom:8px;letter-spacing:.01em}
+.smf-hero-sub{font-size:12px;color:#888;line-height:1.6}
+
+/* ── STICKY FILTER BAR ── */
+.smf-filter-bar{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:20}
+.smf-filter-btn{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid #ccc;border-radius:8px;background:#fff;font-family:inherit;font-size:13px;cursor:pointer;transition:border-color .15s}
+.smf-filter-btn:hover{border-color:#888}
+.smf-filter-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#111;color:#fff;border-radius:50%;font-size:10px;font-weight:700}
+/* ── SORT DROPDOWN ── */
+.smf-sort-wrap{position:relative;margin-left:auto}
+.smf-sort-btn{display:flex;align-items:center;gap:5px;height:34px;padding:0 12px;border:1px solid #ccc;border-radius:8px;background:#fff;font-family:inherit;font-size:13px;cursor:pointer;white-space:nowrap;transition:border-color .15s}
+.smf-sort-btn:hover{border-color:#888}
+.smf-sort-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid #e0e0e0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:190px;z-index:30;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .18s,transform .18s}
+.smf-sort-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.smf-sort-opt{display:block;width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-family:inherit;font-size:13px;color:#333;cursor:pointer;transition:background .15s}
+.smf-sort-opt:first-child{border-radius:12px 12px 0 0}
+.smf-sort-opt:last-child{border-radius:0 0 12px 12px}
+.smf-sort-opt:hover{background:#f5f5f3}
+.smf-sort-opt.active{font-weight:600;color:#111}
+
+/* ── ACTIVE CHIPS ── */
+.smf-chips{display:flex;gap:8px;padding:8px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #f0f0f0;scrollbar-width:none;min-height:0;transition:min-height .2s}
+.smf-chips:empty,.smf-chips.hidden{display:none}
+.smf-chips::-webkit-scrollbar{display:none}
+.smf-chip{display:flex;align-items:center;gap:5px;height:28px;padding:0 10px;border:1px solid #ccc;border-radius:20px;font-size:12px;white-space:nowrap;background:#fff;cursor:pointer;flex-shrink:0}
+.smf-chip-x{color:#aaa;font-size:14px;line-height:1}
+
+/* ── FLOATING BUTTON ── */
+.smf-float{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:50;opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.32,1,.24,1),opacity .28s ease}
+.smf-float.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:all}
+.smf-float-btn{display:flex;align-items:center;gap:8px;height:46px;padding:0 26px;background:#111;color:#fff;border:none;border-radius:999px;font-family:inherit;font-size:14px;font-weight:500;letter-spacing:.04em;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28);transition:background .18s}
+.smf-float-btn:hover{background:#333}
+.smf-float-btn:active{transform:scale(.97)}
+.smf-float-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#fff;color:#111;border-radius:50%;font-size:11px;font-weight:700}
+
+/* ── OVERLAY ── */
+.smf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+.smf-overlay.open{opacity:1;pointer-events:all}
+
+/* ── BOTTOM SHEET ── */
+.smf-sheet{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;z-index:101;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1,.24,1);display:flex;flex-direction:column;max-height:75vh;min-height:200px}
+.smf-sheet.open{transform:translateY(0)}
+.smf-handle{width:36px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.smf-sheet-header{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+.smf-sheet-reset{font-size:12px;color:#888;background:none;border:none;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:4px}
+.smf-sheet-title{flex:1;text-align:center;font-size:14px;font-weight:500}
+.smf-sheet-close{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#666;line-height:1}
+.smf-sheet-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.smf-section{padding:16px 16px 12px}
+.smf-section-label{font-size:13px;color:#888;margin-bottom:12px}
+.smf-section-label strong{color:#161616;font-weight:500}
+.smf-divider{height:1px;background:#f0f0f0}
+
+/* Metal scroll */
+.smf-metal-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;scroll-snap-type:x mandatory}
+.smf-metal-row::-webkit-scrollbar{display:none}
+.smf-metal-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 12px;border-radius:12px;border:1.5px solid #eee;cursor:pointer;flex-shrink:0;scroll-snap-align:start;transition:border-color .15s;min-width:78px}
+.smf-metal-card.active{border-color:#111;background:#fafaf8}
+.smf-metal-circle{width:38px;height:38px;border-radius:50%;border:1.5px solid #ddd}
+/* ── Image override for filter items ── */
+.smf-item-img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid #eee;display:block}
+.smf-shape-img{width:38px;height:38px;object-fit:contain;display:block}
+.smf-metal-img{width:38px;height:38px;border-radius:50%;object-fit:cover;display:block}
+.smf-color-img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid transparent;transition:border-color .15s}
+.smf-color-item.active .smf-color-img{border-color:#111;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #111}
+
+.smf-metal-card span{font-size:11px;color:#333;text-align:center;white-space:nowrap}
+
+/* Shape scroll */
+.smf-shape-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;scroll-snap-type:x mandatory}
+.smf-shape-row::-webkit-scrollbar{display:none}
+.smf-shape-card{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 10px;border-radius:12px;border:1.5px solid #eee;cursor:pointer;flex-shrink:0;scroll-snap-align:start;transition:border-color .15s;min-width:68px}
+.smf-shape-card.active{border-color:#111;background:#fafaf8}
+.smf-shape-card svg path,.smf-shape-card svg polygon,.smf-shape-card svg rect{fill:none!important;stroke:#111!important;stroke-width:1px!important}
+.smf-shape-card span{font-size:10.5px;color:#333;white-space:nowrap}
+
+/* Carat pills */
+.smf-carat-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.smf-carat-pill{height:30px;padding:0 12px;border-radius:8px;border:1.5px solid #eee;background:#fff;font-family:inherit;font-size:11.5px;color:#444;cursor:pointer;transition:border-color .15s,background .15s}
+.smf-carat-pill.active{border-color:#111;background:#111;color:#fff;font-weight:500}
+
+/* Color dots */
+.smf-color-wrap{display:flex;flex-wrap:wrap;gap:10px}
+.smf-color-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:44px}
+.smf-color-dot{width:34px;height:34px;border-radius:50%;border:2px solid transparent;transition:border-color .15s}
+.smf-color-item.active .smf-color-dot{border-color:#111;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #111}
+.smf-color-item span{font-size:9.5px;color:#555;text-align:center}
+
+/* Carousel wrap with arrow buttons */
+.smf-carousel-wrap{display:flex;align-items:center;gap:4px}
+.smf-carr-btn{
+  width:28px;height:28px;min-width:28px;
+  border-radius:50%;
+  border:1px solid #e0e0e0;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  font-size:16px;line-height:1;
+  color:#444;
+  padding:0;
+  flex-shrink:0;
+  transition:box-shadow .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.smf-carr-btn:hover{box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.smf-carousel-wrap .smf-metal-row,
+.smf-carousel-wrap .smf-shape-row{flex:1;min-width:0}
+
+/* Sheet footer */
+.smf-view-btn{width:100%;height:50px;background:#111;color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;letter-spacing:.02em;transition:background .2s}
+.smf-view-btn:hover{background:#333}
+
+/* Desktop: hide this whole section */
+@media (min-width: 768px) {
+  .smf-hero,.smf-filter-bar,.smf-chips,.smf-float,.smf-overlay,.smf-sheet{display:none!important}
+}
+</style>
+
+<!-- ── HERO ── -->
+<div class="smf-hero" style="padding-top:{{ section.settings.padding_top }}px;zoom:{{ section.settings.mobile_font_scale | divided_by: 100.0 }};max-width:{{ section.settings.mobile_max_width }}px;margin-left:auto;margin-right:auto">
+  <h2 class="smf-hero-title">{{ section.settings.title | default: 'Engagement Rings' }}</h2>
+  <p class="smf-hero-sub">{{ section.settings.subtitle | default: 'Discover our collection of made to order engagement rings and customize it to your preference' }}</p>
+</div>
+
+<!-- ── STICKY FILTER BAR ── -->
+<div class="smf-filter-bar" id="smfFilterBar" style="zoom:{{ section.settings.mobile_font_scale | divided_by: 100.0 }};max-width:{{ section.settings.mobile_max_width }}px;margin-left:auto;margin-right:auto">
+  <button class="smf-filter-btn" type="button" onclick="smfOpen()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Filters <span class="smf-filter-badge" id="smfTopBadge">0</span>
+  </button>
+
+  <!-- Sort dropdown -->
+  <div class="smf-sort-wrap" id="smfSortWrap">
+    <button class="smf-sort-btn" type="button" onclick="smfToggleSort(event)">
+      <span id="smfSortLabel">Sort By</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="smf-sort-dropdown" id="smfSortDropdown">
+      <button class="smf-sort-opt" data-sort="" type="button">Featured</button>
+      <button class="smf-sort-opt" data-sort="best-selling" type="button">Best selling</button>
+      <button class="smf-sort-opt" data-sort="title-ascending" type="button">Alphabetically, A-Z</button>
+      <button class="smf-sort-opt" data-sort="title-descending" type="button">Alphabetically, Z-A</button>
+      <button class="smf-sort-opt" data-sort="price-ascending" type="button">Price, low to high</button>
+      <button class="smf-sort-opt" data-sort="price-descending" type="button">Price, high to low</button>
+      <button class="smf-sort-opt" data-sort="created-ascending" type="button">Date, old to new</button>
+      <button class="smf-sort-opt" data-sort="created-descending" type="button">Date, new to old</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACTIVE CHIPS ── -->
+<div class="smf-chips" id="smfChips"></div>
+<div style="padding-bottom:{{ section.settings.padding_bottom }}px"></div>
+
+<!-- ── FLOATING BUTTON ── -->
+<div class="smf-float" id="smfFloat">
+  <button class="smf-float-btn" type="button" onclick="smfOpen()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Filters
+    <span class="smf-float-badge" id="smfFloatBadge">0</span>
+  </button>
+</div>
+
+<!-- ── OVERLAY ── -->
+<div class="smf-overlay" id="smfOverlay" onclick="smfClose()"></div>
+
+<!-- ── BOTTOM SHEET ── -->
+<div class="smf-sheet" id="smfSheet" style="zoom:{{ section.settings.mobile_font_scale | divided_by: 100.0 }};max-width:{{ section.settings.mobile_max_width }}px">
+  <div class="smf-handle"></div>
+  <div class="smf-sheet-header">
+    <button class="smf-sheet-reset" type="button" id="smfResetBtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+      Reset
+    </button>
+    <span class="smf-sheet-title">Filters <span id="smfSheetBadge">0</span></span>
+    <button class="smf-sheet-close" type="button" onclick="smfClose()">×</button>
+  </div>
+
+  <div class="smf-sheet-body">
+
+    <!-- Metal -->
+    <div class="smf-section">
+      <div class="smf-section-label">Metal : <strong id="smfMetalLabel">All</strong></div>
+      <div class="smf-carousel-wrap">
+        <button class="smf-carr-btn smf-carr-prev" onclick="smfScroll('smfMetalRow',-1)" type="button"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="smf-metal-row" id="smfMetalRow">
+        <div class="smf-metal-card active" data-key="filter.p.m.custom.plating_color" data-val="" data-label="All">
+          <div class="smf-metal-circle" style="background:linear-gradient(135deg,#d8d8d8 50%,#d4a820 50%)"></div>
+          <span>All</span>
+        </div>
+        {%- assign plating_list = section.settings.plating_values | split: ',' -%}
+        {%- assign dot_styles = 'radial-gradient(circle at 35% 35%,#fff 0%,#d8d8d8 55%,#aaa 100%)|radial-gradient(circle at 35% 35%,#fff5a0 0%,#d4a820 55%,#a07010 100%)|radial-gradient(circle at 35% 35%,#ffd8c8 0%,#d07860 55%,#a04030 100%)|linear-gradient(135deg,#d4a820 50%,#d8d8d8 50%)|radial-gradient(circle at 35% 35%,#555 0%,#222 55%,#000 100%)' | split: '|' -%}
+        {%- assign metal_img_ids = 'img_white_gold|img_yellow_gold|img_rose_gold|img_two_tone|img_black_gold' | split: '|' -%}
+        {%- for metal in plating_list -%}
+          {%- assign m = metal | strip -%}
+          {%- assign img_id = metal_img_ids[forloop.index0] -%}
+          {%- assign img = section.settings[img_id] -%}
+          <div class="smf-metal-card" data-key="filter.p.m.custom.plating_color" data-val="{{ m }}" data-label="{{ m }}">
+            {%- if img -%}
+              <img src="{{ img | image_url: width: 160 }}" alt="{{ m }}" class="smf-metal-img" width="38" height="38">
+            {%- else -%}
+              <div class="smf-metal-circle" style="background:{{ dot_styles[forloop.index0] }}"></div>
+            {%- endif -%}
+            <span>{{ m }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+      <button class="smf-carr-btn smf-carr-next" onclick="smfScroll('smfMetalRow',1)" type="button"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1L7 7L1 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <div class="smf-divider"></div>
+
+    <!-- Shape -->
+    <div class="smf-section">
+      <div class="smf-section-label">Shape : <strong id="smfShapeLabel">All</strong></div>
+      <div class="smf-carousel-wrap">
+        <button class="smf-carr-btn smf-carr-prev" onclick="smfScroll('smfShapeRow',-1)" type="button"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="smf-shape-row" id="smfShapeRow">
+        <div class="smf-shape-card active" data-key="filter.p.m.custom.stone_shape" data-val="" data-label="All">
+          <svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg>
+          <span>All</span>
+        </div>
+        {% if section.settings.img_shape_round %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Round Cut" data-label="Round"><img class="smf-shape-img" src="{{ section.settings.img_shape_round | image_url: width: 160 }}" alt="Round" loading="lazy"><span>Round</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Round Cut" data-label="Round"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.458 20C31.458 26.318 26.318 31.458 20 31.458C13.682 31.458 8.542 26.318 8.542 20C8.542 13.682 13.682 8.542 20 8.542C26.318 8.542 31.458 13.682 31.458 20ZM26.09 22.529L26.095 17.482L22.529 13.91L17.482 13.905L13.91 17.471L13.905 22.518L17.471 26.09L22.518 26.095Z" fill="black"/></svg><span>Round</span></div>{% endif %}
+        {% if section.settings.img_shape_oval %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Oval Cut" data-label="Oval"><img class="smf-shape-img" src="{{ section.settings.img_shape_oval | image_url: width: 160 }}" alt="Oval" loading="lazy"><span>Oval</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Oval Cut" data-label="Oval"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M30.5 20C30.5 27.732 25.799 34 20 34C14.201 34 9.5 27.732 9.5 20C9.5 12.268 14.201 6 20 6C25.799 6 30.5 12.268 30.5 20ZM23.981 25.761L25.689 20L23.981 14.24L20 11.934L16.019 14.24L14.312 20L16.019 25.761L20 28.067Z" fill="black"/></svg><span>Oval</span></div>{% endif %}
+        {% if section.settings.img_shape_pear %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Pear Cut" data-label="Pear"><img class="smf-shape-img" src="{{ section.settings.img_shape_pear | image_url: width: 160 }}" alt="Pear" loading="lazy"><span>Pear</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Pear Cut" data-label="Pear"><svg viewBox="0 0 40 40" width="36" height="36"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5C10 11 10 21 10 21C10 28 14.5 33 20 33C25.5 33 30 28 30 21C30 21 30 11 20 5Z"/><path fill="black" d="M24.6 22L22.5 15.1L20 12.3L17.5 15.1L15.4 22L16.9 26L20 27.3L23.1 26Z"/></svg><span>Pear</span></div>{% endif %}
+        {% if section.settings.img_shape_emerald %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Emerald Cut" data-label="Emerald"><img class="smf-shape-img" src="{{ section.settings.img_shape_emerald | image_url: width: 160 }}" alt="Emerald" loading="lazy"><span>Emerald</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Emerald Cut" data-label="Emerald"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M28.5 10.578V29.551L24.658 33.565H15.342L11.5 29.551V10.578L15.342 6.565H24.658L28.5 10.578ZM23.625 27.845V12.155L22.845 11.375H17.155L16.375 12.155V27.845L17.155 28.625H22.845Z" fill="black"/></svg><span>Emerald</span></div>{% endif %}
+        {% if section.settings.img_shape_marquise %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Marquise Cut" data-label="Marquise"><img class="smf-shape-img" src="{{ section.settings.img_shape_marquise | image_url: width: 160 }}" alt="Marquise" loading="lazy"><span>Marquise</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Marquise Cut" data-label="Marquise"><svg viewBox="0 0 40 40" width="36" height="36"><path fill="none" stroke="black" stroke-width="1.4" d="M20 5.5C12.5 9 12.5 20 12.5 20C12.5 31 20 34.5 20 34.5C20 34.5 27.5 31 27.5 20C27.5 20 27.5 9 20 5.5Z"/><path fill="black" d="M22.13 14.53L20 12.52L17.87 14.53L16.88 20L17.87 25.47L20 27.48L22.13 25.47L23.12 20Z"/></svg><span>Marquise</span></div>{% endif %}
+        {% if section.settings.img_shape_cushion %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Cushion Cut" data-label="Cushion"><img class="smf-shape-img" src="{{ section.settings.img_shape_cushion | image_url: width: 160 }}" alt="Cushion" loading="lazy"><span>Cushion</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Cushion Cut" data-label="Cushion"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M31.5 20C31.5 30.134 25.687 31.5 20 31.5C14.313 31.5 8.5 30.134 8.5 20C8.5 9.866 14.313 8.5 20 8.5C25.687 8.5 31.5 9.866 31.5 20ZM24.95 24.04L25.62 20L24.95 15.96L20 14.393L15.05 15.96L14.38 20L15.052 24.041L20 25.606Z" fill="black"/></svg><span>Cushion</span></div>{% endif %}
+        {% if section.settings.img_shape_radiant %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Radiant Cut" data-label="Radiant"><img class="smf-shape-img" src="{{ section.settings.img_shape_radiant | image_url: width: 160 }}" alt="Radiant" loading="lazy"><span>Radiant</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Radiant Cut" data-label="Radiant"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M29.5 10.793V29.207L25.207 33.5H14.793L10.5 29.207V10.793L14.793 6.5H25.207L29.5 10.793ZM22.869 27.88L24.616 20L22.869 12.12L19.997 11.387L17.131 12.12L15.384 20L17.131 27.88L19.997 28.613Z" fill="black"/></svg><span>Radiant</span></div>{% endif %}
+        {% if section.settings.img_shape_princess %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Princess Cut" data-label="Princess"><img class="smf-shape-img" src="{{ section.settings.img_shape_princess | image_url: width: 160 }}" alt="Princess" loading="lazy"><span>Princess</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Princess Cut" data-label="Princess"><svg viewBox="0 0 40 40" width="36" height="36"><path fill-rule="evenodd" d="M8.5 8.5V31.5H31.5V8.5H8.5ZM20 26.621L15.107 25.852L13.391 20L15.107 14.147L20 13.379L24.893 14.147L26.609 20L24.893 25.852Z" fill="black"/></svg><span>Princess</span></div>{% endif %}
+        {% if section.settings.img_shape_asscher %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Asscher Cut" data-label="Asscher"><img class="smf-shape-img" src="{{ section.settings.img_shape_asscher | image_url: width: 160 }}" alt="Asscher" loading="lazy"><span>Asscher</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Asscher Cut" data-label="Asscher"><svg viewBox="0 0 45 44" width="36" height="36"><path fill-rule="evenodd" d="M30.428 9.35H14.572L9.85 14.072V29.928L14.572 34.65H30.428L35.15 29.928V14.072L30.428 9.35ZM26.729 28.187H18.271L16.313 26.229V17.771L18.271 15.812H26.729L28.688 17.771V26.229Z" fill="black"/></svg><span>Asscher</span></div>{% endif %}
+        {% if section.settings.img_shape_heart %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Heart Cut" data-label="Heart"><img class="smf-shape-img" src="{{ section.settings.img_shape_heart | image_url: width: 160 }}" alt="Heart" loading="lazy"><span>Heart</span></div>{% else %}<div class="smf-shape-card" data-key="filter.p.m.custom.stone_shape" data-val="Heart Cut" data-label="Heart"><svg viewBox="0 0 40 40" width="36" height="36"><path d="M20 33C20 33 7 24 7 15C7 10.5 10.5 7 15 7C17.5 7 19.5 8.2 20 9C20.5 8.2 22.5 7 25 7C29.5 7 33 10.5 33 15C33 24 20 33 20 33Z" fill="black" opacity=".85"/></svg><span>Heart</span></div>{% endif %}
+        {% if section.settings.img_shape_coffin %}{% else %}{% endif %}
+      </div>
+      <button class="smf-carr-btn smf-carr-next" onclick="smfScroll('smfShapeRow',1)" type="button"><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1L7 7L1 13" stroke="#444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <div class="smf-divider"></div>
+
+    <!-- Carat -->
+    <div class="smf-section">
+      <div class="smf-section-label">Carat : <strong id="smfCaratLabel">All</strong></div>
+      <div class="smf-carat-wrap" id="smfCaratRow">
+        <button class="smf-carat-pill active" data-key="filter.p.m.custom.carat" data-val="" data-label="All" type="button">All</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="Below 1.0 Ct" data-label="Below 1.0" type="button">Below 1.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="1.0Ct-2.0Ct" data-label="1.0–2.0" type="button">1.0 – 2.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="2.0Ct-3.0Ct" data-label="2.0–3.0" type="button">2.0 – 3.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="3.0Ct-4.0Ct" data-label="3.0–4.0" type="button">3.0 – 4.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="4.0Ct-5.0Ct" data-label="4.0–5.0" type="button">4.0 – 5.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="5.0Ct-6.0Ct" data-label="5.0–6.0" type="button">5.0 – 6.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="6.0Ct-7.0Ct" data-label="6.0–7.0" type="button">6.0 – 7.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="7.0Ct-8.0Ct" data-label="7.0–8.0" type="button">7.0 – 8.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="8.0Ct-9.0Ct" data-label="8.0–9.0" type="button">8.0 – 9.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="9.0Ct-10.0Ct" data-label="9.0–10.0" type="button">9.0 – 10.0</button>
+        <button class="smf-carat-pill" data-key="filter.p.m.custom.carat" data-val="10.0 Ct and above" data-label="10.0+" type="button">10.0+</button>
+      </div>
+    </div>
+    <div class="smf-divider"></div>
+
+    <!-- Stone Color -->
+    <div class="smf-section">
+      <div class="smf-section-label">Stone Color : <strong id="smfColorLabel">All</strong></div>
+      <div class="smf-color-wrap" id="smfColorRow">
+        <div class="smf-color-item active" data-key="filter.p.m.custom.stone_color" data-val="" data-label="All"><div class="smf-color-dot" style="background:linear-gradient(135deg,#fff 0%,#f4a0c0 33%,#a0c4f4 66%,#a0f4a0 100%);border-color:#ddd"></div><span>All</span></div>
+        {% if section.settings.img_color_white %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="White Stone" data-label="White"><img class="smf-color-img" src="{{ section.settings.img_color_white | image_url: width: 160 }}" alt="White" loading="lazy"><span>White</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="White Stone" data-label="White"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e0e0e0);border-color:#ddd"></div><span>White</span></div>{% endif %}
+        {% if section.settings.img_color_yellow %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Yellow Stone" data-label="Yellow"><img class="smf-color-img" src="{{ section.settings.img_color_yellow | image_url: width: 160 }}" alt="Yellow" loading="lazy"><span>Yellow</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Yellow Stone" data-label="Yellow"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fffacc,#f0d020)"></div><span>Yellow</span></div>{% endif %}
+        {% if section.settings.img_color_pink %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Pink Stone" data-label="Pink"><img class="smf-color-img" src="{{ section.settings.img_color_pink | image_url: width: 160 }}" alt="Pink" loading="lazy"><span>Pink</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Pink Stone" data-label="Pink"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffd8e8,#e060a0)"></div><span>Pink</span></div>{% endif %}
+        {% if section.settings.img_color_morganite %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Morganite Stone" data-label="Morganite"><img class="smf-color-img" src="{{ section.settings.img_color_morganite | image_url: width: 160 }}" alt="Morganite" loading="lazy"><span>Morganite</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Morganite Stone" data-label="Morganite"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fce0d8,#e8a090)"></div><span>Morganite</span></div>{% endif %}
+        {% if section.settings.img_color_blue %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Blue Stone" data-label="Blue"><img class="smf-color-img" src="{{ section.settings.img_color_blue | image_url: width: 160 }}" alt="Blue" loading="lazy"><span>Blue</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Blue Stone" data-label="Blue"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#c8dcff,#2060d0)"></div><span>Blue</span></div>{% endif %}
+        {% if section.settings.img_color_emerald %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Emerald Green" data-label="Emerald"><img class="smf-color-img" src="{{ section.settings.img_color_emerald | image_url: width: 160 }}" alt="Emerald" loading="lazy"><span>Emerald</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Emerald Green" data-label="Emerald"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#a8f0b8,#1a8040)"></div><span>Emerald</span></div>{% endif %}
+        {% if section.settings.img_color_aqua %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Aquamarine Blue" data-label="Aqua"><img class="smf-color-img" src="{{ section.settings.img_color_aqua | image_url: width: 160 }}" alt="Aqua" loading="lazy"><span>Aqua</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Aquamarine Blue" data-label="Aqua"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#c0f0f8,#40b8d8)"></div><span>Aqua</span></div>{% endif %}
+        {% if section.settings.img_color_black %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Black Stone" data-label="Black"><img class="smf-color-img" src="{{ section.settings.img_color_black | image_url: width: 160 }}" alt="Black" loading="lazy"><span>Black</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Black Stone" data-label="Black"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#666,#111)"></div><span>Black</span></div>{% endif %}
+        {% if section.settings.img_color_champagne %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Champagne Stone" data-label="Champagne"><img class="smf-color-img" src="{{ section.settings.img_color_champagne | image_url: width: 160 }}" alt="Champagne" loading="lazy"><span>Champagne</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Champagne Stone" data-label="Champagne"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff8e0,#d4a840)"></div><span>Champagne</span></div>{% endif %}
+        {% if section.settings.img_color_purple %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Purple Stone" data-label="Purple"><img class="smf-color-img" src="{{ section.settings.img_color_purple | image_url: width: 160 }}" alt="Purple" loading="lazy"><span>Purple</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Purple Stone" data-label="Purple"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#e0c8f8,#8030c0)"></div><span>Purple</span></div>{% endif %}
+        {% if section.settings.img_color_ruby %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Ruby Stone" data-label="Ruby"><img class="smf-color-img" src="{{ section.settings.img_color_ruby | image_url: width: 160 }}" alt="Ruby" loading="lazy"><span>Ruby</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Ruby Stone" data-label="Ruby"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#ffc8c8,#c01020)"></div><span>Ruby</span></div>{% endif %}
+        {% if section.settings.img_color_pearl %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Pearl" data-label="Pearl"><img class="smf-color-img" src="{{ section.settings.img_color_pearl | image_url: width: 160 }}" alt="Pearl" loading="lazy"><span>Pearl</span></div>{% else %}<div class="smf-color-item" data-key="filter.p.m.custom.stone_color" data-val="Pearl" data-label="Pearl"><div class="smf-color-dot" style="background:radial-gradient(circle at 35% 35%,#fff,#e8e0f0);border-color:#ddd"></div><span>Pearl</span></div>{% endif %}
+      </div>
+    </div>
+
+  </div><!-- /sheet-body -->
+
+  <div class="smf-sheet-footer">
+    <button class="smf-view-btn" type="button" id="smfViewBtn">View Results</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ── State ──
+  var state = {
+    'filter.p.m.custom.plating_color': { val: '', label: 'All', labelEl: 'smfMetalLabel' },
+    'filter.p.m.custom.stone_shape':   { val: '', label: 'All', labelEl: 'smfShapeLabel' },
+    'filter.p.m.custom.carat':         { val: '', label: 'All', labelEl: 'smfCaratLabel' },
+    'filter.p.m.custom.stone_color':   { val: '', label: 'All', labelEl: 'smfColorLabel' }
+  };
+
+  // ── Sort ──
+  var activeSortBy = '';
+  window.smfToggleSort = function(e) {
+    e.stopPropagation();
+    document.getElementById('smfSortDropdown').classList.toggle('open');
+  };
+  document.querySelectorAll('.smf-sort-opt').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      activeSortBy = btn.dataset.sort;
+      // Update label
+      document.getElementById('smfSortLabel').textContent = btn.textContent.trim();
+      // Mark active
+      document.querySelectorAll('.smf-sort-opt').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      // Close dropdown
+      document.getElementById('smfSortDropdown').classList.remove('open');
+      // Apply
+      smfApplyWithSort();
+    });
+  });
+  // Close sort on outside click
+  document.addEventListener('click', function() {
+    var dd = document.getElementById('smfSortDropdown');
+    if (dd) dd.classList.remove('open');
+  });
+
+  var smfFetchController = null;
+
+  function smfApplyWithSort() {
+    var params = [];
+    Object.keys(state).forEach(function(k) {
+      if (state[k].val !== '') params.push(encodeURIComponent(k) + '=' + encodeURIComponent(state[k].val));
+    });
+    if (activeSortBy) params.push('sort_by=' + encodeURIComponent(activeSortBy));
+    var url = window.location.pathname + (params.length ? '?' + params.join('&') : '');
+    history.pushState({}, '', url);
+
+    var grid = document.querySelector('#CollectionProductGrid, .collection__products, .product-grid, [class*="collection-grid"]');
+    if (!grid) { window.location.href = url; return; }
+
+    // 取消上一个还未完成的请求
+    if (smfFetchController) {
+      smfFetchController.abort();
+    }
+    smfFetchController = new AbortController();
+
+    grid.style.opacity = '0.4';
+    fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      signal: smfFetchController.signal
+    })
+      .then(function(r){ return r.text(); })
+      .then(function(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var newGrid = doc.querySelector('#CollectionProductGrid, .collection__products, .product-grid, [class*="collection-grid"]');
+        if (newGrid) grid.innerHTML = newGrid.innerHTML;
+        grid.style.opacity = '1';
+        smfFetchController = null;
+      })
+      .catch(function(err){
+        // AbortError 是主动取消，不需要恢复透明度
+        if (err.name !== 'AbortError') {
+          grid.style.opacity = '1';
+        }
+        smfFetchController = null;
+      });
+  }
+
+  // ── Carousel scroll ──
+  window.smfScroll = function(rowId, dir) {
+    var row = document.getElementById(rowId);
+    if (row) row.scrollBy({ left: dir * 180, behavior: 'smooth' });
+  };
+
+  // ── Open / Close ──
+  window.smfOpen = function() {
+    document.getElementById('smfOverlay').classList.add('open');
+    document.getElementById('smfSheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.smfClose = function() {
+    document.getElementById('smfOverlay').classList.remove('open');
+    document.getElementById('smfSheet').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // ── Pick item ──
+  document.querySelectorAll('[data-key]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var key   = el.dataset.key;
+      var val   = el.dataset.val;
+      var label = el.dataset.label || val || 'All';
+      // deselect group
+      el.closest('[id]').querySelectorAll('[data-key="' + key + '"]').forEach(function(b){ b.classList.remove('active'); });
+      el.classList.add('active');
+      state[key].val   = val;
+      state[key].label = label;
+      document.getElementById(state[key].labelEl).textContent = label;
+      updateBadge();
+    });
+  });
+
+  // ── Update badges + chips ──
+  function updateBadge() {
+    var count = 0;
+    var chips = [];
+    Object.keys(state).forEach(function(k) {
+      if (state[k].val !== '') {
+        count++;
+        chips.push({ key: k, label: state[k].label });
+      }
+    });
+    ['smfTopBadge','smfFloatBadge','smfSheetBadge'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.textContent = count;
+    });
+    // render chips
+    var chipsEl = document.getElementById('smfChips');
+    chipsEl.innerHTML = '';
+    chips.forEach(function(c) {
+      var chip = document.createElement('div');
+      chip.className = 'smf-chip';
+      chip.innerHTML = c.label + ' <span class="smf-chip-x">×</span>';
+      chip.addEventListener('click', function() { removeFilter(c.key); });
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  function removeFilter(key) {
+    // Update state
+    state[key].val = '';
+    state[key].label = 'All';
+
+    // Safely update sheet label (might not be visible)
+    try {
+      var labelEl = document.getElementById(state[key].labelEl);
+      if (labelEl) labelEl.textContent = 'All';
+    } catch(e) {}
+
+    // Reset active state in sheet rows
+    try {
+      var allBtn = document.querySelector('[data-key="' + key + '"][data-val=""]');
+      if (allBtn) {
+        allBtn.closest('.smf-metal-row, .smf-shape-row, .smf-carat-wrap, .smf-color-wrap').querySelectorAll('[data-key="' + key + '"]').forEach(function(b){ b.classList.remove('active'); });
+        allBtn.classList.add('active');
+      }
+    } catch(e) {}
+
+    // Rebuild chips and badges
+    updateBadge();
+
+    // Apply filters immediately
+    smfApplyWithSort();
+  }
+
+  // ── Reset ──
+  document.getElementById('smfResetBtn').addEventListener('click', function() {
+    Object.keys(state).forEach(function(k) {
+      state[k].val = '';
+      state[k].label = 'All';
+      try {
+        var labelEl = document.getElementById(state[k].labelEl);
+        if (labelEl) labelEl.textContent = 'All';
+        var allBtn = document.querySelector('[data-key="' + k + '"][data-val=""]');
+        if (allBtn) {
+          allBtn.closest('.smf-metal-row, .smf-shape-row, .smf-carat-wrap, .smf-color-wrap').querySelectorAll('[data-key="' + k + '"]').forEach(function(b){ b.classList.remove('active'); });
+          allBtn.classList.add('active');
+        }
+      } catch(e) {}
+    });
+    updateBadge();
+    smfApplyWithSort();
+  });
+
+  // ── View Results → trigger Shopify native AJAX filter ──
+  document.getElementById('smfViewBtn').addEventListener('click', function() {
+    smfClose();
+
+    var params = [];
+    Object.keys(state).forEach(function(k) {
+      if (state[k].val !== '') params.push(encodeURIComponent(k) + '=' + encodeURIComponent(state[k].val));
+    });
+    if (activeSortBy) params.push('sort_by=' + encodeURIComponent(activeSortBy));
+    var url = window.location.pathname + (params.length ? '?' + params.join('&') : '');
+
+    // Update browser URL
+    history.pushState({}, '', url);
+
+    // Find product grid and replace via fetch
+    var grid = document.querySelector('#CollectionProductGrid, .collection__products, .product-grid, [class*="collection-grid"]');
+    if (!grid) { window.location.href = url; return; }
+
+    grid.style.opacity = '0.4';
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function(r){ return r.text(); })
+      .then(function(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var newGrid = doc.querySelector('#CollectionProductGrid, .collection__products, .product-grid, [class*="collection-grid"]');
+        if (newGrid) { grid.innerHTML = newGrid.innerHTML; }
+        grid.style.opacity = '1';
+      })
+      .catch(function(){ grid.style.opacity = '1'; });
+  });
+
+  // ── Scroll: show/hide float button ──
+  var floatEl = document.getElementById('smfFloat');
+  var barEl   = document.getElementById('smfFilterBar');
+  function onScroll() {
+    if (!barEl || !floatEl) return;
+    var gone = barEl.getBoundingClientRect().bottom < 0;
+    floatEl.classList.toggle('visible', gone);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+
+
+{% schema %}
+{
+  "name": "Solarii Ring Filter",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding Left & Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max Width (Desktop)",
+      "min": 600,
+      "max": 1600,
+      "step": 40,
+      "unit": "px",
+      "default": 1320
+    },
+    {
+      "type": "range",
+      "id": "mobile_max_width",
+      "label": "Max Width (Mobile)",
+      "min": 320,
+      "max": 800,
+      "step": 40,
+      "unit": "px",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "font_scale",
+      "label": "Text Size (Desktop)",
+      "min": 80,
+      "max": 130,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales all text and icons proportionally"
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_scale",
+      "label": "Text Size (Mobile)",
+      "min": 80,
+      "max": 130,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales mobile filter sheet size independently"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Engagement Rings"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Discover our collection of made to order engagement rings and customize it to your preference"
+    },
+    {
+      "type": "text",
+      "id": "label_shape",
+      "label": "Shape Filter Label",
+      "default": "Stone Shape"
+    },
+    {
+      "type": "text",
+      "id": "label_carat",
+      "label": "Carat Filter Label",
+      "default": "Carat"
+    },
+    {
+      "type": "text",
+      "id": "label_color",
+      "label": "Stone Color Filter Label",
+      "default": "Stone Color"
+    },
+    {
+      "type": "text",
+      "id": "plating_values",
+      "label": "Plating Color Values (comma separated)",
+      "default": "White Gold,Yellow Gold,Rose Gold,Two-Tone,Black Gold",
+      "info": "Must match your Shopify filter values exactly"
+    },
+    {
+      "type": "header",
+      "content": "── Plating Images (optional) ──"
+    },
+    { "type": "image_picker", "id": "img_white_gold",  "label": "White Gold image" },
+    { "type": "image_picker", "id": "img_yellow_gold", "label": "Yellow Gold image" },
+    { "type": "image_picker", "id": "img_rose_gold",   "label": "Rose Gold image" },
+    { "type": "image_picker", "id": "img_two_tone",    "label": "Two-Tone image" },
+    { "type": "image_picker", "id": "img_black_gold",  "label": "Black Gold image" },
+    {
+      "type": "header",
+      "content": "── Shape Images (optional) ──"
+    },
+    { "type": "image_picker", "id": "img_shape_round",    "label": "Round Cut" },
+    { "type": "image_picker", "id": "img_shape_oval",     "label": "Oval Cut" },
+    { "type": "image_picker", "id": "img_shape_pear",     "label": "Pear Cut" },
+    { "type": "image_picker", "id": "img_shape_emerald",  "label": "Emerald Cut" },
+    { "type": "image_picker", "id": "img_shape_marquise", "label": "Marquise Cut" },
+    { "type": "image_picker", "id": "img_shape_cushion",  "label": "Cushion Cut" },
+    { "type": "image_picker", "id": "img_shape_radiant",  "label": "Radiant Cut" },
+    { "type": "image_picker", "id": "img_shape_princess", "label": "Princess Cut" },
+    { "type": "image_picker", "id": "img_shape_asscher",  "label": "Asscher Cut" },
+    { "type": "image_picker", "id": "img_shape_heart",    "label": "Heart Cut" },
+    { "type": "image_picker", "id": "img_shape_coffin",   "label": "Coffin Cut" },
+    {
+      "type": "header",
+      "content": "── Stone Color Images (optional) ──"
+    },
+    { "type": "image_picker", "id": "img_color_white",     "label": "White Stone" },
+    { "type": "image_picker", "id": "img_color_yellow",    "label": "Yellow Stone" },
+    { "type": "image_picker", "id": "img_color_pink",      "label": "Pink Stone" },
+    { "type": "image_picker", "id": "img_color_morganite", "label": "Morganite Stone" },
+    { "type": "image_picker", "id": "img_color_blue",      "label": "Blue Stone" },
+    { "type": "image_picker", "id": "img_color_emerald",   "label": "Emerald Green" },
+    { "type": "image_picker", "id": "img_color_aqua",      "label": "Aquamarine Blue" },
+    { "type": "image_picker", "id": "img_color_black",     "label": "Black Stone" },
+    { "type": "image_picker", "id": "img_color_champagne", "label": "Champagne Stone" },
+    { "type": "image_picker", "id": "img_color_purple",    "label": "Purple Stone" },
+    { "type": "image_picker", "id": "img_color_ruby",      "label": "Ruby Stone" },
+    { "type": "image_picker", "id": "img_color_pearl",     "label": "Pearl" }
+  ],
+  "presets": [
+    {
+      "name": "Solarii Ring Filter"
+    }
+  ]
+}
+{% endschema %}

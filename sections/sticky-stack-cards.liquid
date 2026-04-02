@@ -1,0 +1,482 @@
+{% liquid
+  assign section_id = section.id
+%}
+
+<section id="shopify-section-{{ section_id }}" class="sj-sticky-stack-section">
+  <div
+    class="sj-sticky-stack"
+    style="
+      --section-bg: {{ section.settings.section_bg }};
+      --top-padding: {{ section.settings.top_padding }}px;
+      --bottom-padding: {{ section.settings.bottom_padding }}px;
+      --card-height: {{ section.settings.card_height_desktop }}px;
+      --card-height-mobile: {{ section.settings.card_height_mobile }}px;
+      --collapsed-height: {{ section.settings.collapsed_height }}px;
+      --sticky-top: {{ section.settings.sticky_top }}px;
+      --card-radius: {{ section.settings.card_radius }}px;
+    "
+  >
+    <div class="sj-sticky-stack__inner">
+      {% for block in section.blocks %}
+        <div
+          class="sj-sticky-stack__item"
+          style="
+            --index: {{ forloop.index0 }};
+            --card-bg: {{ block.settings.card_bg }};
+            --card-text: {{ block.settings.text_color }};
+          "
+          {{ block.shopify_attributes }}
+        >
+          <article class="sj-sticky-card">
+            <div class="sj-sticky-card__header">
+              <h3 class="sj-sticky-card__title">{{ block.settings.title | escape }}</h3>
+              <span class="sj-sticky-card__icon" aria-hidden="true"></span>
+            </div>
+
+            <div class="sj-sticky-card__body">
+              {% if block.settings.description != blank %}
+                <div class="sj-sticky-card__desc">
+                  {{ block.settings.description | newline_to_br }}
+                </div>
+              {% else %}
+                <div></div>
+              {% endif %}
+
+              {% if block.settings.number != blank %}
+                <div class="sj-sticky-card__number">
+                  {{ block.settings.number | escape }}
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+
+      <div class="sj-sticky-stack__end-spacer" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <style>
+    #shopify-section-{{ section_id }} {
+      background: var(--section-bg);
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack {
+      background: var(--section-bg);
+      padding-top: var(--top-padding);
+      padding-bottom: var(--bottom-padding);
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__inner {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__item {
+      position: relative;
+      height: calc(var(--card-height) + 18px);
+      z-index: calc(100 - var(--index));
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card {
+      position: sticky;
+      top: calc(var(--sticky-top) + (var(--index) * var(--collapsed-height)));
+      height: var(--card-height);
+      min-height: var(--card-height);
+      background: var(--card-bg);
+      color: var(--card-text);
+      border-radius: var(--card-radius);
+      padding: 28px 28px 24px;
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition:
+        height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        min-height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        padding 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.25s ease,
+        transform 0.25s ease;
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.10),
+        0 1px 0 rgba(0, 0, 0, 0.08);
+      will-change: height, transform;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card {
+      height: var(--collapsed-height);
+      min-height: var(--collapsed-height);
+      padding-top: 12px;
+      padding-bottom: 12px;
+      border-radius: calc(var(--card-radius) - 6px);
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__title {
+      margin: 0;
+      max-width: 12ch;
+      font-size: clamp(30px, 3.8vw, 60px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      font-weight: 500;
+      transition:
+        font-size 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+        line-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+        max-width 0.34s ease;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card__title {
+      max-width: 100%;
+      font-size: clamp(15px, 1.2vw, 22px);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transform: translateY(1px);
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__icon {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 26px;
+      border-radius: 6px;
+      border: 1.5px solid currentColor;
+      position: relative;
+      opacity: 0.88;
+      margin-top: 2px;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__icon::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 10px;
+      height: 10px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__body {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      transition:
+        opacity 0.22s ease,
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.22s ease;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card__body {
+      opacity: 0;
+      transform: translateY(18px);
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__desc {
+      max-width: 32ch;
+      font-size: 20px;
+      line-height: 1.45;
+      opacity: 0.9;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-card__number {
+      font-size: clamp(72px, 15vw, 208px);
+      line-height: 0.82;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+      white-space: nowrap;
+      justify-self: end;
+      text-align: right;
+    }
+
+    #shopify-section-{{ section_id }} .sj-sticky-stack__end-spacer {
+      height: calc(var(--card-height) * 0.45);
+    }
+
+    @media screen and (max-width: 989px) {
+      #shopify-section-{{ section_id }} .sj-sticky-stack__inner {
+        width: calc(100% - 24px);
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-stack__item {
+        height: calc(var(--card-height-mobile) + 14px);
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-card {
+        height: var(--card-height-mobile);
+        min-height: var(--card-height-mobile);
+        padding: 22px 20px 20px;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-card__title {
+        max-width: 11ch;
+        font-size: clamp(24px, 7.2vw, 36px);
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-card__desc {
+        font-size: 15px;
+        max-width: 28ch;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-card__number {
+        font-size: clamp(52px, 20vw, 108px);
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-stack__end-spacer {
+        height: calc(var(--card-height-mobile) * 0.35);
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section_id }} .sj-sticky-card__body {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-card__number {
+        justify-self: start;
+        text-align: left;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card__icon {
+        width: 20px;
+        height: 20px;
+        flex-basis: 20px;
+      }
+
+      #shopify-section-{{ section_id }} .sj-sticky-stack__item.is-collapsed .sj-sticky-card__icon::after {
+        top: 4px;
+        left: 4px;
+        width: 8px;
+        height: 8px;
+      }
+    }
+  </style>
+
+  <script>
+    (() => {
+      const sectionId = 'shopify-section-{{ section_id }}';
+      const section = document.getElementById(sectionId);
+      if (!section || section.dataset.stickyStackInit === 'true') return;
+
+      section.dataset.stickyStackInit = 'true';
+
+      const items = Array.from(section.querySelectorAll('.sj-sticky-stack__item'));
+      const root = section.querySelector('.sj-sticky-stack');
+      if (!items.length || !root) return;
+
+      let frameId = 0;
+
+      const getPx = (value) => parseFloat(value) || 0;
+
+      const updateCards = () => {
+        frameId = 0;
+
+        if (!document.body.contains(section)) return;
+
+        const styles = getComputedStyle(root);
+        const stickyTop = getPx(styles.getPropertyValue('--sticky-top'));
+        const collapsedHeight = getPx(styles.getPropertyValue('--collapsed-height'));
+        const sectionRect = section.getBoundingClientRect();
+
+        let activeIndex = -1;
+
+        items.forEach((item, index) => {
+          const rect = item.getBoundingClientRect();
+          const triggerPoint = stickyTop + (index * collapsedHeight) + 2;
+
+          if (rect.top <= triggerPoint) {
+            activeIndex = index;
+          }
+        });
+
+        if (activeIndex < 0 && sectionRect.top < window.innerHeight * 0.7) {
+          activeIndex = 0;
+        }
+
+        items.forEach((item, index) => {
+          item.classList.toggle('is-collapsed', index < activeIndex);
+          item.classList.toggle('is-active', index === activeIndex);
+        });
+      };
+
+      const requestUpdate = () => {
+        if (frameId) return;
+        frameId = window.requestAnimationFrame(updateCards);
+      };
+
+      requestUpdate();
+      window.addEventListener('scroll', requestUpdate, { passive: true });
+      window.addEventListener('resize', requestUpdate);
+
+      document.addEventListener('shopify:section:load', requestUpdate);
+      document.addEventListener('shopify:section:reorder', requestUpdate);
+      document.addEventListener('shopify:block:select', (event) => {
+        if (section.contains(event.target)) {
+          requestUpdate();
+        }
+      });
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Sticky stack cards",
+  "tag": "section",
+  "class": "section section-sticky-stack-cards",
+  "settings": [
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "top_padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "bottom_padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "card_height_desktop",
+      "min": 420,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "label": "Card height desktop",
+      "default": 620
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "min": 360,
+      "max": 760,
+      "step": 10,
+      "unit": "px",
+      "label": "Card height mobile",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "collapsed_height",
+      "min": 44,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Collapsed title bar height",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "sticky_top",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Sticky top offset",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card radius",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Our custom rings"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Crafted for your story, made with careful detail and premium finishing."
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number / big text",
+          "default": "01"
+        },
+        {
+          "type": "color",
+          "id": "card_bg",
+          "label": "Card background",
+          "default": "#F3F1EA"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#111111"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Sticky stack cards",
+      "blocks": [
+        {
+          "type": "card"
+        },
+        {
+          "type": "card"
+        },
+        {
+          "type": "card"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

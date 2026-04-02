@@ -1,0 +1,603 @@
+{% comment %}
+  Section: Crafted for Every Occasion
+  - 4 occasion cards with hover effects
+  - Fully customizable via Shopify Theme Editor
+{% endcomment %}
+
+{{ 'section-occasion-cards.css' | asset_url | stylesheet_tag }}
+
+<section class="occasion-section" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="occasion-container">
+
+    {%- if section.settings.show_header -%}
+      <div class="occasion-header">
+        <div class="occasion-header__left">
+          {%- if section.settings.eyebrow != blank -%}
+            <span class="occasion-eyebrow">{{ section.settings.eyebrow }}</span>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="occasion-heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.subtext != blank -%}
+          <div class="occasion-header__right">
+            <p>{{ section.settings.subtext }}</p>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="occasion-cards occasion-cards--{{ section.settings.columns_desktop }}">
+      {%- for block in section.blocks -%}
+        <a href="{{ block.settings.link }}" class="occasion-card" {{ block.shopify_attributes }}
+           style="--card-height: {{ section.settings.card_height }}px;">
+
+          <div class="occasion-card__bg">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 800 | image_tag:
+                loading: 'lazy',
+                class: 'occasion-card__img',
+                widths: '400, 600, 800',
+                sizes: '(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw'
+              }}
+            {%- else -%}
+              <div class="occasion-card__placeholder">
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          </div>
+
+          <div class="occasion-card__overlay"></div>
+
+          <div class="occasion-card__content">
+            {%- if block.settings.icon != blank -%}
+              <div class="occasion-card__emoji">{{ block.settings.icon }}</div>
+            {%- endif -%}
+            {%- if block.settings.title != blank -%}
+              <h3 class="occasion-card__title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <p class="occasion-card__desc">{{ block.settings.description }}</p>
+            {%- endif -%}
+            {%- if block.settings.button_text != blank -%}
+              <span class="occasion-card__cta">
+                {{ block.settings.button_text }}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+              </span>
+            {%- endif -%}
+          </div>
+
+        </a>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* ===== Google Fonts ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap');
+
+  /* ===== Variables ===== */
+  .occasion-section {
+    --gold: {{ section.settings.accent_color }};
+    --gold-light: {{ section.settings.accent_color | color_lighten: 15 }};
+    --cream: {{ section.settings.bg_color }};
+    --dark: #1B1915;
+    --text-sub: #9A9490;
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Outfit', sans-serif;
+    background: var(--cream);
+  }
+
+  /* ===== Container ===== */
+  .occasion-container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ===== Header ===== */
+  .occasion-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 64px;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .occasion-eyebrow {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 4.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .occasion-eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .occasion-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.12;
+    color: var(--dark);
+    margin: 0;
+  }
+
+  .occasion-header__right p {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-sub);
+    max-width: 300px;
+    text-align: right;
+    margin: 0;
+  }
+
+  /* ===== Cards Grid ===== */
+  .occasion-cards {
+    display: grid;
+    gap: {{ section.settings.card_gap }}px;
+  }
+
+  .occasion-cards--4 { grid-template-columns: repeat(4, 1fr); }
+  .occasion-cards--3 { grid-template-columns: repeat(3, 1fr); }
+  .occasion-cards--2 { grid-template-columns: repeat(2, 1fr); }
+
+  /* ===== Single Card ===== */
+  .occasion-card {
+    position: relative;
+    border-radius: {{ section.settings.card_radius }}px;
+    overflow: hidden;
+    height: var(--card-height, 520px);
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .occasion-card__bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .occasion-card:hover .occasion-card__bg {
+    transform: scale(1.08);
+  }
+
+  .occasion-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .occasion-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background: #e8e0d6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .occasion-card__placeholder .placeholder-svg {
+    width: 60%;
+    opacity: 0.3;
+  }
+
+  /* Overlay */
+  .occasion-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(27,25,21,0) 30%, rgba(27,25,21,0.35) 60%, rgba(27,25,21,0.82) 100%);
+    transition: background 0.5s ease;
+  }
+
+  .occasion-card:hover .occasion-card__overlay {
+    background: linear-gradient(180deg, rgba(27,25,21,0) 15%, rgba(27,25,21,0.25) 50%, rgba(27,25,21,0.88) 100%);
+  }
+
+  /* Content */
+  .occasion-card__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 28px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .occasion-card__emoji {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 8px;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+  }
+
+  .occasion-card:hover .occasion-card__emoji {
+    transform: translateY(-4px);
+    background: rgba(196,162,101,0.25);
+    border-color: rgba(196,162,101,0.4);
+  }
+
+  .occasion-card__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 24px;
+    color: #fff;
+    line-height: 1.25;
+    margin: 0;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .occasion-card:hover .occasion-card__title {
+    transform: translateY(-4px);
+  }
+
+  .occasion-card__desc {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.7);
+    margin: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.5s ease 0.1s,
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(10px);
+  }
+
+  .occasion-card:hover .occasion-card__desc {
+    max-height: 80px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .occasion-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s,
+                opacity 0.5s ease 0.15s,
+                gap 0.3s ease;
+  }
+
+  .occasion-card:hover .occasion-card__cta {
+    max-height: 40px;
+    opacity: 1;
+  }
+
+  .occasion-card__cta:hover {
+    gap: 14px;
+  }
+
+  .occasion-card__cta svg {
+    transition: transform 0.3s ease;
+  }
+
+  .occasion-card__cta:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Gold bottom line */
+  .occasion-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 3;
+  }
+
+  .occasion-card:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1100px) {
+    .occasion-cards--4,
+    .occasion-cards--3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .occasion-card {
+      --card-height: 440px !important;
+    }
+    .occasion-container {
+      padding: 0 32px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .occasion-cards--4,
+    .occasion-cards--3,
+    .occasion-cards--2 {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .occasion-card {
+      --card-height: 380px !important;
+    }
+    .occasion-container {
+      padding: 0 20px;
+    }
+    .occasion-header {
+      margin-bottom: 40px;
+    }
+    .occasion-header__right {
+      display: none;
+    }
+    /* Mobile: always show desc & cta */
+    .occasion-card .occasion-card__desc {
+      max-height: 80px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .occasion-card .occasion-card__cta {
+      max-height: 40px;
+      opacity: 1;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Occasion Cards",
+  "tag": "section",
+  "class": "section-occasion-cards",
+  "settings": [
+    {
+      "type": "header",
+      "content": "标题区域"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "显示标题",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "小标签",
+      "default": "Collections"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "主标题",
+      "default": "<p>Crafted for<br><em>Every Occasion</em></p>"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "副标题",
+      "default": "From milestone moments to everyday sparkle — find pieces that match your story."
+    },
+    {
+      "type": "header",
+      "content": "布局设置"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "最大宽度",
+      "min": 1000,
+      "max": 1600,
+      "step": 40,
+      "default": 1400,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "桌面端列数",
+      "options": [
+        { "value": "2", "label": "2 列" },
+        { "value": "3", "label": "3 列" },
+        { "value": "4", "label": "4 列" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "卡片高度",
+      "min": 360,
+      "max": 700,
+      "step": 20,
+      "default": 520,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "卡片间距",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "卡片圆角",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "颜色"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "背景颜色",
+      "default": "#FBF8F3"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "金色强调色",
+      "default": "#C4A265"
+    },
+    {
+      "type": "header",
+      "content": "间距"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "上边距",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "default": 96,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "下边距",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "default": 120,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "occasion_card",
+      "name": "场景卡片",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "卡片图片"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Emoji 图标",
+          "default": "💍"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题",
+          "default": "Engagement & Wedding"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "描述文字",
+          "default": "Say \"I do\" with brilliance. Sparkling rings & timeless bands for your forever love."
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "按钮文字",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "链接地址"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Occasion Cards",
+      "blocks": [
+        {
+          "type": "occasion_card",
+          "settings": {
+            "icon": "💍",
+            "title": "Engagement & Wedding",
+            "description": "Say \"I do\" with brilliance. Sparkling rings & timeless bands for your forever love.",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "occasion_card",
+          "settings": {
+            "icon": "✈️",
+            "title": "Travel",
+            "description": "Lightweight elegance for every adventure. Durable, versatile, effortlessly chic.",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "occasion_card",
+          "settings": {
+            "icon": "🤰",
+            "title": "Pregnancy",
+            "description": "Celebrate the journey of motherhood with delicate, meaningful pieces.",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "occasion_card",
+          "settings": {
+            "icon": "🌟",
+            "title": "Every Occasion",
+            "description": "Gold today, silver tomorrow — express it all guilt-free with affordable treasures.",
+            "button_text": "Shop Now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
